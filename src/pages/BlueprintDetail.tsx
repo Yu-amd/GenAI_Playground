@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import bannerWave from '../assets/banner_wave.png';
 import bp_chatqna from '../assets/blueprints/bp_chatqna.png';
 import bp_agentqna from '../assets/blueprints/bp_agentqna.png';
@@ -66,7 +67,30 @@ const OPEA_LABEL = 'Open Platform for Enterprise AI';
 const BlueprintDetail: React.FC = () => {
   const { blueprintId } = useParams<{ blueprintId: string }>();
   const blueprint = blueprints.find(bp => bp.id === blueprintId);
-  const [activeTab, setActiveTab] = useState<'aims' | 'card'>('aims');
+  const [activeTab, setActiveTab] = useState<'card' | 'aims'>('card');
+  const [markdownContent, setMarkdownContent] = useState<string>('');
+
+  useEffect(() => {
+    const loadMarkdown = async () => {
+      if (blueprint) {
+        try {
+          const response = await fetch(`/blueprints/markdown/${blueprint.id}.md`);
+          if (response.ok) {
+            const text = await response.text();
+            setMarkdownContent(text);
+          } else {
+            console.error('Failed to load markdown file');
+            setMarkdownContent('# Blueprint Documentation\n\nDocumentation coming soon...');
+          }
+        } catch (error) {
+          console.error('Error loading markdown:', error);
+          setMarkdownContent('# Blueprint Documentation\n\nDocumentation coming soon...');
+        }
+      }
+    };
+
+    loadMarkdown();
+  }, [blueprint]);
 
   if (!blueprint) {
     return (
@@ -100,17 +124,6 @@ const BlueprintDetail: React.FC = () => {
         {/* Tabs */}
         <div className="flex border-b border-neutral-700 mb-6">
           <button
-            onClick={() => setActiveTab('aims')}
-            className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
-              ${activeTab === 'aims'
-                ? 'border-blue-500 text-blue-500 bg-transparent'
-                : 'border-transparent text-gray-400 hover:text-blue-400'}
-            `}
-            style={{ background: 'none', borderRadius: 0 }}
-          >
-            AIMs
-          </button>
-          <button
             onClick={() => setActiveTab('card')}
             className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
               ${activeTab === 'card'
@@ -121,6 +134,17 @@ const BlueprintDetail: React.FC = () => {
           >
             Blueprint Card
           </button>
+          <button
+            onClick={() => setActiveTab('aims')}
+            className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
+              ${activeTab === 'aims'
+                ? 'border-blue-500 text-blue-500 bg-transparent'
+                : 'border-transparent text-gray-400 hover:text-blue-400'}
+            `}
+            style={{ background: 'none', borderRadius: 0 }}
+          >
+            AIMs
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -130,15 +154,8 @@ const BlueprintDetail: React.FC = () => {
           </div>
         )}
         {activeTab === 'card' && (
-          <div className="flex flex-col items-center justify-center min-h-[300px]">
-            <img
-              src={blueprint.image}
-              alt={blueprint.name}
-              className="w-32 h-32 object-cover rounded-2xl border-2 border-neutral-700 shadow-md mb-6"
-            />
-            <div className="text-base text-blue-400 font-semibold mb-1 uppercase tracking-widest">{OPEA_LABEL}</div>
-            <h1 className="text-3xl font-bold mb-4 text-center">{blueprint.name}</h1>
-            <div className="text-lg text-neutral-200 text-center max-w-2xl">{blueprint.description}</div>
+          <div className="prose prose-invert max-w-none">
+            <ReactMarkdown>{markdownContent}</ReactMarkdown>
           </div>
         )}
       </div>
