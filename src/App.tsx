@@ -4,6 +4,7 @@ import ModelsCatalog from './pages/ModelsCatalog';
 import BlueprintsCatalog from './pages/BlueprintsCatalog';
 import GPUCloud from './pages/GPUCloud';
 import ModelDetail from './pages/ModelDetail';
+import BlueprintDetail from './pages/BlueprintDetail';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
            <Route path="/models" element={<ModelsCatalog />} />
 	   <Route path="/models/:modelId/*" element={<ModelDetail />} />
            <Route path="/blueprints" element={<BlueprintsCatalog />} />
+           <Route path="/blueprints/:blueprintId" element={<BlueprintDetail />} />
            <Route path="/gpu-cloud" element={<GPUCloud />} />
       </Routes>
     </Router>
