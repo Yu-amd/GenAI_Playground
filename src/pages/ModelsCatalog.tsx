@@ -1,14 +1,59 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import bannerWave from '../assets/banner_wave.png';
 import llamaImg from '../assets/models/model_llama3_1.png';
 import qwen2Img from '../assets/models/model_Qwen2-7B.png';
 import deepseekImg from '../assets/models/model_DeepSeek_MoE_18B.png';
 import gemmaImg from '../assets/models/model_Gemma.png';
 
-import { NavLink, Link } from 'react-router-dom';
-import { models } from '../data/models'; // Use shared data
+interface Model {
+  id: string;
+  org: string;
+  name: string;
+  description: string;
+  image: string;
+  localCard: string;
+  lastUpdated: string;
+}
 
-// Remove the local models array here
+const models: Model[] = [
+  {
+    id: 'meta-llama/Llama-3-8B',
+    org: 'Meta',
+    name: 'Llama 3 8B',
+    description: 'The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models in 8B, 70B and 405B sizes (text in/text out).',
+    image: bannerWave,
+    localCard: llamaImg,
+    lastUpdated: '2024-03-15'
+  },
+  {
+    id: 'Qwen/Qwen2-7B-Instruct',
+    org: 'Qwen',
+    name: 'Qwen2 7B',
+    description: 'Qwen2 has generally surpassed most open-source models and demonstrated competitiveness against proprietary models across a series of benchmarks targeting for language understanding, language generation, multilingual capability, coding, mathematics, reasoning, etc.',
+    image: bannerWave,
+    localCard: qwen2Img,
+    lastUpdated: '2024-03-20'
+  },
+  {
+    id: 'deepseek-ai/deepseek-moe-16b-base',
+    org: 'DeepSeek',
+    name: 'DeepSeek MoE 16B',
+    description: 'Mixture-of-Experts (MoE) language model with 16.4B parameters. It employs an innovative MoE architecture, which involves two principal strategies: fine-grained expert segmentation and shared experts isolation.',
+    image: bannerWave,
+    localCard: deepseekImg,
+    lastUpdated: '2024-03-25'
+  },
+  {
+    id: 'google/gemma-3-4b-it',
+    org: 'Google',
+    name: 'Gemma 3',
+    description: 'Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models. Gemma 3 models are multimodal, handling text and image input and generating text output, with open weights for both pre-trained variants and instruction-tuned variants.',
+    image: bannerWave,
+    localCard: gemmaImg,
+    lastUpdated: '2024-03-28'
+  }
+];
 
 const ModelsCatalog: React.FC = () => {
   return (
@@ -24,8 +69,8 @@ const ModelsCatalog: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-full max-w-7xl mx-auto py-12 px-4 flex-1">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full items-stretch">
+      <div className="w-full max-w-[1600px] mx-auto py-12 px-8 flex-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full items-stretch">
           {models.map((model) => (
             <Link
               key={model.id}
@@ -33,14 +78,14 @@ const ModelsCatalog: React.FC = () => {
               className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-10 flex flex-row items-center hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full"
             >
               <img
-                src={model.image}
+                src={model.localCard}
                 alt={model.name}
-                className="w-32 h-32 object-cover rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0"
+                className="w-36 h-36 object-cover rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0"
               />
               <div className="flex-1 min-w-0 flex flex-col justify-center">
-                <div className="text-base text-blue-400 font-semibold mb-2 truncate">{model.org}</div>
-                <h2 className="text-3xl font-bold mb-3 group-hover:text-blue-400 transition truncate">{model.name}</h2>
-                <div className="text-base text-neutral-200">{model.description}</div>
+                <div className="text-base text-blue-400 font-semibold mb-1 truncate">{model.org}</div>
+                <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-400 transition truncate">{model.name}</h2>
+                <div className="text-sm text-neutral-200 line-clamp-3">{model.description}</div>
               </div>
             </Link>
           ))}

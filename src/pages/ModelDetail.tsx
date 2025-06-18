@@ -419,12 +419,11 @@ const ModelDetail: React.FC = () => {
     <div className="min-h-screen bg-neutral-900 text-white flex flex-col">
         {/* Banner */}
       <div className="relative w-full h-56 md:h-72 lg:h-80 overflow-hidden">
-          <img src={bannerWave} alt="Banner" className="w-full h-full object-cover" />
-        {/* Navigation Bar */}
-        <nav className="absolute top-0 left-0 w-full flex justify-center gap-16 pt-8 z-10">
-          <NavLink to="/models" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full" end>Models</NavLink>
-          <NavLink to="/blueprints" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full" end>Blueprints</NavLink>
-          <NavLink to="/gpu-cloud" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full" end>GPU Clouds</NavLink>
+        <img src={bannerWave} alt="Banner" className="w-full h-full object-cover" />
+        <nav className="absolute top-0 left-0 w-full flex flex-wrap justify-center gap-4 md:gap-8 pt-4 z-10 px-4">
+          <Link to="/models" className="text-lg md:text-xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Models</Link>
+          <Link to="/blueprints" className="text-lg md:text-xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Blueprints</Link>
+          <Link to="/gpu-cloud" className="text-lg md:text-xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
         </nav>
         {/* Left-aligned glassy model logo/tile overlay */}
         <div className="absolute left-8 top-1/2 -translate-y-1/2 z-10 bg-white/10 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg p-6 flex flex-col items-center w-64">
@@ -560,12 +559,12 @@ const ModelDetail: React.FC = () => {
               </div>
             </div>
             {/* Integration Code (right) */}
-            <div className="w-full md:w-[60%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg border border-neutral-800 shadow flex flex-col min-w-0">
+            <div className="w-full md:w-[60%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg border border-neutral-800 shadow flex flex-col">
               <div className="flex items-center space-x-2 mb-4 pt-6 px-6">
                 <CodeBracketIcon className="w-5 h-5 text-gray-400" />
                 <h3 className="text-lg font-medium text-gray-200">API Integration</h3>
               </div>
-              <div className="flex flex-nowrap gap-2 mb-4 px-6 items-center min-w-0">
+              <div className="flex flex-nowrap gap-2 mb-4 px-6 items-center overflow-x-auto">
                 {['python', 'javascript', 'java', 'go', 'csharp', 'shell'].map((lang) => (
                   <button
                     key={lang}
@@ -590,18 +589,19 @@ const ModelDetail: React.FC = () => {
                     <ClipboardIcon className="w-5 h-5" />
                   )}
                 </button>
+                <div className="flex-grow" />
                 <button
                   onClick={() => setIsCodeModalOpen(true)}
-                  className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-md transition-colors"
+                  className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-md transition-colors ml-2"
                   title="View Full Code"
                 >
                   <CodeBracketIcon className="w-5 h-5" />
                 </button>
               </div>
-              <div className="px-6 pb-4 min-w-0">
+              <div className="px-6 pb-4">
                 <Highlight theme={themes.nightOwl} code={codeContent} language={selectedLanguage}>
                   {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                    <pre className={`${className} p-4 text-sm font-mono whitespace-pre-wrap break-words overflow-x-auto overflow-y-auto max-h-[600px]`} style={{ ...style, margin: 0, maxWidth: '100%' }}>
+                    <pre className={`${className} p-4 text-sm font-mono whitespace-pre-wrap break-words overflow-x-auto overflow-y-auto max-h-[550px]`} style={{ ...style, margin: 0, maxWidth: '100%' }}>
                       {tokens.map((line, i) => (
                         <div key={i} {...getLineProps({ line })}>
                           {line.map((token, key) => (
@@ -622,7 +622,7 @@ const ModelDetail: React.FC = () => {
             <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
               {model.localCard}
             </ReactMarkdown>
-          </div>
+        </div>
         )}
       </div>
       <Dialog open={isCodeModalOpen} onClose={() => setIsCodeModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">
@@ -657,7 +657,7 @@ const ModelDetail: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
+      </div>
       </Dialog>
     </div>
   );
