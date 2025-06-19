@@ -109,8 +109,7 @@ const BlueprintsCatalog: React.FC = () => {
                 className="w-36 h-36 object-cover rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0"
               />
               <div className="flex-1 min-w-0 flex flex-col justify-center">
-                <div className="text-base text-blue-400 font-semibold mb-1 truncate">{OPEA_LABEL}</div>
-                <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-400 transition truncate">{bp.name}</h2>
+                <h2 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition truncate">{bp.name}</h2>
                 <div className="flex space-x-2 mb-3">
                   {bp.tags.map((tag, index) => (
                     <span 
@@ -125,7 +124,7 @@ const BlueprintsCatalog: React.FC = () => {
                     </span>
                   ))}
                 </div>
-                <div className="text-sm text-neutral-200 line-clamp-3">{bp.description}</div>
+                <div className="text-sm text-neutral-300 line-clamp-3">{bp.description}</div>
               </div>
             </Link>
           ))}

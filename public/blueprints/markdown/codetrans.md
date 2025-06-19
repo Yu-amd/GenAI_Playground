@@ -1,69 +1,11 @@
 # CodeTrans - Architecture Implementation Models
 
 ## Overview
-CodeTrans is a specialized code translation system that converts code between different programming languages while preserving functionality and optimizing for target language idioms. The system handles syntax translation, library mapping, and code optimization.
-
-## Microservices Architecture
-
-### Core Models Inference Endpoints
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_codeTrans.png" alt="Code Translation Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Code Translation Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Primary service for translating code between programming languages</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_agentqna.png" alt="Syntax Analysis Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Syntax Analysis Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Analyzes source code syntax and structure for translation</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_codegen.png" alt="Language Model Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Language Model Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Provides language-specific knowledge and patterns</p>
-  </div>
-</div>
-
-### Functional Microservices
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_searchQna.png" alt="Language Detection Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Language Detection Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Automatically detects source and target programming languages</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_docsum.png" alt="Code Optimization Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Code Optimization Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Optimizes translated code for target language best practices</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_translation.png" alt="Translation Validation Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Translation Validation Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Validates translated code for correctness and functionality</p>
-  </div>
-</div>
+CodeTrans is a code translation example that converts code from one programming language to another. The system leverages large language models to provide accurate and idiomatic translations.
 
 ## Implementation Workflow
 
-### 1. Code Analysis
+### 1. Language Analysis
 - **Language Detection**: Identifies source programming language
 - **Syntax Parsing**: Parses source code into abstract syntax tree
 - **Dependency Analysis**: Identifies libraries and external dependencies

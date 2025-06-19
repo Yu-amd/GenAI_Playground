@@ -1,65 +1,7 @@
 # Translation - Architecture Implementation Models
 
 ## Overview
-Translation is a comprehensive language translation system that provides high-quality translations between multiple languages. The system combines neural machine translation with context awareness and cultural adaptation to deliver accurate, natural-sounding translations.
-
-## Microservices Architecture
-
-### Core Models Inference Endpoints
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_translation.png" alt="Translation Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Translation Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Primary service for neural machine translation</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_agentqna.png" alt="Language Detection Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Language Detection Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Automatically detects source language and dialect</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_searchQna.png" alt="Context Analysis Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Context Analysis Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Analyzes context for improved translation accuracy</p>
-  </div>
-</div>
-
-### Functional Microservices
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_codegen.png" alt="Language Pair Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Language Pair Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Manages translation models for specific language pairs</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_docsum.png" alt="Quality Assurance Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Quality Assurance Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Ensures translation quality and consistency</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_chatqna.png" alt="Cultural Adaptation Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Cultural Adaptation Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Adapts translations for cultural context and nuances</p>
-  </div>
-</div>
+The Translation blueprint provides a comprehensive solution for language translation, leveraging advanced AI models to deliver accurate and context-aware translations. The system is designed for scalability and can be adapted for various use cases.
 
 ## Implementation Workflow
 

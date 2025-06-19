@@ -1,69 +1,11 @@
 # DocSum - Architecture Implementation Models
 
 ## Overview
-DocSum is a comprehensive document summarization system that creates concise, accurate summaries of various text types including documents, articles, reports, and conversations. The system uses advanced NLP techniques to extract key information and generate coherent summaries.
-
-## Microservices Architecture
-
-### Core Models Inference Endpoints
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_docsum.png" alt="Summarization Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Summarization Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Primary service for generating document summaries</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_agentqna.png" alt="Text Analysis Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Text Analysis Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Analyzes text structure, sentiment, and key themes</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_searchQna.png" alt="Content Extraction Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Content Extraction Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Extracts key information and insights from documents</p>
-  </div>
-</div>
-
-### Functional Microservices
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_codegen.png" alt="Document Processing Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Document Processing Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Handles various document formats and preprocessing</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_chatqna.png" alt="Key Point Extraction Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Key Point Extraction Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Identifies and extracts key points and main ideas</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_translation.png" alt="Summary Quality Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Summary Quality Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Ensures summary quality, coherence, and accuracy</p>
-  </div>
-</div>
+DocSum is a document summarization application that creates concise summaries of various text types. The system analyzes document structure, identifies key points, and generates high-quality summaries.
 
 ## Implementation Workflow
 
-### 1. Document Processing
+### 1. Document Analysis
 - **Format Detection**: Identifies document type and format
 - **Text Extraction**: Extracts text content from various formats
 - **Preprocessing**: Cleans and normalizes text content

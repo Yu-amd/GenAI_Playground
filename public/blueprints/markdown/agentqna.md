@@ -1,65 +1,5 @@
-# AgentQnA - Architecture Implementation Models
-
 ## Overview
 AgentQnA is a hierarchical multi-agent system designed for complex question-answering applications. The system coordinates specialized agents to break down complex queries and synthesize comprehensive responses.
-
-## Microservices Architecture
-
-### Core Models Inference Endpoints
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_agentqna.png" alt="LLM Inference Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">LLM Inference Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Primary language model for agent coordination and response generation</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_chatqna.png" alt="Agent Coordination Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Agent Coordination Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Manages communication and task distribution between specialized agents</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_searchQna.png" alt="Specialized Agent Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Specialized Agent Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Domain-specific agents for specialized knowledge and tasks</p>
-  </div>
-</div>
-
-### Functional Microservices
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_codegen.png" alt="Agent Orchestrator" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Agent Orchestrator</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Coordinates the execution flow and manages agent lifecycle</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_docsum.png" alt="Task Decomposition Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Task Decomposition Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Breaks down complex queries into manageable sub-tasks</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_translation.png" alt="Response Aggregator" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Response Aggregator</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Synthesizes responses from multiple agents into coherent output</p>
-  </div>
-</div>
 
 ## Implementation Workflow
 
@@ -134,4 +74,4 @@ Key configuration parameters:
 - Response quality validation
 
 ## Support
-For questions and support, please contact the OPEA team. 
+For questions and support, please contact the OPEA team.

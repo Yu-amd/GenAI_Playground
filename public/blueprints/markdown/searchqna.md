@@ -3,67 +3,9 @@
 ## Overview
 SearchQnA enhances question-answering applications by integrating web search capabilities with AI-powered response generation. The system combines real-time web search results with intelligent content analysis to provide up-to-date and comprehensive answers.
 
-## Microservices Architecture
-
-### Core Models Inference Endpoints
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_searchQna.png" alt="Search Engine Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Search Engine Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Primary service for web search and content retrieval</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_agentqna.png" alt="LLM Inference Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">LLM Inference Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Processes search results and generates intelligent responses</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_chatqna.png" alt="Content Analysis Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Content Analysis Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Analyzes and extracts relevant information from web content</p>
-  </div>
-</div>
-
-### Functional Microservices
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_codegen.png" alt="Query Enhancement Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Query Enhancement Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Optimizes search queries for better result relevance</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_docsum.png" alt="Result Synthesis Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Result Synthesis Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Combines and synthesizes information from multiple sources</p>
-  </div>
-  
-  <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-    <div class="flex items-center space-x-3 mb-4">
-      <img src="/graphics/logos/logo_translation.png" alt="Source Validation Service" class="w-8 h-8 rounded object-cover" />
-      <h3 class="text-lg font-semibold text-white">Source Validation Service</h3>
-    </div>
-    <p class="text-gray-300 text-sm">Validates source credibility and information accuracy</p>
-  </div>
-</div>
-
 ## Implementation Workflow
 
-### 1. Query Processing
+### 1. Query Enhancement
 - **Query Analysis**: Analyzes user question for search intent
 - **Query Enhancement**: Optimizes search terms for better results
 - **Search Strategy**: Determines optimal search approach and sources
