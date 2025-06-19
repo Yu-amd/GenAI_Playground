@@ -431,6 +431,22 @@ const ModelDetail: React.FC = () => {
           <div className="text-lg font-bold text-white mt-2 text-center drop-shadow-lg">{model.org}</div>
           <div className="text-2xl font-extrabold mb-2 text-center text-white drop-shadow-lg">{model.name}</div>
         </div>
+        
+        {/* Filter tags positioned to the right of the logo */}
+        <div className="absolute left-80 bottom-8 z-10 flex flex-wrap gap-2 max-w-md">
+          {model.tags?.map((tag, index) => (
+            <span 
+              key={index}
+              className={`px-3 py-2 rounded-lg text-sm font-medium shadow-lg ${
+                index === 0 ? 'bg-blue-900/70 text-blue-200 border border-blue-700/50' :
+                index === 1 ? 'bg-green-900/70 text-green-200 border border-green-700/50' :
+                'bg-purple-900/70 text-purple-200 border border-purple-700/50'
+              }`}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* Main Content */}

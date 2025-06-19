@@ -19,6 +19,7 @@ export const models = [
       'The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models in 8B, 70B and 405B sizes (text in/text out).',
     image: llamaImg,
     localCard: llama3Card,
+    tags: ['Text Generation', 'Multilingual', 'Instruction Tuned']
   },
   {
     id: 'Qwen/Qwen2-7B-Instruct',
@@ -28,6 +29,7 @@ export const models = [
       'Qwen2 has generally surpassed most open-source models and demonstrated competitiveness against proprietary models across a series of benchmarks targeting for language understanding, language generation, multilingual capability, coding, mathematics, reasoning, etc.',
     image: qwen2Img,
     localCard: qwen2Card,
+    tags: ['Code Generation', 'Mathematics', 'Reasoning']
   },
   {
     id: 'deepseek-ai/deepseek-moe-16b-base',
@@ -37,6 +39,7 @@ export const models = [
       'Mixture-of-Experts (MoE) language model with 16.4B parameters. It employs an innovative MoE architecture, which involves two principal strategies: fine-grained expert segmentation and shared experts isolation.',
     image: deepseekImg,
     localCard: deepseekCard,
+    tags: ['MoE Architecture', 'Efficient', 'Base Model']
   },
   {
     id: 'google/gemma-3-4b-it',
@@ -46,5 +49,6 @@ export const models = [
       'Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models. Gemma 3 models are multimodal, handling text and image input and generating text output, with open weights for both pre-trained variants and instruction-tuned variants.',
     image: gemmaImg,
     localCard: gemmaCard,
+    tags: ['Multimodal', 'Lightweight', 'Open Weights']
   },
 ];

@@ -12,54 +12,70 @@ import bp_docsum from '../assets/blueprints/bp_docsum.png';
 import bp_translation from '../assets/blueprints/bp_translation.png';
 import bp_avatarchatbot from '../assets/blueprints/bp_avatarchatbot.png';
 
-const blueprints = [
+interface Blueprint {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  tags: string[];
+}
+
+const blueprints: Blueprint[] = [
   {
     id: 'chatqna',
     name: 'ChatQnA',
     description: 'Chatbot application based on Retrieval Augmented Generation architecture.',
     image: bp_chatqna,
+    tags: ['RAG', 'Chatbot', 'Knowledge Base']
   },
   {
     id: 'agentqna',
     name: 'AgentQnA',
     description: 'A hierarchical multi-agent system for question-answering applications.',
     image: bp_agentqna,
+    tags: ['Multi-Agent', 'Hierarchical', 'Orchestration']
   },
   {
     id: 'codegen',
     name: 'CodeGen',
     description: 'A code copilot application for executing code generation.',
     image: bp_codegen,
+    tags: ['Code Generation', 'Copilot', 'Development']
   },
   {
     id: 'codetrans',
     name: 'CodeTrans',
     description: 'A code translation example which converts code from one programming language to another programming language.',
     image: bp_codeTrans,
+    tags: ['Code Translation', 'Language Conversion', 'Transpilation']
   },
   {
     id: 'searchqna',
     name: 'SearchQnA',
     description: 'An example of improving QnA application quality by expanding the pipeline with the Google search engine.',
     image: bp_searchQna,
+    tags: ['Search Integration', 'Enhanced QnA', 'External APIs']
   },
   {
     id: 'docsum',
     name: 'DocSum',
     description: 'A sample app which creates summaries of different types of text.',
     image: bp_docsum,
+    tags: ['Document Summarization', 'Text Processing', 'NLP']
   },
   {
     id: 'translation',
     name: 'Translation',
     description: 'An application which demonstrates language translation inference.',
     image: bp_translation,
+    tags: ['Language Translation', 'Multilingual', 'Inference']
   },
   {
     id: 'avatarchatbot',
     name: 'Avatar Chatbot',
     description: 'Integrates a conversational chatbot with a virtual avatar.',
     image: bp_avatarchatbot,
+    tags: ['Avatar Integration', 'Visual AI', 'Conversational']
   },
 ];
 
@@ -95,6 +111,20 @@ const BlueprintsCatalog: React.FC = () => {
               <div className="flex-1 min-w-0 flex flex-col justify-center">
                 <div className="text-base text-blue-400 font-semibold mb-1 truncate">{OPEA_LABEL}</div>
                 <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-400 transition truncate">{bp.name}</h2>
+                <div className="flex space-x-2 mb-3">
+                  {bp.tags.map((tag, index) => (
+                    <span 
+                      key={index}
+                      className={`px-2 py-1 rounded text-xs ${
+                        index === 0 ? 'bg-blue-900/50 text-blue-200' :
+                        index === 1 ? 'bg-green-900/50 text-green-200' :
+                        'bg-purple-900/50 text-purple-200'
+                      }`}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
                 <div className="text-sm text-neutral-200 line-clamp-3">{bp.description}</div>
               </div>
             </Link>

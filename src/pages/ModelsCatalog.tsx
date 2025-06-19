@@ -14,6 +14,7 @@ interface Model {
   image: string;
   localCard: string;
   lastUpdated: string;
+  tags: string[];
 }
 
 const models: Model[] = [
@@ -24,7 +25,8 @@ const models: Model[] = [
     description: 'The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models in 8B, 70B and 405B sizes (text in/text out).',
     image: bannerWave,
     localCard: llamaImg,
-    lastUpdated: '2024-03-15'
+    lastUpdated: '2024-03-15',
+    tags: ['Text Generation', 'Multilingual', 'Instruction Tuned']
   },
   {
     id: 'Qwen/Qwen2-7B-Instruct',
@@ -33,7 +35,8 @@ const models: Model[] = [
     description: 'Qwen2 has generally surpassed most open-source models and demonstrated competitiveness against proprietary models across a series of benchmarks targeting for language understanding, language generation, multilingual capability, coding, mathematics, reasoning, etc.',
     image: bannerWave,
     localCard: qwen2Img,
-    lastUpdated: '2024-03-20'
+    lastUpdated: '2024-03-20',
+    tags: ['Code Generation', 'Mathematics', 'Reasoning']
   },
   {
     id: 'deepseek-ai/deepseek-moe-16b-base',
@@ -42,7 +45,8 @@ const models: Model[] = [
     description: 'Mixture-of-Experts (MoE) language model with 16.4B parameters. It employs an innovative MoE architecture, which involves two principal strategies: fine-grained expert segmentation and shared experts isolation.',
     image: bannerWave,
     localCard: deepseekImg,
-    lastUpdated: '2024-03-25'
+    lastUpdated: '2024-03-25',
+    tags: ['MoE Architecture', 'Efficient', 'Base Model']
   },
   {
     id: 'google/gemma-3-4b-it',
@@ -51,7 +55,8 @@ const models: Model[] = [
     description: 'Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models. Gemma 3 models are multimodal, handling text and image input and generating text output, with open weights for both pre-trained variants and instruction-tuned variants.',
     image: bannerWave,
     localCard: gemmaImg,
-    lastUpdated: '2024-03-28'
+    lastUpdated: '2024-03-28',
+    tags: ['Multimodal', 'Lightweight', 'Open Weights']
   }
 ];
 
@@ -85,6 +90,20 @@ const ModelsCatalog: React.FC = () => {
               <div className="flex-1 min-w-0 flex flex-col justify-center">
                 <div className="text-base text-blue-400 font-semibold mb-1 truncate">{model.org}</div>
                 <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-400 transition truncate">{model.name}</h2>
+                <div className="flex space-x-2 mb-3">
+                  {model.tags.map((tag, index) => (
+                    <span 
+                      key={index}
+                      className={`px-2 py-1 rounded text-xs ${
+                        index === 0 ? 'bg-blue-900/50 text-blue-200' :
+                        index === 1 ? 'bg-green-900/50 text-green-200' :
+                        'bg-purple-900/50 text-purple-200'
+                      }`}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
                 <div className="text-sm text-neutral-200 line-clamp-3">{model.description}</div>
               </div>
             </Link>
