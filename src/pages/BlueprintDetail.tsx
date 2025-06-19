@@ -131,6 +131,103 @@ const BlueprintDetail: React.FC = () => {
   const blueprint = blueprints.find(bp => bp.id === blueprintId);
   const [activeTab, setActiveTab] = useState<'card' | 'aims' | 'interact'>('card');
   const [markdownContent, setMarkdownContent] = useState<string>('');
+  
+  // CodeGen specific state
+  const [selectedLanguage, setSelectedLanguage] = useState('python');
+  const [generatedCode, setGeneratedCode] = useState('');
+  const [inputLanguage, setInputLanguage] = useState('python');
+  const [outputLanguage, setOutputLanguage] = useState('javascript');
+  const [inputCode, setInputCode] = useState('');
+  const [translatedCode, setTranslatedCode] = useState('');
+  const [codePrompt, setCodePrompt] = useState('');
+  const [isGeneratingCode, setIsGeneratingCode] = useState(false);
+  const [codeHistory, setCodeHistory] = useState<Array<{
+    id: string;
+    prompt: string;
+    code: string;
+    language: string;
+    timestamp: Date;
+  }>>([]);
+  const [generationSettings, setGenerationSettings] = useState({
+    temperature: 0.7,
+    maxTokens: 1000,
+    topP: 0.9,
+    frequencyPenalty: 0.0,
+    presencePenalty: 0.0
+  });
+  
+  // Knowledge Base Management for RAG
+  const [knowledgeBaseEnabled, setKnowledgeBaseEnabled] = useState(false);
+  const [knowledgeBaseStatus, setKnowledgeBaseStatus] = useState<'disabled' | 'enabled' | 'loading'>('disabled');
+  
+  // Mockup document with specific information
+  const mockupDocument = {
+    title: "OPEA Framework Technical Specifications v2.1",
+    content: `
+# OPEA Framework Technical Specifications
+
+## Overview
+The OPEA (Open Platform for Enterprise AI) Framework is a comprehensive solution for building enterprise-grade AI applications. This document contains proprietary information about our internal architecture and implementation details.
+
+## Core Components
+
+### 1. Neural Processing Unit (NPU) Integration
+Our custom NPU design, codenamed "Athena-X1", features:
+- 128-bit vector processing units
+- 4MB on-chip cache per core
+- Custom instruction set optimized for transformer models
+- Power efficiency: 45 TOPS/W at 8-bit precision
+
+### 2. Memory Architecture
+- Hierarchical memory system with L1/L2/L3 caches
+- 512GB unified memory pool
+- NVMe SSD storage with 7GB/s read bandwidth
+- Memory bandwidth: 1.2TB/s
+
+### 3. Software Stack
+- Custom CUDA alternative: "OPEA Compute"
+- Model serving framework: "Hermes"
+- Data pipeline: "Poseidon Stream"
+- Monitoring: "Atlas Metrics"
+
+## Performance Benchmarks
+- GPT-4 equivalent model inference: 45ms latency
+- Batch processing: 10,000 requests/second
+- Memory efficiency: 85% reduction vs standard implementations
+- Cost per inference: $0.0001
+
+## Security Features
+- Hardware-level encryption with AES-256
+- Secure enclave for model weights
+- Zero-knowledge proofs for data privacy
+- Quantum-resistant key exchange
+
+## Deployment Architecture
+- Multi-zone redundancy across 12 data centers
+- Auto-scaling with 99.99% uptime SLA
+- Edge computing nodes in 50+ locations
+- Real-time model updates without downtime
+
+## Pricing Model
+- Base tier: $0.01 per 1K tokens
+- Enterprise tier: $0.005 per 1K tokens
+- Custom deployments: Contact sales
+- Volume discounts available for 1M+ tokens/month
+
+## Contact Information
+For technical support: tech@opea.ai
+For sales inquiries: sales@opea.ai
+Emergency hotline: +1-555-OPEA-911
+    `,
+    metadata: {
+      author: "OPEA Engineering Team",
+      version: "2.1",
+      lastUpdated: "2024-01-15",
+      classification: "Public",
+      size: "15.2 KB"
+    }
+  };
+
   const [messages, setMessages] = useState<Message[]>([
     { 
       role: 'system', 
@@ -186,50 +283,58 @@ const BlueprintDetail: React.FC = () => {
 
     const userMessage = inputMessage.trim();
     setInputMessage('');
-    setMessages(prev => [...prev, { role: 'user', content: userMessage, timestamp: new Date() }]);
     setIsLoading(true);
 
+    // Add user message
+    const newUserMessage: Message = {
+      role: 'user',
+      content: userMessage,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, newUserMessage]);
+
     try {
-      // Simulate different responses based on blueprint type
+      // Use RAG pipeline for ChatQnA when knowledge base is enabled
       let response = '';
       let sources: Array<{ title: string; url: string; snippet: string; }> | undefined = undefined;
       
-      if (blueprint?.id === 'chatqna') {
-        // Simulate RAG response for ChatQnA
-        response = `Based on my knowledge base, here's what I found about "${userMessage}":\n\nThis appears to be related to the ${blueprint.name} system. The information suggests that this query would typically be processed through our retrieval-augmented generation pipeline, which includes embedding generation, semantic search, and context-aware response generation.\n\nWould you like me to provide more specific details about any aspect of this process?`;
-        sources = [
-          { title: 'Knowledge Base Document 1', url: '#', snippet: 'Relevant information about the query topic...' },
-          { title: 'Technical Documentation', url: '#', snippet: 'Implementation details and best practices...' }
-        ];
+      if (blueprint?.id === 'chatqna' && knowledgeBaseEnabled) {
+        // RAG Pipeline: Search knowledge base and generate response
+        const relevantSections = searchKnowledgeBase(userMessage);
+        response = generateRAGResponse(userMessage, relevantSections);
+        
+        if (relevantSections.length > 0) {
+          sources = relevantSections.map((section, index) => ({
+            title: `${mockupDocument.title} - Section ${index + 1}`,
+            url: '#',
+            snippet: section.substring(0, 150) + '...'
+          }));
+        }
+      } else if (blueprint?.id === 'chatqna') {
+        // Standard response when knowledge base is disabled
+        response = `I'm a general AI assistant. I don't have access to specific knowledge about "${userMessage}" since the knowledge base is currently disabled. You can enable the knowledge base to get more detailed, contextual responses based on our technical documentation.`;
       } else {
         // Generic response for other blueprints
-        response = `Thank you for your message: "${userMessage}". I'm the ${blueprint?.name} system and I'm here to help you with your request. This is a simulated response to demonstrate the interactive capabilities of this blueprint.\n\nHow can I assist you further?`;
+        response = `Thank you for your message about "${userMessage}". This appears to be related to the ${blueprint?.name} system. I'm here to help you with any questions or tasks related to this blueprint.`;
       }
 
-      // Simulate streaming response
-      const words = response.split(' ');
-      let streamedResponse = '';
-      
-      for (let i = 0; i < words.length; i++) {
-        streamedResponse += words[i] + ' ';
-        setMessages(prev => [
-          ...prev.slice(0, -1),
-          { 
-            role: 'assistant', 
-            content: streamedResponse.trim(),
-            timestamp: new Date(),
-            sources: i === words.length - 1 ? sources : undefined
-          }
-        ]);
-        await new Promise(resolve => setTimeout(resolve, 50));
-      }
+      // Add assistant response
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: response,
+        timestamp: new Date(),
+        sources
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+
     } catch (error) {
-      console.error('Error sending message:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'Sorry, I encountered an error processing your request. Please try again.',
+      console.error('Error processing message:', error);
+      const errorMessage: Message = {
+        role: 'assistant',
+        content: `I apologize, but I encountered an error while processing your question about "${userMessage}". Please try again.`,
         timestamp: new Date()
-      }]);
+      };
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -247,6 +352,259 @@ const BlueprintDetail: React.FC = () => {
       e.preventDefault();
       handleSendMessage();
     }
+  };
+
+  // CodeGen specific functions
+  const handleGenerateCode = async () => {
+    if (!codePrompt.trim() || isGeneratingCode) return;
+    
+    setIsGeneratingCode(true);
+    try {
+      // Simulate code generation with streaming
+      const sampleCode = getSampleCode(codePrompt, selectedLanguage);
+      let generatedCodeStream = '';
+      
+      for (let i = 0; i < sampleCode.length; i++) {
+        generatedCodeStream += sampleCode[i];
+        setGeneratedCode(generatedCodeStream);
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+      
+      // Add to history
+      const newEntry = {
+        id: Date.now().toString(),
+        prompt: codePrompt,
+        code: sampleCode,
+        language: selectedLanguage,
+        timestamp: new Date()
+      };
+      setCodeHistory(prev => [newEntry, ...prev.slice(0, 9)]); // Keep last 10
+      
+    } catch (error) {
+      console.error('Error generating code:', error);
+      setGeneratedCode('// Error generating code. Please try again.');
+    } finally {
+      setIsGeneratingCode(false);
+    }
+  };
+
+  const handleTranslateCode = async () => {
+    if (!inputCode.trim() || isGeneratingCode) return;
+    
+    setIsGeneratingCode(true);
+    try {
+      // Simulate code translation
+      const translated = translateCodeSample(inputCode, inputLanguage, outputLanguage);
+      setTranslatedCode(translated);
+    } catch (error) {
+      console.error('Error translating code:', error);
+      setTranslatedCode('// Error translating code. Please try again.');
+    } finally {
+      setIsGeneratingCode(false);
+    }
+  };
+
+  const getSampleCode = (prompt: string, language: string): string => {
+    const samples: Record<string, Record<string, string>> = {
+      python: {
+        'function': `def ${prompt.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')}():
+    """
+    ${prompt}
+    """
+    # TODO: Implement function logic
+    pass`,
+        'class': `class ${prompt.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')}:
+    """
+    ${prompt}
+    """
+    def __init__(self):
+        pass`,
+        'api': `import requests
+import json
+
+def ${prompt.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')}_api():
+    """
+    ${prompt}
+    """
+    url = "https://api.example.com/endpoint"
+    headers = {"Content-Type": "application/json"}
+    
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        print(f"Error: {e}")
+        return None`,
+        'default': `# ${prompt}
+def main():
+    """
+    Main function for ${prompt}
+    """
+    print("Hello, World!")
+    
+if __name__ == "__main__":
+    main()`
+      },
+      javascript: {
+        'function': `function ${prompt.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')}() {
+    /**
+     * ${prompt}
+     */
+    // TODO: Implement function logic
+}
+
+module.exports = { ${prompt.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')} };`,
+        'class': `class ${prompt.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} {
+    /**
+     * ${prompt}
+     */
+    constructor() {
+        // Initialize class
+    }
+}
+
+module.exports = ${prompt.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')};`,
+        'api': `const axios = require('axios');
+
+async function ${prompt.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')}_api() {
+    /**
+     * ${prompt}
+     */
+    try {
+        const response = await axios.get('https://api.example.com/endpoint', {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error:', error.message);
+        return null;
+    }
+}
+
+module.exports = { ${prompt.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')}_api };`,
+        'default': `// ${prompt}
+function main() {
+    /**
+     * Main function for ${prompt}
+     */
+    console.log("Hello, World!");
+}
+
+main();`
+      }
+    };
+
+    const languageSamples = samples[language] || samples.python;
+    const key = Object.keys(languageSamples).find(k => prompt.toLowerCase().includes(k)) || 'default';
+    return languageSamples[key];
+  };
+
+  const translateCodeSample = (code: string, fromLang: string, toLang: string): string => {
+    // Simple code translation examples
+    const translations: Record<string, Record<string, string>> = {
+      'python-javascript': {
+        'def main():': 'function main() {',
+        'print(': 'console.log(',
+        'if __name__ == "__main__":': '// Main execution',
+        'import ': 'const ',
+        'from ': 'const ',
+        'pass': '// TODO: Implement',
+        'True': 'true',
+        'False': 'false',
+        'None': 'null'
+      },
+      'javascript-python': {
+        'function ': 'def ',
+        'console.log(': 'print(',
+        'const ': 'import ',
+        'let ': 'import ',
+        'var ': 'import ',
+        'true': 'True',
+        'false': 'False',
+        'null': 'None',
+        'undefined': 'None'
+      }
+    };
+
+    const key = `${fromLang}-${toLang}`;
+    const translationMap = translations[key] || {};
+    
+    let translated = code;
+    Object.entries(translationMap).forEach(([from, to]) => {
+      translated = translated.replace(new RegExp(from, 'g'), to);
+    });
+    
+    return translated;
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      // You could add a toast notification here
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
+
+  // Knowledge Base Management Functions
+  const handleToggleKnowledgeBase = async () => {
+    if (knowledgeBaseEnabled) {
+      setKnowledgeBaseStatus('loading');
+      // Simulate disabling knowledge base
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setKnowledgeBaseEnabled(false);
+      setKnowledgeBaseStatus('disabled');
+    } else {
+      setKnowledgeBaseStatus('loading');
+      // Simulate enabling knowledge base
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setKnowledgeBaseEnabled(true);
+      setKnowledgeBaseStatus('enabled');
+    }
+  };
+
+  const searchKnowledgeBase = (query: string): string[] => {
+    if (!knowledgeBaseEnabled) return [];
+    
+    const searchTerms = query.toLowerCase().split(' ');
+    const content = mockupDocument.content.toLowerCase();
+    const relevantSections: string[] = [];
+    
+    // Simple keyword matching for demo purposes
+    if (searchTerms.some(term => content.includes(term))) {
+      const lines = mockupDocument.content.split('\n');
+      let currentSection = '';
+      
+      for (const line of lines) {
+        if (line.startsWith('##') || line.startsWith('###')) {
+          if (currentSection && searchTerms.some(term => currentSection.toLowerCase().includes(term))) {
+            relevantSections.push(currentSection.trim());
+          }
+          currentSection = line;
+        } else {
+          currentSection += '\n' + line;
+        }
+      }
+      
+      // Add the last section if relevant
+      if (currentSection && searchTerms.some(term => currentSection.toLowerCase().includes(term))) {
+        relevantSections.push(currentSection.trim());
+      }
+    }
+    
+    return relevantSections.slice(0, 3); // Return top 3 relevant sections
+  };
+
+  const generateRAGResponse = (query: string, relevantSections: string[]): string => {
+    if (relevantSections.length === 0) {
+      return `I don't have specific information about "${query}" in my knowledge base. However, I can help you with general questions about AI and technology.`;
+    }
+    
+    const context = relevantSections.join('\n\n');
+    return `Based on the OPEA Framework Technical Specifications, here's what I found about "${query}":\n\n${context}\n\nThis information comes from our internal technical documentation. Is there anything specific about these details you'd like me to clarify?`;
   };
 
   const renderSettings = () => (
@@ -791,110 +1149,508 @@ const BlueprintDetail: React.FC = () => {
         )}
 
         {activeTab === 'interact' && (
-          <div className="flex flex-row gap-8 h-[700px]">
-            {/* Chat Interface (left) */}
-            <div className="w-full md:w-[60%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow flex flex-col">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold flex items-center">
-                  <ChatBubbleLeftRightIcon className="w-5 h-5 mr-2" />
-                  {blueprint.name} Interface
-                </h3>
-                <button
-                  onClick={() => setShowSettings(!showSettings)}
-                  className="text-gray-400 hover:text-white"
-                >
-                  <Cog6ToothIcon className="h-6 w-6" />
-                </button>
-              </div>
-              
-              {showSettings && renderSettings()}
-              
-              <div className="flex flex-col space-y-4 flex-1 min-h-0">
-                {/* Chat messages */}
-                <div className="flex-1 min-h-0 overflow-y-auto">
-                  {messages.map((message, index) => (
-                    <div
-                      key={index}
-                      className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
-                    >
-                      <div
-                        className={`max-w-[80%] rounded-lg p-4 ${
-                          message.role === 'user'
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-neutral-800 text-white border border-neutral-700'
+          ['codegen', 'codetrans'].includes(blueprint?.id || '') ? (
+            // Specialized CodeGen/CodeTrans Interface
+            <div className="flex flex-col lg:flex-row gap-8 h-[700px]">
+              {/* Left Panel - Code Generation/Translation */}
+              <div className="flex-1 h-full min-h-0 flex flex-col space-y-6">
+                {blueprint?.id === 'codetrans' ? (
+                  // Code Translation Interface
+                  <div className="bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow flex flex-col flex-1 h-full space-y-6">
+                    {/* Input Section */}
+                    <div className="flex flex-col flex-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-white">Input Code</h3>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-400">Language:</span>
+                          <select
+                            className="bg-neutral-800 text-white border border-neutral-700 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={inputLanguage}
+                            onChange={(e) => setInputLanguage(e.target.value)}
+                          >
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="java">Java</option>
+                            <option value="go">Go</option>
+                            <option value="csharp">C#</option>
+                            <option value="rust">Rust</option>
+                          </select>
+                        </div>
+                      </div>
+                      <textarea
+                        className="flex-1 bg-neutral-800 text-white rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-neutral-700 font-mono text-sm"
+                        placeholder="Paste your code here to translate..."
+                        value={inputCode}
+                        onChange={(e) => setInputCode(e.target.value)}
+                        disabled={isGeneratingCode}
+                      />
+                    </div>
+                    
+                    {/* Translation Button */}
+                    <div className="flex justify-center">
+                      <button
+                        onClick={handleTranslateCode}
+                        disabled={isGeneratingCode || !inputCode.trim()}
+                        className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                          isGeneratingCode || !inputCode.trim()
+                            ? 'bg-neutral-700 text-gray-400 cursor-not-allowed'
+                            : 'bg-blue-600 text-white hover:bg-blue-700'
                         }`}
                       >
-                        <div className="prose prose-invert max-w-none text-sm">
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            rehypePlugins={[rehypeRaw]}
-                          >
-                            {message.content}
-                          </ReactMarkdown>
-                        </div>
-                        
-                        {message.sources && message.sources.length > 0 && (
-                          <div className="mt-3 pt-3 border-t border-neutral-600">
-                            <div className="text-xs font-semibold text-blue-300 mb-2">Sources:</div>
-                            {message.sources.map((source, i) => (
-                              <div key={i} className="text-xs text-gray-400 mb-1">
-                                <div className="font-medium">{source.title}</div>
-                                <div className="text-gray-500">{source.snippet}</div>
-                              </div>
-                            ))}
+                        {isGeneratingCode ? (
+                          <div className="flex items-center space-x-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <span>Translating...</span>
                           </div>
+                        ) : (
+                          'Translate Code'
+                        )}
+                      </button>
+                    </div>
+                    
+                    {/* Output Section */}
+                    <div className="flex flex-col flex-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-white">Translated Code</h3>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-400">Language:</span>
+                          <select
+                            className="bg-neutral-800 text-white border border-neutral-700 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={outputLanguage}
+                            onChange={(e) => setOutputLanguage(e.target.value)}
+                          >
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="java">Java</option>
+                            <option value="go">Go</option>
+                            <option value="csharp">C#</option>
+                            <option value="rust">Rust</option>
+                          </select>
+                          {translatedCode && (
+                            <button
+                              onClick={() => copyToClipboard(translatedCode)}
+                              className="px-3 py-1 bg-neutral-700 text-white rounded text-sm hover:bg-neutral-600"
+                            >
+                              Copy
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex-1 min-h-0 bg-neutral-800 rounded-lg border border-neutral-700 overflow-auto">
+                        <Highlight
+                          theme={themes.nightOwl}
+                          code={translatedCode || `// Translated code will appear here...`}
+                          language={outputLanguage === 'csharp' ? 'clike' : outputLanguage}
+                        >
+                          {({ style, tokens, getLineProps, getTokenProps }) => (
+                            <pre className="p-4 m-0 min-h-full font-mono text-sm" style={style}>
+                              {tokens.map((line, i) => (
+                                <div key={i} {...getLineProps({ line })}>
+                                  {line.map((token, key) => (
+                                    <span key={key} {...getTokenProps({ token })} />
+                                  ))}
+                                </div>
+                              ))}
+                            </pre>
+                          )}
+                        </Highlight>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  // Code Generation Interface
+                  <div className="bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow flex flex-col flex-1 h-full space-y-6">
+                    {/* Prompt Section */}
+                    <div className="flex flex-col">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-white">Code Generation Prompt</h3>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-400">Language:</span>
+                          <select
+                            className="bg-neutral-800 text-white border border-neutral-700 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={selectedLanguage}
+                            onChange={(e) => setSelectedLanguage(e.target.value)}
+                          >
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="java">Java</option>
+                            <option value="go">Go</option>
+                            <option value="csharp">C#</option>
+                            <option value="rust">Rust</option>
+                          </select>
+                        </div>
+                      </div>
+                      <textarea
+                        className="bg-neutral-800 text-white rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-neutral-700"
+                        rows={4}
+                        placeholder="Describe the code you want to generate... (e.g., 'function to calculate fibonacci numbers', 'class for user authentication', 'API endpoint for user management')"
+                        value={codePrompt}
+                        onChange={(e) => setCodePrompt(e.target.value)}
+                        disabled={isGeneratingCode}
+                      />
+                    </div>
+                    
+                    {/* Generation Settings */}
+                    <div className="bg-neutral-800 rounded-lg p-4 border border-neutral-700">
+                      <h4 className="text-sm font-semibold mb-3 text-blue-400">Generation Settings</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Temperature</label>
+                          <input
+                            type="range"
+                            min="0"
+                            max="2"
+                            step="0.1"
+                            value={generationSettings.temperature}
+                            onChange={(e) => setGenerationSettings(prev => ({ ...prev, temperature: parseFloat(e.target.value) }))}
+                            className="w-full"
+                          />
+                          <span className="text-xs text-gray-400">{generationSettings.temperature}</span>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Max Tokens</label>
+                          <input
+                            type="range"
+                            min="100"
+                            max="2000"
+                            step="100"
+                            value={generationSettings.maxTokens}
+                            onChange={(e) => setGenerationSettings(prev => ({ ...prev, maxTokens: parseInt(e.target.value) }))}
+                            className="w-full"
+                          />
+                          <span className="text-xs text-gray-400">{generationSettings.maxTokens}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Generate Button */}
+                    <div className="flex justify-center">
+                      <button
+                        onClick={handleGenerateCode}
+                        disabled={isGeneratingCode || !codePrompt.trim()}
+                        className={`px-8 py-3 rounded-lg font-medium transition-colors ${
+                          isGeneratingCode || !codePrompt.trim()
+                            ? 'bg-neutral-700 text-gray-400 cursor-not-allowed'
+                            : 'bg-green-600 text-white hover:bg-green-700'
+                        }`}
+                      >
+                        {isGeneratingCode ? (
+                          <div className="flex items-center space-x-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <span>Generating...</span>
+                          </div>
+                        ) : (
+                          'Generate Code'
+                        )}
+                      </button>
+                    </div>
+                    
+                    {/* Generated Code Section */}
+                    <div className="flex flex-col flex-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-white">Generated Code</h3>
+                        {generatedCode && (
+                          <button
+                            onClick={() => copyToClipboard(generatedCode)}
+                            className="px-3 py-1 bg-neutral-700 text-white rounded text-sm hover:bg-neutral-600"
+                          >
+                            Copy Code
+                          </button>
                         )}
                       </div>
-                    </div>
-                  ))}
-                  
-                  {isLoading && (
-                    <div className="flex justify-start mb-4">
-                      <div className="max-w-[80%] rounded-lg p-4 bg-neutral-800 text-white border border-neutral-700">
-                        <div className="flex items-center space-x-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-                          <span className="text-sm">Processing request...</span>
-                        </div>
+                      <div className="flex-1 min-h-0 bg-neutral-800 rounded-lg border border-neutral-700 overflow-auto">
+                        <Highlight
+                          theme={themes.nightOwl}
+                          code={generatedCode || '// Generated code will appear here...'}
+                          language={selectedLanguage === 'csharp' ? 'clike' : selectedLanguage}
+                        >
+                          {({ style, tokens, getLineProps, getTokenProps }) => (
+                            <pre className="p-4 m-0 min-h-full font-mono text-sm" style={style}>
+                              {tokens.map((line, i) => (
+                                <div key={i} {...getLineProps({ line })}>
+                                  {line.map((token, key) => (
+                                    <span key={key} {...getTokenProps({ token })} />
+                                  ))}
+                                </div>
+                              ))}
+                            </pre>
+                          )}
+                        </Highlight>
                       </div>
                     </div>
-                  )}
-                  
-                  <div ref={messagesEndRef} />
+                  </div>
+                )}
+              </div>
+              
+              {/* Right Panel - History & Examples */}
+              <div className="w-full lg:w-80 h-full min-h-0 flex flex-col space-y-4">
+                {/* Code History */}
+                {codeHistory.length > 0 && (
+                  <div className="bg-neutral-900 rounded-lg p-4 border border-neutral-800 shadow flex-1">
+                    <h3 className="text-lg font-semibold text-white mb-4">Recent Generations</h3>
+                    <div className="space-y-3 max-h-60 overflow-y-auto">
+                      {codeHistory.map((entry) => (
+                        <div key={entry.id} className="bg-neutral-800 rounded p-3 border border-neutral-700">
+                          <div className="text-sm text-gray-400 mb-1">
+                            {entry.timestamp.toLocaleTimeString()}
+                          </div>
+                          <div className="text-xs text-white mb-2 line-clamp-2">
+                            {entry.prompt}
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-1 rounded">
+                              {entry.language}
+                            </span>
+                            <button
+                              onClick={() => {
+                                setCodePrompt(entry.prompt);
+                                setSelectedLanguage(entry.language);
+                                setGeneratedCode(entry.code);
+                              }}
+                              className="text-xs text-blue-400 hover:text-blue-300"
+                            >
+                              Load
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Quick Examples */}
+                <div className="bg-neutral-900 rounded-lg p-4 border border-neutral-800 shadow">
+                  <h3 className="text-lg font-semibold text-white mb-4">Quick Examples</h3>
+                  <div className="space-y-2">
+                    {[
+                      'function to calculate fibonacci numbers',
+                      'class for user authentication',
+                      'API endpoint for user management',
+                      'database connection utility',
+                      'file upload handler'
+                    ].map((example, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCodePrompt(example)}
+                        className="w-full text-left text-sm text-gray-300 hover:text-white p-2 rounded bg-neutral-800 hover:bg-neutral-700 transition-colors"
+                      >
+                        {example}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 
-                {/* Input area */}
-                <div className="mt-auto">
-                  <div className="flex items-end space-x-2">
-                    <textarea
-                      ref={textareaRef}
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder={getInputPlaceholder()}
-                      className="flex-1 bg-neutral-800 text-white rounded-lg p-3 min-h-[60px] max-h-[200px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-neutral-700"
-                      disabled={isLoading}
-                    />
-                    <button
-                      onClick={handleSendMessage}
-                      disabled={isLoading || !inputMessage.trim()}
-                      className={`p-3 rounded-lg ${
-                        isLoading || !inputMessage.trim()
-                          ? 'bg-neutral-700 text-gray-400 cursor-not-allowed'
-                          : 'bg-blue-600 text-white hover:bg-blue-700'
-                      }`}
-                    >
-                      <PaperAirplaneIcon className="h-6 w-6" />
-                    </button>
+                {/* Microservice Status */}
+                <div className="flex-1">
+                  {renderMicroserviceStatus()}
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Generic Chat Interface for other blueprints
+            <div className="flex flex-row gap-8 h-[700px]">
+              {/* Chat Interface (left) */}
+              <div className="w-full md:w-[60%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold flex items-center">
+                    <ChatBubbleLeftRightIcon className="w-5 h-5 mr-2" />
+                  </h3>
+                  <button
+                    onClick={() => setShowSettings(!showSettings)}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    <Cog6ToothIcon className="h-6 w-6" />
+                  </button>
+                </div>
+                
+                {showSettings && renderSettings()}
+                
+                <div className="flex flex-col space-y-4 flex-1 min-h-0">
+                  {/* Chat messages */}
+                  <div className="flex-1 min-h-0 overflow-y-auto">
+                    {messages.map((message, index) => (
+                      <div
+                        key={index}
+                        className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
+                      >
+                        <div
+                          className={`max-w-[80%] rounded-lg p-4 ${
+                            message.role === 'user'
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-neutral-800 text-white border border-neutral-700'
+                          }`}
+                        >
+                          <div className="prose prose-invert max-w-none text-sm">
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              rehypePlugins={[rehypeRaw]}
+                            >
+                              {message.content}
+                            </ReactMarkdown>
+                          </div>
+                          
+                          {message.sources && message.sources.length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-neutral-600">
+                              <div className="text-xs font-semibold text-blue-300 mb-2">Sources:</div>
+                              {message.sources.map((source, i) => (
+                                <div key={i} className="text-xs text-gray-400 mb-1">
+                                  <div className="font-medium">{source.title}</div>
+                                  <div className="text-gray-500">{source.snippet}</div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {isLoading && (
+                      <div className="flex justify-start mb-4">
+                        <div className="max-w-[80%] rounded-lg p-4 bg-neutral-800 text-white border border-neutral-700">
+                          <div className="flex items-center space-x-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                            <span className="text-sm">Processing request...</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div ref={messagesEndRef} />
+                  </div>
+                  
+                  {/* Input area */}
+                  <div className="mt-auto">
+                    <div className="flex items-end space-x-2">
+                      <textarea
+                        ref={textareaRef}
+                        value={inputMessage}
+                        onChange={(e) => setInputMessage(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder={getInputPlaceholder()}
+                        className="flex-1 bg-neutral-800 text-white rounded-lg p-3 min-h-[60px] max-h-[200px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-neutral-700"
+                        disabled={isLoading}
+                      />
+                      <button
+                        onClick={handleSendMessage}
+                        disabled={isLoading || !inputMessage.trim()}
+                        className={`p-3 rounded-lg ${
+                          isLoading || !inputMessage.trim()
+                            ? 'bg-neutral-700 text-gray-400 cursor-not-allowed'
+                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
+                      >
+                        <PaperAirplaneIcon className="h-6 w-6" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Microservice Status (right) */}
-            <div className="w-full md:w-[40%] flex-1 h-full min-h-0 flex flex-col space-y-4">
-              {renderMicroserviceStatus()}
+              {/* Microservice Status (right) */}
+              <div className="w-full md:w-[40%] flex-1 h-full min-h-0 flex flex-col space-y-4">
+                {/* Data Sources for RAG */}
+                {blueprint?.id === 'chatqna' && (
+                  <div className="bg-neutral-900 rounded-lg p-4 border border-neutral-800 shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium text-white flex items-center">
+                        <DocumentTextIcon className="w-4 h-4 mr-2" />
+                        Knowledge Base
+                      </h4>
+                      <button
+                        onClick={handleToggleKnowledgeBase}
+                        disabled={knowledgeBaseStatus === 'loading'}
+                        className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                          knowledgeBaseStatus === 'loading'
+                            ? 'bg-neutral-700 text-gray-400 cursor-not-allowed'
+                            : knowledgeBaseEnabled
+                            ? 'bg-red-600 text-white hover:bg-red-700'
+                            : 'bg-green-600 text-white hover:bg-green-700'
+                        }`}
+                      >
+                        {knowledgeBaseStatus === 'loading' ? (
+                          <div className="flex items-center space-x-1">
+                            <div className="animate-spin rounded-full h-3 w-3 border-b border-white"></div>
+                            <span>Loading...</span>
+                          </div>
+                        ) : knowledgeBaseEnabled ? (
+                          'Disable KB'
+                        ) : (
+                          'Enable KB'
+                        )}
+                      </button>
+                    </div>
+                    
+                    {/* Status Indicator */}
+                    <div className="mb-3 p-2 bg-neutral-800 rounded border border-neutral-700">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-300">Status:</span>
+                        <div className="flex items-center space-x-2">
+                          <div className={`w-2 h-2 rounded-full ${
+                            knowledgeBaseStatus === 'enabled' ? 'bg-green-500' : 
+                            knowledgeBaseStatus === 'loading' ? 'bg-yellow-500' : 'bg-red-500'
+                          }`}></div>
+                          <span className={`text-sm ${
+                            knowledgeBaseStatus === 'enabled' ? 'text-green-400' : 
+                            knowledgeBaseStatus === 'loading' ? 'text-yellow-400' : 'text-red-400'
+                          }`}>
+                            {knowledgeBaseStatus === 'enabled' ? 'Active' : 
+                             knowledgeBaseStatus === 'loading' ? 'Processing...' : 'Inactive'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Document Information */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between p-2 bg-neutral-800 rounded border border-neutral-700">
+                        <div className="flex items-center space-x-2">
+                          <div className={`w-2 h-2 rounded-full ${
+                            knowledgeBaseEnabled ? 'bg-green-500' : 'bg-gray-500'
+                          }`}></div>
+                          <span className="text-sm text-gray-300">{mockupDocument.title}</span>
+                        </div>
+                        <span className="text-xs text-gray-400">{mockupDocument.metadata.size}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Document Details */}
+                    <div className="mt-3 pt-3 border-t border-neutral-700">
+                      <div className="space-y-1 text-xs text-gray-400">
+                        <div className="flex justify-between">
+                          <span>Author:</span>
+                          <span>{mockupDocument.metadata.author}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Version:</span>
+                          <span>{mockupDocument.metadata.version}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Last Updated:</span>
+                          <span>{mockupDocument.metadata.lastUpdated}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Classification:</span>
+                          <span className="text-orange-400">{mockupDocument.metadata.classification}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* RAG Information */}
+                    {knowledgeBaseEnabled && (
+                      <div className="mt-3 pt-3 border-t border-neutral-700">
+                        <div className="text-xs text-blue-400 mb-2">RAG Pipeline Active</div>
+                        <div className="text-xs text-gray-400">
+                          The chatbot will now search this document and provide responses based on the technical specifications.
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {renderMicroserviceStatus()}
+              </div>
             </div>
-          </div>
+          )
         )}
       </div>
     </div>
