@@ -682,6 +682,41 @@ main();`
     return functionalAgent;
   };
 
+  // Helper to generate service ID for routing
+  const getServiceId = (serviceName: string): string => {
+    const name = serviceName.toLowerCase();
+    if (name.includes('data preparation')) return 'data-preparation-service';
+    if (name.includes('knowledge retriever')) return 'knowledge-retriever-service';
+    if (name.includes('embedding generation')) return 'embedding-generation-service';
+    if (name.includes('agent orchestrator')) return 'agent-orchestrator';
+    if (name.includes('task decomposition')) return 'task-decomposition-service';
+    if (name.includes('response aggregator')) return 'response-aggregator';
+    if (name.includes('project context')) return 'project-context-service';
+    if (name.includes('code review')) return 'code-review-service';
+    if (name.includes('best practices')) return 'best-practices-service';
+    if (name.includes('language detection')) return 'language-detection-service';
+    if (name.includes('code optimization')) return 'code-optimization-service';
+    if (name.includes('translation validation')) return 'translation-validation-service';
+    if (name.includes('query enhancement')) return 'query-enhancement-service';
+    if (name.includes('result synthesis')) return 'result-synthesis-service';
+    if (name.includes('source validation')) return 'source-validation-service';
+    if (name.includes('document processing')) return 'document-processing-service';
+    if (name.includes('key point extraction')) return 'key-point-extraction-service';
+    if (name.includes('summary quality')) return 'summary-quality-service';
+    if (name.includes('language pair')) return 'language-pair-service';
+    if (name.includes('quality assurance')) return 'quality-assurance-service';
+    if (name.includes('cultural adaptation')) return 'cultural-adaptation-service';
+    if (name.includes('avatar animation')) return 'avatar-animation-service';
+    if (name.includes('interaction manager')) return 'interaction-manager';
+    if (name.includes('multi-modal')) return 'multi-modal-service';
+    if (name.includes('business logic')) return 'business-logic-service';
+    if (name.includes('data service')) return 'data-service';
+    if (name.includes('integration service')) return 'integration-service';
+    
+    // Fallback: convert to kebab case
+    return name.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  };
+
   const renderAimsContent = () => {
     const microservices = getMicroservicesForBlueprint();
     // Assign logos by name for functional microservices
@@ -705,52 +740,25 @@ main();`
                   <img
                     src={model.logo}
                     alt={model.name}
-                    className="w-36 h-36 object-cover rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0"
+                    className="w-36 h-36 rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0 object-cover"
                   />
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
-                    <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-400 transition truncate">{model.name}</h2>
+                    <h4 className="font-medium text-white text-xl mb-2">{model.name}</h4>
                     <div className="flex space-x-2 mb-3">
                       {model.tags?.map((tag, tagIdx) => (
                         <span
                           key={tagIdx}
                           className={`px-2 py-1 rounded text-xs ${
-                            tagIdx === 0 ? 'bg-blue-900/50 text-blue-200' :
-                            tagIdx === 1 ? 'bg-green-900/50 text-green-200' :
-                            'bg-purple-900/50 text-purple-200'
+                            tagIdx === 0 ? 'bg-green-900/50 text-green-200' :
+                            tagIdx === 1 ? 'bg-purple-900/50 text-purple-200' :
+                            'bg-orange-900/50 text-orange-200'
                           }`}
                         >
                           {tag}
                         </span>
                       ))}
                     </div>
-                    <div className="text-sm text-neutral-200 line-clamp-3">
-                      {model.name === 'Qwen2 7B' && 'Qwen2 has generally surpassed most open-source models and demonstrated competitiveness against proprietary models across a series of benchmarks targeting for language understanding, language generation, multilingual capability, coding, mathematics, reasoning, etc.'}
-                      {model.name === 'Embedding Service' && 'Generates vector embeddings for documents and queries'}
-                      {model.name === 'LLM Inference Service' && 'Provides large language model inference capabilities'}
-                      {model.name === 'Reranking Service' && 'Reranks search results for improved relevance'}
-                      {model.name === 'Agent Coordination Service' && 'Coordinates multiple AI agents for complex tasks'}
-                      {model.name === 'Specialized Agent Service' && 'Provides specialized agent capabilities'}
-                      {model.name === 'Code Generation Service' && 'Generates code based on natural language descriptions'}
-                      {model.name === 'Code Completion Service' && 'Provides intelligent code completion'}
-                      {model.name === 'Code Analysis Service' && 'Analyzes code for quality and optimization'}
-                      {model.name === 'Code Translation Service' && 'Translates code between programming languages'}
-                      {model.name === 'Syntax Analysis Service' && 'Analyzes code syntax and structure'}
-                      {model.name === 'Language Model Service' && 'Provides language-specific model capabilities'}
-                      {model.name === 'Search Engine Service' && 'Provides web search and content retrieval'}
-                      {model.name === 'Content Analysis Service' && 'Analyzes content for relevance and quality'}
-                      {model.name === 'Summarization Service' && 'Creates concise summaries of documents and text'}
-                      {model.name === 'Text Analysis Service' && 'Analyzes text for insights and patterns'}
-                      {model.name === 'Content Extraction Service' && 'Extracts key content from documents'}
-                      {model.name === 'Translation Service' && 'Translates text between multiple languages'}
-                      {model.name === 'Language Detection Service' && 'Detects the language of input text'}
-                      {model.name === 'Context Analysis Service' && 'Analyzes context for better translations'}
-                      {model.name === 'Avatar Rendering Service' && 'Renders virtual avatar animations'}
-                      {model.name === 'Conversation Service' && 'Manages conversational interactions'}
-                      {model.name === 'Emotion Processing Service' && 'Processes and responds to emotional cues'}
-                      {model.name === 'Core Service' && 'Provides core system functionality'}
-                      {model.name === 'Processing Service' && 'Handles data processing tasks'}
-                      {model.name === 'Analysis Service' && 'Provides analytical capabilities'}
-                    </div>
+                    <p className="text-sm text-neutral-300 line-clamp-3">AI model for inference and generation</p>
                   </div>
                 </Link>
               ))}
@@ -761,7 +769,11 @@ main();`
             {/* Functional Microservices */}
             <div className="space-y-6">
               {functionalWithLogos.map((service, index) => (
-                <div key={index} className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-10 flex flex-row items-center hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full">
+                <Link
+                  key={index}
+                  to={`/services/${getServiceId(service.name)}`}
+                  className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-10 flex flex-row items-center hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full"
+                >
                   <img src={service.logo} alt={service.name} className="w-36 h-36 rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0 object-cover" />
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <h4 className="font-medium text-white text-xl mb-2">{service.name}</h4>
@@ -781,7 +793,7 @@ main();`
                     </div>
                     <p className="text-sm text-neutral-300 line-clamp-3">{service.description}</p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
