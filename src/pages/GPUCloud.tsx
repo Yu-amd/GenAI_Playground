@@ -6,7 +6,7 @@ import { IconContext } from 'react-icons';
 
 const amdDeveloperCloud = {
   name: 'AMD Developer Cloud',
-  description: 'Enables developers to remotely access the latest AMD Instinct™ accelerators and ROCm™ software. Get access to the MI300X, MI250, and MI210, all in a pre-configured environment.',
+  description: 'Enables developers to remotely access the latest AMD Instinct™ accelerators and ROCm™ software. Get access to AMD Instinct™ MI300 accelerators in a pre-configured environment.',
   link: 'https://www.amd.com/en/developer/resources/cloud-access/amd-developer-cloud.html',
 };
 
