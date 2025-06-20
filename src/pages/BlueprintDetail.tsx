@@ -890,127 +890,98 @@ main();`
     return gemmaImg;
   };
 
-  const getMicroservicesForBlueprint = () => {
+    const getMicroservicesForBlueprint = () => {
     if (!blueprint) {
       return {
         models: [],
         functional: []
       };
     }
+
+    if (blueprint.id === 'chatqna') {
+      return {
+        models: [
+          { name: 'Qwen2 7B', logo: qwen2Img, tags: ['Code Generation', 'Mathematics', 'Reasoning'] }
+        ],
+        functional: [
+          { name: 'Data Preparation Service', description: 'Handles data preprocessing, cleaning, and preparation for RAG pipeline', logo: getFunctionalLogoByName('Data Preparation Service'), tags: ['Data Processing', 'Preprocessing'] },
+          { name: 'Knowledge Retriever Service', description: 'Retrieves relevant documents and information from knowledge base', logo: getFunctionalLogoByName('Knowledge Retriever Service'), tags: ['Retrieval', 'Search'] },
+          { name: 'Embedding Generation Service', description: 'Generates vector embeddings for documents and queries', logo: getFunctionalLogoByName('Embedding Generation Service'), tags: ['Embeddings', 'Vectorization'] }
+        ]
+      };
+    }
+
+    const modelPool = [
+      { name: 'Llama3.1 8B', logo: llamaImg, tags: ['LLM', 'Inference', 'Meta'] },
+      { name: 'DeepSeek MoE 18B', logo: deepseekImg, tags: ['Mixture of Experts', 'LLM', 'Scalable'] },
+      { name: 'Gemma 7B', logo: gemmaImg, tags: ['Lightweight', 'Google', 'Instruction-Tuned'] },
+      { name: 'Qwen2 7B', logo: qwen2Img, tags: ['Multilingual', 'Chat', 'Reasoning'] }
+    ];
+
     switch (blueprint.id) {
-      case 'chatqna':
-        return {
-          models: [
-            { name: 'Qwen2 7B', logo: qwen2Img, tags: ['Code Generation', 'Mathematics', 'Reasoning'] }
-          ],
-          functional: [
-            { name: 'Data Preparation Service', description: 'Handles data preprocessing, cleaning, and preparation for RAG pipeline', logo: getFunctionalLogoByName('Data Preparation Service'), tags: ['Data Processing', 'Preprocessing'] },
-            { name: 'Knowledge Retriever Service', description: 'Retrieves relevant documents and information from knowledge base', logo: getFunctionalLogoByName('Knowledge Retriever Service'), tags: ['Retrieval', 'Search'] },
-            { name: 'Embedding Generation Service', description: 'Generates vector embeddings for documents and queries', logo: getFunctionalLogoByName('Embedding Generation Service'), tags: ['Embeddings', 'Vectorization'] }
-          ]
-        };
       case 'agentqna':
         return {
-          models: [
-            { name: 'LLM Inference Service', logo: logoAgentqna, tags: ['Inference', 'LLM'] },
-            { name: 'Agent Coordination Service', logo: logoChatqna, tags: ['Coordination', 'Orchestration'] },
-            { name: 'Specialized Agent Service', logo: logoSearchQna, tags: ['Specialized', 'Agents'] }
-          ],
+          models: [modelPool[0], modelPool[2]],
           functional: [
-            { name: 'Agent Orchestrator', description: 'Coordinates agent workflows and manages agent lifecycles', logo: getFunctionalLogoByName('Agent Orchestrator'), tags: ['Orchestration', 'Coordination'] },
-            { name: 'Task Decomposition Service', description: 'Breaks down complex queries into manageable subtasks for agents', logo: getFunctionalLogoByName('Task Decomposition Service'), tags: ['Task Management', 'Decomposition'] },
-            { name: 'Response Aggregator', description: 'Aggregates and synthesizes responses from multiple agents', logo: getFunctionalLogoByName('Response Aggregator'), tags: ['Aggregation', 'Synthesis'] }
+            { name: 'Agent Orchestrator', description: 'Coordinates multiple specialized agents to handle complex tasks and workflows.', logo: getFunctionalLogoByName('Agent Orchestrator'), tags: ['Orchestration', 'Multi-Agent'] },
+            { name: 'Task Decomposition Service', description: 'Breaks down complex user queries into smaller, manageable sub-tasks for individual agents.', logo: getFunctionalLogoByName('Task Decomposition'), tags: ['Task Planning', 'Analysis'] },
+            { name: 'Response Aggregator', description: 'Synthesizes responses from multiple agents into a single, coherent answer.', logo: getFunctionalLogoByName('Response Aggregator'), tags: ['Synthesis', 'Aggregation'] }
           ]
         };
       case 'codegen':
         return {
-          models: [
-            { name: 'Code Generation Service', logo: logoCodegen, tags: ['Code Generation', 'Development'] },
-            { name: 'Code Completion Service', logo: logoAgentqna, tags: ['Code Completion', 'IntelliSense'] },
-            { name: 'Code Analysis Service', logo: logoSearchQna, tags: ['Code Analysis', 'Quality'] }
-          ],
+          models: [modelPool[1]],
           functional: [
-            { name: 'Project Context Service', description: 'Maintains understanding of project structure and dependencies', logo: getFunctionalLogoByName('Project Context Service'), tags: ['Context', 'Project Management'] },
-            { name: 'Code Review Service', description: 'Performs automated code reviews and suggests improvements', logo: getFunctionalLogoByName('Code Review Service'), tags: ['Quality Assurance', 'Review'] },
-            { name: 'Best Practices Service', description: 'Recommends and enforces coding best practices', logo: getFunctionalLogoByName('Best Practices Service'), tags: ['Best Practices', 'Guidelines'] }
+            { name: 'Project Context Service', description: 'Maintains an understanding of the project structure and dependencies for context-aware code generation.', logo: getFunctionalLogoByName('Project Context'), tags: ['Context', 'Analysis'] },
+            { name: 'Code Validation Service', description: 'Performs static analysis and validation on generated code to ensure correctness and quality.', logo: getFunctionalLogoByName('Code Validation'), tags: ['Validation', 'QA'] }
           ]
         };
       case 'codetrans':
         return {
-          models: [
-            { name: 'Code Translation Service', logo: logoCodeTrans, tags: ['Code Translation', 'Conversion'] },
-            { name: 'Syntax Analysis Service', logo: logoAgentqna, tags: ['Syntax Analysis', 'Parsing'] },
-            { name: 'Language Model Service', logo: logoCodegen, tags: ['Language Model', 'Processing'] }
-          ],
+          models: [modelPool[3]],
           functional: [
-            { name: 'Language Detection Service', description: 'Automatically detects source and target programming languages', logo: getFunctionalLogoByName('Language Detection Service'), tags: ['Language Detection', 'Analysis'] },
-            { name: 'Code Optimization Service', description: 'Optimizes translated code for target language best practices', logo: getFunctionalLogoByName('Code Optimization Service'), tags: ['Optimization', 'Best Practices'] },
-            { name: 'Translation Validation Service', description: 'Validates translated code for correctness and functionality', logo: getFunctionalLogoByName('Translation Validation Service'), tags: ['Validation', 'Quality Assurance'] }
+            { name: 'Language Detection Service', description: 'Automatically detects the source programming language of the input code snippet.', logo: getFunctionalLogoByName('Language Detection'), tags: ['Detection', 'Analysis'] },
+            { name: 'Code Optimization Service', description: "Optimizes translated code for the target language's best practices and idioms.", logo: getFunctionalLogoByName('Optimization'), tags: ['Refinement', 'Best Practices'] },
+            { name: 'Translation Validation Service', description: 'Validates translated code for syntactical correctness and functional equivalence.', logo: getFunctionalLogoByName('Translation Validation'), tags: ['Validation', 'Testing'] }
           ]
         };
       case 'searchqna':
         return {
-          models: [
-            { name: 'Search Engine Service', logo: logoSearchQna, tags: ['Search', 'Retrieval'] },
-            { name: 'LLM Inference Service', logo: logoAgentqna, tags: ['Inference', 'LLM'] },
-            { name: 'Content Analysis Service', logo: logoChatqna, tags: ['Content Analysis', 'Processing'] }
-          ],
+          models: [modelPool[0], modelPool[1]],
           functional: [
-            { name: 'Query Enhancement Service', description: 'Optimizes search queries for better result relevance', logo: getFunctionalLogoByName('Query Enhancement Service'), tags: ['Query Optimization', 'Search'] },
-            { name: 'Result Synthesis Service', description: 'Combines and synthesizes information from multiple sources', logo: getFunctionalLogoByName('Result Synthesis Service'), tags: ['Synthesis', 'Aggregation'] },
-            { name: 'Source Validation Service', description: 'Validates source credibility and information accuracy', logo: getFunctionalLogoByName('Source Validation Service'), tags: ['Validation', 'Quality Assurance'] }
+            { name: 'Query Enhancement Service', description: 'Rewrites and expands user queries to improve search engine result relevance and accuracy.', logo: getFunctionalLogoByName('Query Enhancement'), tags: ['Query Processing', 'NLP'] },
+            { name: 'Web Search Service', description: 'Interfaces with external search APIs (e.g., Google, Bing) to retrieve up-to-date web results.', logo: getFunctionalLogoByName('Web Search'), tags: ['Search', 'API'] }
           ]
         };
       case 'docsum':
         return {
-          models: [
-            { name: 'Summarization Service', logo: logoDocsum, tags: ['Summarization', 'Text Processing'] },
-            { name: 'Text Analysis Service', logo: logoAgentqna, tags: ['Text Analysis', 'NLP'] },
-            { name: 'Content Extraction Service', logo: logoSearchQna, tags: ['Content Extraction', 'Processing'] }
-          ],
+          models: [modelPool[2]],
           functional: [
-            { name: 'Document Processing Service', description: 'Handles various document formats and preprocessing', logo: getFunctionalLogoByName('Document Processing Service'), tags: ['Document Processing', 'Preprocessing'] },
-            { name: 'Key Point Extraction Service', description: 'Identifies and extracts key points and main ideas', logo: getFunctionalLogoByName('Key Point Extraction Service'), tags: ['Extraction', 'Analysis'] },
-            { name: 'Summary Quality Service', description: 'Ensures summary quality, coherence, and accuracy', logo: getFunctionalLogoByName('Summary Quality Service'), tags: ['Quality Assurance', 'Validation'] }
+            { name: 'Document Processing Service', description: 'Handles various document formats (PDF, DOCX, etc.) and extracts raw text content.', logo: getFunctionalLogoByName('Document Processing'), tags: ['Parsing', 'Extraction'] },
+            { name: 'Key Point Extraction Service', description: 'Identifies and extracts the most important sentences and concepts from the text.', logo: getFunctionalLogoByName('Key Point Extraction'), tags: ['NLP', 'Analysis'] }
           ]
         };
       case 'translation':
         return {
-          models: [
-            { name: 'Translation Service', logo: logoTranslation, tags: ['Translation', 'Language'] },
-            { name: 'Language Detection Service', logo: logoAgentqna, tags: ['Language Detection', 'Analysis'] },
-            { name: 'Context Analysis Service', logo: logoSearchQna, tags: ['Context Analysis', 'Understanding'] }
-          ],
+          models: [modelPool[3], modelPool[2]],
           functional: [
-            { name: 'Language Pair Service', description: 'Manages translation models for specific language pairs', logo: getFunctionalLogoByName('Language Pair Service'), tags: ['Language Management', 'Translation'] },
-            { name: 'Quality Assurance Service', description: 'Ensures translation quality and consistency', logo: getFunctionalLogoByName('Quality Assurance Service'), tags: ['Quality Assurance', 'Validation'] },
-            { name: 'Cultural Adaptation Service', description: 'Adapts translations for cultural context and nuances', logo: getFunctionalLogoByName('Cultural Adaptation Service'), tags: ['Cultural Adaptation', 'Localization'] }
+            { name: 'Language Pair Service', description: 'Manages and selects the optimal translation models for specific language pairs.', logo: getFunctionalLogoByName('Language Pair'), tags: ['Model Management', 'Languages'] },
+            { name: 'Cultural Adaptation Service', description: 'Adapts translations for cultural context, localization, and nuanced expressions.', logo: getFunctionalLogoByName('Cultural Adaptation'), tags: ['Localization', 'Context'] }
           ]
         };
       case 'avatarchatbot':
         return {
-          models: [
-            { name: 'Avatar Rendering Service', logo: logoAvatarChatbot, tags: ['Avatar Rendering', 'Visual'] },
-            { name: 'Conversation Service', logo: logoAgentqna, tags: ['Conversation', 'Dialogue'] },
-            { name: 'Emotion Processing Service', logo: logoSearchQna, tags: ['Emotion Processing', 'Sentiment'] }
-          ],
+          models: [modelPool[0]],
           functional: [
-            { name: 'Avatar Animation Service', description: 'Generates real-time avatar animations and expressions', logo: getFunctionalLogoByName('Avatar Animation Service'), tags: ['Animation', 'Visual'] },
-            { name: 'Interaction Manager', description: 'Manages user interactions and conversation state', logo: getFunctionalLogoByName('Interaction Manager'), tags: ['Interaction', 'State Management'] },
-            { name: 'Multi-Modal Service', description: 'Handles voice, text, and gesture interactions', logo: getFunctionalLogoByName('Multi-Modal Service'), tags: ['Multi-Modal', 'Input Processing'] }
+            { name: 'Avatar Animation Service', description: 'Generates real-time avatar animations, lip-sync, and facial expressions from text.', logo: getFunctionalLogoByName('Avatar Animation'), tags: ['Animation', 'Graphics'] },
+            { name: 'Text-to-Speech Service', description: 'Synthesizes natural-sounding speech for the avatar from the chatbot\'s text responses.', logo: getFunctionalLogoByName('Text-to-Speech'), tags: ['TTS', 'Audio'] }
           ]
         };
       default:
         return {
-          models: [
-            { name: 'Core Service', logo: logoChatqna, tags: ['Core', 'Foundation'] },
-            { name: 'Processing Service', logo: logoAgentqna, tags: ['Processing', 'Computation'] },
-            { name: 'Analysis Service', logo: logoSearchQna, tags: ['Analysis', 'Insights'] }
-          ],
+          models: [modelPool[0]],
           functional: [
-            { name: 'Business Logic Service', description: 'Implements core business logic and workflows', logo: getFunctionalLogoByName('Business Logic Service'), tags: ['Business Logic', 'Workflows'] },
-            { name: 'Data Service', description: 'Manages data storage, retrieval, and processing', logo: getFunctionalLogoByName('Data Service'), tags: ['Data Management', 'Storage'] },
-            { name: 'Integration Service', description: 'Handles integration with external systems and APIs', logo: getFunctionalLogoByName('Integration Service'), tags: ['Integration', 'APIs'] }
+            { name: 'Agent Orchestrator', description: 'Coordinates agent workflows and manages agent lifecycles.', logo: getFunctionalLogoByName('Agent Orchestrator'), tags: ['Orchestration', 'Multi-Agent'] }
           ]
         };
     }
