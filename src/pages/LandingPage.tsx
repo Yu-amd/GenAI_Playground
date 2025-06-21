@@ -28,13 +28,13 @@ const LandingPage: React.FC = () => {
   const features = [
     {
       icon: FaRocket,
-      title: 'AMD Instinct™ Powered',
+      title: 'Instinct GPU Powered',
       description: 'Optimized for AMD Instinct™ GPUs with ROCm™ software stack for maximum performance'
     },
     {
       icon: FaBrain,
       title: 'Cutting-Edge Models',
-      description: 'Access to the latest language models optimized for AMD hardware acceleration'
+      description: 'Access to the latest language models optimized for Instinct GPU acceleration'
     },
     {
       icon: FaCode,
@@ -76,7 +76,7 @@ const LandingPage: React.FC = () => {
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <div className="text-center max-w-4xl mx-auto px-8">
             <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-500 to-red-500 bg-clip-text text-transparent">
-              AMD GenAI Playground
+              GenAI Playground
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
               Experience the power of AMD Instinct™ GPUs with cutting-edge AI models, ready-to-use blueprints, and seamless cloud infrastructure for your GenAI workloads
@@ -136,7 +136,7 @@ const LandingPage: React.FC = () => {
       <div className="py-20">
         <div className="max-w-6xl mx-auto px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Explore How Easy It Is to Run GenAI Workloads on AMD!</h2>
+            <h2 className="text-4xl font-bold mb-4">Explore How Easy It Is to Run GenAI Workloads on Instinct GPUs!</h2>
             <p className="text-xl text-gray-300">Leverage AMD Instinct™ GPU power for your AI applications</p>
           </div>
           
@@ -287,7 +287,7 @@ const LandingPage: React.FC = () => {
             Scale your GenAI initiatives with AMD Instinct™ GPUs and enterprise-grade support
           </p>
           <a
-            href="mailto:enterprise@amd.com"
+            href="mailto:enterprise@genaiplayground.com"
             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 mx-auto w-fit"
           >
             Contact Enterprise Sales
@@ -299,10 +299,10 @@ const LandingPage: React.FC = () => {
       <footer className="py-12 bg-neutral-800 border-t border-white/10">
         <div className="max-w-6xl mx-auto px-8 text-center">
           <p className="text-gray-400 mb-4">
-            AMD GenAI Playground - Unleashing the power of AMD Instinct™ GPUs for artificial intelligence
+            GenAI Playground - Unleashing the power of AMD Instinct™ GPUs for artificial intelligence
           </p>
           <div className="flex justify-center gap-8 text-sm text-gray-500">
-            <span>© 2024 AMD GenAI Playground</span>
+            <span>© 2024 GenAI Playground</span>
             <span>•</span>
             <span>Open Source</span>
             <span>•</span>
