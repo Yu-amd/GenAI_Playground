@@ -142,7 +142,7 @@ const LandingPage: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <div key={index} className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300">
+              <div key={index} className="text-center p-6 rounded-xl bg-transparent">
                 <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <feature.icon size={24} />
                 </div>
@@ -169,11 +169,13 @@ const LandingPage: React.FC = () => {
                 to={`/models/${model.id}`}
                 className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 hover:bg-white/20 hover:shadow-2xl hover:shadow-white/10 hover:-translate-y-2 transition-all duration-300"
               >
-                <img
-                  src={model.image}
-                  alt={model.name}
-                  className="w-full h-32 object-contain rounded-lg mb-4 group-hover:scale-105 transition-transform duration-300 bg-white/5"
-                />
+                <div className="w-full h-32 rounded-lg mb-4 overflow-hidden">
+                  <img
+                    src={model.image}
+                    alt={model.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
                 <div className="text-sm text-blue-400 font-semibold mb-1">{model.org}</div>
                 <h3 className="text-lg font-bold mb-2 group-hover:text-blue-400 transition-colors">{model.name}</h3>
                 <p className="text-sm text-gray-300 line-clamp-2">{model.description}</p>
@@ -205,19 +207,27 @@ const LandingPage: React.FC = () => {
               <Link
                 key={blueprint.id}
                 to={`/blueprints/${blueprint.id}`}
-                className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 hover:bg-white/20 hover:shadow-2xl hover:shadow-white/10 hover:-translate-y-2 transition-all duration-300"
+                className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 hover:bg-white/20 hover:shadow-2xl hover:shadow-white/10 hover:-translate-y-2 transition-all duration-300 flex flex-col"
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mb-6">
-                  <blueprint.icon size={24} />
+                <div className="relative w-full h-48 mb-4">
+                  <div className="w-full h-full rounded-lg overflow-hidden">
+                    <img
+                      src={blueprint.image}
+                      alt={blueprint.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="absolute bottom-[-1rem] right-2 w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center border-4 border-neutral-800">
+                    <blueprint.icon size={20} />
+                  </div>
                 </div>
-                <img
-                  src={blueprint.image}
-                  alt={blueprint.name}
-                  className="w-full h-32 object-contain rounded-lg mb-4 group-hover:scale-105 transition-transform duration-300 bg-white/5"
-                />
-                <h3 className="text-xl font-bold mb-3 group-hover:text-blue-400 transition-colors">{blueprint.name}</h3>
-                <p className="text-gray-300 mb-4">{blueprint.description}</p>
-                <div className="flex items-center text-blue-400 font-semibold group-hover:underline">
+
+                <div className="flex-grow mt-4">
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">{blueprint.name}</h3>
+                  <p className="text-gray-300 text-sm mb-3">{blueprint.description}</p>
+                </div>
+
+                <div className="flex items-center text-blue-400 font-semibold group-hover:underline mt-auto">
                   Try Blueprint <div className="group-hover:translate-x-1 transition-transform"><FaArrowRight /></div>
                 </div>
               </Link>
