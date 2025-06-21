@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
 import ModelsCatalog from './pages/ModelsCatalog';
 import BlueprintsCatalog from './pages/BlueprintsCatalog';
 import GPUCloud from './pages/GPUCloud';
@@ -11,7 +11,7 @@ function App() {
   return (
     <Router>
       <Routes>
-           <Route path="/" element={<Navigate to="/models" replace />} />
+           <Route path="/" element={<LandingPage />} />
            <Route path="/models" element={<ModelsCatalog />} />
 	   <Route path="/models/:modelId/*" element={<ModelDetail />} />
            <Route path="/blueprints" element={<BlueprintsCatalog />} />

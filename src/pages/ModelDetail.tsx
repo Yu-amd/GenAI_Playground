@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, NavLink, useLocation } from 'react-router-dom';
 import { models } from '../data/models';
 import bannerWave from '../assets/banner_wave.png';
+import PlaygroundLogo from '../components/PlaygroundLogo';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -343,7 +344,10 @@ const ModelDetail: React.FC = () => {
   const renderSettings = () => (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Settings</h3>
+        <div>
+          <h3 className="text-lg font-semibold">Settings</h3>
+          <p className="text-sm text-gray-400">(LM-studio for testing only)</p>
+        </div>
         <button
           onClick={() => setShowSettings(false)}
           className="text-gray-400 hover:text-white"
@@ -416,230 +420,213 @@ const ModelDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-900 text-white flex flex-col">
-        {/* Banner */}
+    <div className="min-h-screen bg-neutral-900 text-white font-sans">
+      {/* Banner */}
       <div className="relative w-full h-56 md:h-72 lg:h-80 overflow-hidden">
         <img src={bannerWave} alt="Banner" className="w-full h-full object-cover" />
-        <nav className="absolute top-0 left-0 w-full flex flex-wrap justify-center gap-4 md:gap-8 pt-4 z-10 px-4">
-          <Link to="/models" className="text-lg md:text-xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Models</Link>
-          <Link to="/blueprints" className="text-lg md:text-xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Blueprints</Link>
-          <Link to="/gpu-cloud" className="text-lg md:text-xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
+        <nav className="absolute top-0 left-0 w-full flex justify-between items-center pt-8 px-8 z-10">
+          <PlaygroundLogo />
+          <div className="flex gap-16">
+            <Link to="/models" className="text-2xl font-bold transition relative px-2 opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-full after:bg-red-500">Models</Link>
+            <Link to="/blueprints" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Blueprints</Link>
+            <Link to="/gpu-cloud" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
+          </div>
         </nav>
-        {/* Left-aligned glassy model logo/tile overlay */}
-        <div className="absolute left-8 top-1/2 -translate-y-1/2 z-10 bg-white/10 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg p-6 flex flex-col items-center w-64">
-          <img src={model.image} alt={model.name} className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 object-cover rounded-xl mb-4 border border-neutral-800" />
-          <div className="text-lg font-bold text-white mt-2 text-center drop-shadow-lg">{model.org}</div>
-          <div className="text-2xl font-extrabold mb-2 text-center text-white drop-shadow-lg">{model.name}</div>
-        </div>
-        
-        {/* Filter tags positioned to the right of the logo */}
-        <div className="absolute left-80 bottom-8 z-10 flex flex-wrap gap-2 max-w-md">
-          {model.tags?.map((tag, index) => (
-            <span 
-              key={index}
-              className={`px-3 py-2 rounded-lg text-sm font-medium shadow-lg ${
-                index === 0 ? 'bg-blue-900/70 text-blue-200 border border-blue-700/50' :
-                index === 1 ? 'bg-green-900/70 text-green-200 border border-green-700/50' :
-                'bg-purple-900/70 text-purple-200 border border-purple-700/50'
-              }`}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 flex-1 w-full flex flex-col">
-        {/* Tabs */}
-        <div className="flex border-b border-neutral-700 mb-6">
-          <button
-            onClick={() => setActiveTab('interact')}
-            className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
-              ${activeTab === 'interact'
-                ? 'border-blue-500 text-blue-500 bg-transparent'
-                : 'border-transparent text-gray-400 hover:text-blue-400'}
-            `}
-            style={{ background: 'none', borderRadius: 0 }}
-          >
-            Interact
-          </button>
-          <button
-            onClick={() => setActiveTab('model')}
-            className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
-              ${activeTab === 'model'
-                ? 'border-blue-500 text-blue-500 bg-transparent'
-                : 'border-transparent text-gray-400 hover:text-blue-400'}
-            `}
-            style={{ background: 'none', borderRadius: 0 }}
-          >
-            Model Card
-          </button>
-        </div>
+      <div className="flex flex-col md:flex-row max-w-[1600px] mx-auto p-8 gap-8">
+        {/* Main Content */}
+        <div className="flex-1">
+          {/* Top Header */}
+          <div className="flex border-b border-neutral-700 mb-6">
+            <button
+              onClick={() => setActiveTab('interact')}
+              className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
+                ${activeTab === 'interact'
+                  ? 'border-blue-500 text-blue-500 bg-transparent'
+                  : 'border-transparent text-gray-400 hover:text-blue-400'}
+              `}
+              style={{ background: 'none', borderRadius: 0 }}
+            >
+              Interact
+            </button>
+            <button
+              onClick={() => setActiveTab('model')}
+              className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
+                ${activeTab === 'model'
+                  ? 'border-blue-500 text-blue-500 bg-transparent'
+                  : 'border-transparent text-gray-400 hover:text-blue-400'}
+              `}
+              style={{ background: 'none', borderRadius: 0 }}
+            >
+              Model Card
+            </button>
+          </div>
 
-        {/* Tab Content */}
-        {activeTab === 'interact' && (
-          <div className="flex flex-row gap-8 items-stretch h-[700px]">
-            {/* Chatbox (left) */}
-            <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow mb-8 md:mb-0 flex-shrink-0 flex flex-col">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Chat</h3>
-                <button
-                  onClick={() => setShowSettings(!showSettings)}
-                  className="text-gray-400 hover:text-white"
-                >
-                  <Cog6ToothIcon className="h-6 w-6" />
-                </button>
-              </div>
-              {showSettings && renderSettings()}
-              <div className="flex flex-col space-y-4 flex-1 min-h-0">
-                {/* Chat messages */}
-                <div className="flex-1 min-h-0 overflow-y-auto">
-                  {messages.map((message, index) => (
-                    <div
-                      key={index}
-                      className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                    >
+          {/* Tab Content */}
+          {activeTab === 'interact' && (
+            <div className="flex flex-row gap-8 items-stretch h-[700px]">
+              {/* Chatbox (left) */}
+              <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow mb-8 md:mb-0 flex-shrink-0 flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Chat</h3>
+                  <button
+                    onClick={() => setShowSettings(!showSettings)}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    <Cog6ToothIcon className="h-6 w-6" />
+                  </button>
+                </div>
+                {showSettings && renderSettings()}
+                <div className="flex flex-col space-y-4 flex-1 min-h-0">
+                  {/* Chat messages */}
+                  <div className="flex-1 min-h-0 overflow-y-auto">
+                    {messages.map((message, index) => (
                       <div
-                        className={`max-w-[80%] rounded-lg p-4 ${
-                          message.role === 'user'
-                            ? 'bg-blue-600 text-white'
-                            : message.role === 'tool'
-                            ? 'bg-green-600 text-white'
-                            : 'bg-neutral-800 text-white'
+                        key={index}
+                        className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-[80%] rounded-lg p-4 ${
+                            message.role === 'user'
+                              ? 'bg-blue-600 text-white'
+                              : message.role === 'tool'
+                              ? 'bg-green-600 text-white'
+                              : 'bg-neutral-800 text-white'
+                          }`}
+                        >
+                          <div className="prose prose-invert max-w-none">
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              rehypePlugins={[rehypeRaw]}
+                            >
+                              {message.content}
+                            </ReactMarkdown>
+                          </div>
+                          {message.tool_calls && (
+                            <div className="mt-2 text-sm">
+                              <div className="font-semibold">Tool Calls:</div>
+                              {message.tool_calls.map((toolCall, i) => (
+                                <div key={i} className="mt-1">
+                                  <div>Function: {toolCall.function.name}</div>
+                                  <div>Arguments: {toolCall.function.arguments}</div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {isStreaming && streamingContent && (
+                      <div className="flex justify-start">
+                        <div className="max-w-[80%] rounded-lg p-4 bg-neutral-800 text-white">
+                          <div className="prose prose-invert max-w-none">
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              rehypePlugins={[rehypeRaw]}
+                            >
+                              {streamingContent}
+                            </ReactMarkdown>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+                  {/* Input area */}
+                  <div className="mt-auto">
+                    <div className="flex items-end space-x-2">
+                      <textarea
+                        ref={textareaRef}
+                        value={inputMessage}
+                        onChange={(e) => setInputMessage(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Type your message..."
+                        className="flex-1 bg-neutral-800 text-white rounded-lg p-3 min-h-[60px] max-h-[200px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={isLoading}
+                      />
+                      <button
+                        onClick={handleSendMessage}
+                        disabled={isLoading || !inputMessage.trim()}
+                        className={`p-3 rounded-lg ${
+                          isLoading || !inputMessage.trim()
+                            ? 'bg-neutral-700 text-gray-400 cursor-not-allowed'
+                            : 'bg-blue-600 text-white hover:bg-blue-700'
                         }`}
                       >
-                        <div className="prose prose-invert max-w-none">
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            rehypePlugins={[rehypeRaw]}
-                          >
-                            {message.content}
-                          </ReactMarkdown>
-                        </div>
-                        {message.tool_calls && (
-                          <div className="mt-2 text-sm">
-                            <div className="font-semibold">Tool Calls:</div>
-                            {message.tool_calls.map((toolCall, i) => (
-                              <div key={i} className="mt-1">
-                                <div>Function: {toolCall.function.name}</div>
-                                <div>Arguments: {toolCall.function.arguments}</div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                        <PaperAirplaneIcon className="h-6 w-6" />
+                      </button>
                     </div>
-                  ))}
-                  {isStreaming && streamingContent && (
-                    <div className="flex justify-start">
-                      <div className="max-w-[80%] rounded-lg p-4 bg-neutral-800 text-white">
-                        <div className="prose prose-invert max-w-none">
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            rehypePlugins={[rehypeRaw]}
-                          >
-                            {streamingContent}
-                          </ReactMarkdown>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  <div ref={messagesEndRef} />
-                </div>
-                {/* Input area */}
-                <div className="mt-auto">
-                  <div className="flex items-end space-x-2">
-                    <textarea
-                      ref={textareaRef}
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Type your message..."
-                      className="flex-1 bg-neutral-800 text-white rounded-lg p-3 min-h-[60px] max-h-[200px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      disabled={isLoading}
-                    />
-                    <button
-                      onClick={handleSendMessage}
-                      disabled={isLoading || !inputMessage.trim()}
-                      className={`p-3 rounded-lg ${
-                        isLoading || !inputMessage.trim()
-                          ? 'bg-neutral-700 text-gray-400 cursor-not-allowed'
-                          : 'bg-blue-600 text-white hover:bg-blue-700'
-                      }`}
-                    >
-                      <PaperAirplaneIcon className="h-6 w-6" />
-                    </button>
                   </div>
                 </div>
               </div>
-            </div>
-            {/* Integration Code (right) */}
-            <div className="w-full md:w-[60%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg border border-neutral-800 shadow flex flex-col">
-              <div className="flex items-center space-x-2 mb-4 pt-6 px-6">
-                <CodeBracketIcon className="w-5 h-5 text-gray-400" />
-                <h3 className="text-lg font-medium text-gray-200">API Integration</h3>
-              </div>
-              <div className="flex flex-nowrap gap-2 mb-4 px-6 items-center overflow-x-auto">
-                {['python', 'javascript', 'java', 'go', 'csharp', 'shell'].map((lang) => (
+              {/* Integration Code (right) */}
+              <div className="w-full md:w-[60%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg border border-neutral-800 shadow flex flex-col">
+                <div className="flex items-center space-x-2 mb-4 pt-6 px-6">
+                  <CodeBracketIcon className="w-5 h-5 text-gray-400" />
+                  <h3 className="text-lg font-medium text-gray-200">API Integration</h3>
+                </div>
+                <div className="flex flex-nowrap gap-2 mb-4 px-6 items-center overflow-x-auto">
+                  {['python', 'javascript', 'java', 'go', 'csharp', 'shell'].map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => setSelectedLanguage(lang as typeof selectedLanguage)}
+                      className={`px-3 py-1 text-sm rounded-md font-mono border transition-colors duration-150 ${
+                        selectedLanguage === lang
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'bg-neutral-800 text-gray-300 border-neutral-700 hover:bg-neutral-700'
+                      }`}
+                    >
+                      {lang === 'csharp' ? 'C#' : lang.charAt(0).toUpperCase() + lang.slice(1)}
+                    </button>
+                  ))}
                   <button
-                    key={lang}
-                    onClick={() => setSelectedLanguage(lang as typeof selectedLanguage)}
-                    className={`px-3 py-1 text-sm rounded-md font-mono border transition-colors duration-150 ${
-                      selectedLanguage === lang
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-neutral-800 text-gray-300 border-neutral-700 hover:bg-neutral-700'
-                    }`}
+                    onClick={handleCopyCode}
+                    className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-md transition-colors"
+                    title="Copy code"
                   >
-                    {lang === 'csharp' ? 'C#' : lang.charAt(0).toUpperCase() + lang.slice(1)}
+                    {copied ? (
+                      <CheckIcon className="w-5 h-5" />
+                    ) : (
+                      <ClipboardIcon className="w-5 h-5" />
+                    )}
                   </button>
-                ))}
-                <button
-                  onClick={handleCopyCode}
-                  className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-md transition-colors"
-                  title="Copy code"
-                >
-                  {copied ? (
-                    <CheckIcon className="w-5 h-5" />
-                  ) : (
-                    <ClipboardIcon className="w-5 h-5" />
-                  )}
-                </button>
-                <div className="flex-grow" />
-                <button
-                  onClick={() => setIsCodeModalOpen(true)}
-                  className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-md transition-colors ml-2"
-                  title="View Full Code"
-                >
-                  <CodeBracketIcon className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="px-6 pb-4">
-                <Highlight theme={themes.nightOwl} code={codeContent} language={selectedLanguage}>
-                  {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                    <pre className={`${className} p-4 text-sm font-mono whitespace-pre-wrap break-words overflow-x-auto overflow-y-auto max-h-[550px]`} style={{ ...style, margin: 0, maxWidth: '100%' }}>
-                      {tokens.map((line, i) => (
-                        <div key={i} {...getLineProps({ line })}>
-                          {line.map((token, key) => (
-                            <span key={key} {...getTokenProps({ token })} />
-                          ))}
-                        </div>
-                      ))}
-                    </pre>
-                  )}
-                </Highlight>
+                  <div className="flex-grow" />
+                  <button
+                    onClick={() => setIsCodeModalOpen(true)}
+                    className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-md transition-colors ml-2"
+                    title="View Full Code"
+                  >
+                    <CodeBracketIcon className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="px-6 pb-4">
+                  <Highlight theme={themes.nightOwl} code={codeContent} language={selectedLanguage}>
+                    {({ className, style, tokens, getLineProps, getTokenProps }) => (
+                      <pre className={`${className} p-4 text-sm font-mono whitespace-pre-wrap break-words overflow-x-auto overflow-y-auto max-h-[550px]`} style={{ ...style, margin: 0, maxWidth: '100%' }}>
+                        {tokens.map((line, i) => (
+                          <div key={i} {...getLineProps({ line })}>
+                            {line.map((token, key) => (
+                              <span key={key} {...getTokenProps({ token })} />
+                            ))}
+                          </div>
+                        ))}
+                      </pre>
+                    )}
+                  </Highlight>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {activeTab === 'model' && (
-          <div className="prose prose-invert max-w-none bg-neutral-900/80 p-6 rounded-xl shadow-lg text-lg custom-prose border border-neutral-800 w-full">
-            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-              {model.localCard}
-            </ReactMarkdown>
+          {activeTab === 'model' && (
+            <div className="prose prose-invert max-w-none bg-neutral-900/80 p-6 rounded-xl shadow-lg text-lg custom-prose border border-neutral-800 w-full">
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                {model.localCard}
+              </ReactMarkdown>
+            </div>
+          )}
         </div>
-        )}
       </div>
       <Dialog open={isCodeModalOpen} onClose={() => setIsCodeModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">
         <div className="flex items-center justify-center min-h-screen px-4">
@@ -673,7 +660,7 @@ const ModelDetail: React.FC = () => {
               </button>
             </div>
           </div>
-      </div>
+        </div>
       </Dialog>
     </div>
   );

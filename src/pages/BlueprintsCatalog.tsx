@@ -1,7 +1,7 @@
 import React from 'react';
 import bannerWave from '../assets/banner_wave.png';
 import { Link } from 'react-router-dom';
-import BlueprintCard from '../components/BlueprintCard';
+import PlaygroundLogo from '../components/PlaygroundLogo';
 
 import bp_chatqna from '../assets/blueprints/bp_chatqna.png';
 import bp_agentqna from '../assets/blueprints/bp_agentqna.png';
@@ -79,18 +79,19 @@ const blueprints: Blueprint[] = [
   },
 ];
 
-const OPEA_LABEL = 'Open Platform for Enterprise AI';
-
 const BlueprintsCatalog: React.FC = () => {
   return (
     <div className="min-h-screen bg-neutral-900 text-white font-sans flex flex-col">
       {/* Banner */}
       <div className="relative w-full h-56 md:h-72 lg:h-80 overflow-hidden">
         <img src={bannerWave} alt="Banner" className="w-full h-full object-cover" />
-        <nav className="absolute top-0 left-0 w-full flex justify-center gap-16 pt-8 z-10">
-          <Link to="/models" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100">Models</Link>
-          <Link to="/blueprints" className="text-2xl font-bold transition relative px-2 opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-full after:bg-white">Blueprints</Link>
-          <Link to="/gpu-cloud" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100">GPU Clouds</Link>
+        <nav className="absolute top-0 left-0 w-full flex justify-between items-center pt-8 px-8 z-10">
+          <PlaygroundLogo />
+          <div className="flex gap-16">
+            <Link to="/models" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100">Models</Link>
+            <Link to="/blueprints" className="text-2xl font-bold transition relative px-2 opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-full after:bg-white">Blueprints</Link>
+            <Link to="/gpu-cloud" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100">GPU Clouds</Link>
+          </div>
         </nav>
       </div>
 
@@ -106,7 +107,7 @@ const BlueprintsCatalog: React.FC = () => {
               <img
                 src={bp.image}
                 alt={bp.name}
-                className="w-36 h-36 object-cover rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0"
+                className="w-36 h-36 object-contain rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0 bg-white/5"
               />
               <div className="flex-1 min-w-0 flex flex-col justify-center">
                 <h2 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition truncate">{bp.name}</h2>
