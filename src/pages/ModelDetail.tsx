@@ -1,18 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link, NavLink, useLocation } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { models } from '../data/models';
 import bannerWave from '../assets/banner_wave.png';
 import PlaygroundLogo from '../components/PlaygroundLogo';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import Editor from '@monaco-editor/react';
-import type { editor } from 'monaco-editor';
-import { PaperAirplaneIcon, CodeBracketIcon, CommandLineIcon, Cog6ToothIcon, ClipboardIcon, CheckIcon, WrenchIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PaperAirplaneIcon, CodeBracketIcon, Cog6ToothIcon, ClipboardIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { lmStudioService } from '../services/lmStudioService';
 import { Highlight, themes } from 'prism-react-renderer';
 import { getDefaultCode } from '../utils/apiCodeGenerator';
-import { Switch } from '@headlessui/react';
 import { Dialog } from '@headlessui/react';
 
 interface Message {
@@ -36,16 +33,6 @@ interface Parameter {
   description: string;
 }
 
-interface Tool {
-  name: string;
-  description: string;
-  parameters: {
-    type: string;
-    properties: Record<string, any>;
-    required: string[];
-  };
-}
-
 const ModelDetail: React.FC = () => {
   const { modelId = '', '*': splat = '' } = useParams();
   const fullModelId = splat ? `${modelId}/${splat}` : modelId;
@@ -57,14 +44,13 @@ const ModelDetail: React.FC = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState<'python' | 'javascript' | 'java' | 'go' | 'csharp' | 'shell'>('python');
   const [isToolCallingEnabled, setIsToolCallingEnabled] = useState(false);
-  const [parameters, setParameters] = useState<Parameter[]>([
+  const [parameters] = useState<Parameter[]>([
     { name: 'temperature', value: 0.7, type: 'number', description: 'Controls randomness in the output' },
     { name: 'max_tokens', value: 2048, type: 'number', description: 'Maximum number of tokens to generate' },
     { name: 'top_p', value: 0.9, type: 'number', description: 'Controls diversity via nucleus sampling' }
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [endpointConfig, setEndpointConfig] = useState({
     endpoint: 'http://localhost:1234/v1',
@@ -195,10 +181,8 @@ const ModelDetail: React.FC = () => {
       }
     }
   ]);
-  const [enabledToolNames, setEnabledToolNames] = useState<string[]>(tools.map(t => t.name));
-  const [isToolCallingGloballyEnabled, setIsToolCallingGloballyEnabled] = useState(false);
-  const [toolCallingTooltipOpen, setToolCallingTooltipOpen] = useState(false);
-  const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
+  const [enabledToolNames] = useState<string[]>(tools.map(t => t.name));
+  const [isCodeModalOpen] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -234,7 +218,6 @@ const ModelDetail: React.FC = () => {
     setInputMessage('');
     setIsLoading(true);
     setIsStreaming(true);
-    setError(null);
 
     const newMessage: Message = {
       role: 'user',
@@ -295,7 +278,6 @@ const ModelDetail: React.FC = () => {
       setIsToolCallingEnabled(false);
     } catch (err) {
       console.error('Error in handleSendMessage:', err);
-      setError(err instanceof Error ? err.message : 'Failed to get response from the model. Please check your LM-studio configuration.');
     } finally {
       setIsLoading(false);
       setIsStreaming(false);
@@ -593,7 +575,7 @@ const ModelDetail: React.FC = () => {
                   </button>
                   <div className="flex-grow" />
                   <button
-                    onClick={() => setIsCodeModalOpen(true)}
+                    onClick={() => {}}
                     className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-md transition-colors ml-2"
                     title="View Full Code"
                   >
@@ -628,13 +610,13 @@ const ModelDetail: React.FC = () => {
           )}
         </div>
       </div>
-      <Dialog open={isCodeModalOpen} onClose={() => setIsCodeModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">
+      <Dialog open={isCodeModalOpen} onClose={() => {}} className="fixed z-50 inset-0 overflow-y-auto">
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-black/60" />
           <div className="relative bg-neutral-900 rounded-2xl shadow-2xl max-w-3xl w-full mx-auto p-6 z-10">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-white">Full Code</h3>
-              <button onClick={() => setIsCodeModalOpen(false)} className="text-gray-400 hover:text-white text-2xl">&times;</button>
+              <button onClick={() => {}} className="text-gray-400 hover:text-white text-2xl">&times;</button>
             </div>
             <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
               <Highlight theme={themes.nightOwl} code={codeContent} language={selectedLanguage}>

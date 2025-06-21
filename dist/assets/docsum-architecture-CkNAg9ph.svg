@@ -1,0 +1,108 @@
+<svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e293b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="serviceGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="sumGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="400" fill="url(#bgGradient)"/>
+  
+  <!-- Title -->
+  <text x="400" y="30" text-anchor="middle" fill="#f8fafc" font-family="Arial, sans-serif" font-size="24" font-weight="bold">DocSum Architecture</text>
+  
+  <!-- Document Input -->
+  <rect x="50" y="60" width="120" height="60" rx="8" fill="url(#serviceGradient)" stroke="#a78bfa" stroke-width="2"/>
+  <text x="110" y="85" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Document Input</text>
+  <text x="110" y="100" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10">(PDF, DOC, TXT)</text>
+  
+  <!-- Document Processing -->
+  <rect x="220" y="60" width="120" height="60" rx="8" fill="url(#serviceGradient)" stroke="#a78bfa" stroke-width="2"/>
+  <text x="280" y="85" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Document Processing</text>
+  <text x="280" y="100" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10">Service</text>
+  
+  <!-- Text Analysis -->
+  <rect x="390" y="60" width="120" height="60" rx="8" fill="url(#serviceGradient)" stroke="#a78bfa" stroke-width="2"/>
+  <text x="450" y="85" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Text Analysis</text>
+  <text x="450" y="100" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10">Service</text>
+  
+  <!-- Summarization -->
+  <rect x="560" y="60" width="120" height="60" rx="8" fill="url(#sumGradient)" stroke="#fbbf24" stroke-width="2"/>
+  <text x="620" y="85" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Summarization</text>
+  <text x="620" y="100" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10">Service</text>
+  
+  <!-- Content Extraction -->
+  <rect x="50" y="160" width="120" height="60" rx="8" fill="url(#serviceGradient)" stroke="#a78bfa" stroke-width="2"/>
+  <text x="110" y="185" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Content Extraction</text>
+  <text x="110" y="200" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10">Service</text>
+  
+  <!-- Key Point Extraction -->
+  <rect x="220" y="160" width="120" height="60" rx="8" fill="url(#serviceGradient)" stroke="#a78bfa" stroke-width="2"/>
+  <text x="280" y="185" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Key Point Extraction</text>
+  <text x="280" y="200" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10">Service</text>
+  
+  <!-- Summary Quality -->
+  <rect x="390" y="160" width="120" height="60" rx="8" fill="url(#serviceGradient)" stroke="#a78bfa" stroke-width="2"/>
+  <text x="450" y="185" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Summary Quality</text>
+  <text x="450" y="200" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10">Service</text>
+  
+  <!-- Entity Recognition -->
+  <rect x="560" y="160" width="120" height="60" rx="8" fill="url(#serviceGradient)" stroke="#a78bfa" stroke-width="2"/>
+  <text x="620" y="185" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Entity Recognition</text>
+  <text x="620" y="200" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10">Service</text>
+  
+  <!-- Generated Summary -->
+  <rect x="220" y="260" width="120" height="60" rx="8" fill="url(#sumGradient)" stroke="#fbbf24" stroke-width="2"/>
+  <text x="280" y="285" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Generated Summary</text>
+  <text x="280" y="300" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10">Output</text>
+  
+  <!-- Format Conversion -->
+  <rect x="390" y="260" width="120" height="60" rx="8" fill="url(#serviceGradient)" stroke="#a78bfa" stroke-width="2"/>
+  <text x="450" y="285" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Format Conversion</text>
+  <text x="450" y="300" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10">Service</text>
+  
+  <!-- Arrows -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#a78bfa"/>
+    </marker>
+    <marker id="sumArrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24"/>
+    </marker>
+  </defs>
+  
+  <!-- Flow arrows -->
+  <line x1="170" y1="90" x2="220" y2="90" stroke="#a78bfa" stroke-width="3" marker-end="url(#arrowhead)"/>
+  <line x1="340" y1="90" x2="390" y2="90" stroke="#a78bfa" stroke-width="3" marker-end="url(#arrowhead)"/>
+  <line x1="510" y1="90" x2="560" y2="90" stroke="#a78bfa" stroke-width="3" marker-end="url(#arrowhead)"/>
+  
+  <!-- Summarization flow -->
+  <line x1="620" y1="120" x2="110" y2="160" stroke="#fbbf24" stroke-width="2" marker-end="url(#sumArrow)"/>
+  <line x1="620" y1="120" x2="280" y2="160" stroke="#fbbf24" stroke-width="2" marker-end="url(#sumArrow)"/>
+  <line x1="620" y1="120" x2="450" y2="160" stroke="#fbbf24" stroke-width="2" marker-end="url(#sumArrow)"/>
+  <line x1="620" y1="120" x2="620" y2="160" stroke="#fbbf24" stroke-width="2" marker-end="url(#sumArrow)"/>
+  
+  <!-- Final flow -->
+  <line x1="110" y1="220" x2="280" y2="260" stroke="#a78bfa" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="280" y1="220" x2="280" y2="260" stroke="#a78bfa" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="450" y1="220" x2="280" y2="260" stroke="#a78bfa" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="620" y1="220" x2="280" y2="260" stroke="#a78bfa" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <line x1="340" y1="290" x2="390" y2="290" stroke="#a78bfa" stroke-width="3" marker-end="url(#arrowhead)"/>
+  
+  <!-- Legend -->
+  <rect x="50" y="340" width="15" height="15" fill="url(#serviceGradient)" stroke="#a78bfa" stroke-width="1"/>
+  <text x="75" y="352" fill="#f8fafc" font-family="Arial, sans-serif" font-size="12">Processing Services</text>
+  
+  <rect x="200" y="340" width="15" height="15" fill="url(#sumGradient)" stroke="#fbbf24" stroke-width="1"/>
+  <text x="225" y="352" fill="#f8fafc" font-family="Arial, sans-serif" font-size="12">Summarization Services</text>
+</svg> 

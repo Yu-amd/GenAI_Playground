@@ -4,8 +4,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { PaperAirplaneIcon, Cog6ToothIcon, DocumentTextIcon, CircleStackIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
-import { InformationCircleIcon, ChevronDownIcon, ClipboardIcon, CheckIcon, BookOpenIcon, CodeBracketIcon } from '@heroicons/react/20/solid';
-import { Switch } from '@headlessui/react';
 import { Highlight, themes } from 'prism-react-renderer';
 import bannerWave from '../assets/banner_wave.png';
 import bp_chatqna from '../assets/blueprints/bp_chatqna.png';
@@ -117,8 +115,6 @@ const blueprints = [
     tags: ['Avatar Integration', 'Visual AI', 'Conversational']
   },
 ];
-
-const OPEA_LABEL = 'Open Platform for Enterprise AI';
 
 const BlueprintDetail: React.FC = () => {
   const { blueprintId } = useParams<{ blueprintId: string }>();
@@ -847,23 +843,23 @@ main();`
   };
 
   const getWelcomeMessage = () => {
-    if (!blueprint) return 'Welcome! How can I help you today?';
+    if (!blueprint) return '';
     
     switch (blueprint.id) {
       case 'chatqna':
         return 'Welcome to ChatQnA! I\'m a RAG-powered chatbot that can answer questions using knowledge retrieval. How can I help you today?';
       case 'agentqna':
-        return 'Welcome to AgentQnA! I\'m a multi-agent system that can coordinate specialized agents to answer complex questions. What would you like to know?';
+        return 'Welcome to AgentQnA! I\'m a multi-agent system that can coordinate specialized agents to answer your questions. What would you like to know?';
       case 'codegen':
-        return 'Welcome to CodeGen! I\'m an AI code assistant that can help you generate, complete, and improve code. What would you like to build?';
+        return 'Welcome to CodeGen! I can help you generate code in various programming languages. What would you like me to create?';
       case 'codetrans':
-        return 'Welcome to CodeTrans! I can help you translate code between different programming languages. What code would you like to convert?';
+        return 'Welcome to CodeTrans! I can translate code between different programming languages. What code would you like me to translate?';
       case 'searchqna':
-        return 'Welcome to SearchQnA! I can search the web and provide up-to-date answers to your questions. What would you like to know?';
+        return 'Welcome to SearchQnA! I can search the web and provide you with up-to-date information. What would you like me to search for?';
       case 'docsum':
-        return 'Welcome to DocSum! I can create concise summaries of documents and text. What would you like me to summarize?';
+        return 'Welcome to DocSum! I can create summaries of different types of text. What would you like me to summarize?';
       case 'translation':
-        return 'Welcome to Translation! I can translate text between multiple languages. What would you like to translate?';
+        return 'Welcome to Translation! I can translate text between different languages. What would you like me to translate?';
       case 'avatarchatbot':
         return 'Welcome to Avatar Chatbot! I\'m a conversational AI with a virtual avatar. How can I assist you today?';
       default:
@@ -871,20 +867,7 @@ main();`
     }
   };
 
-  const getModelLogo = (name: string) => {
-    const n = name.toLowerCase();
-    if (n.includes('llama')) return llamaImg;
-    if (n.includes('qwen')) return qwen2Img;
-    if (n.includes('deepseek')) return deepseekImg;
-    if (n.includes('gemma')) return gemmaImg;
-    // fallback: try to match by service type
-    if (n.includes('embedding')) return llamaImg;
-    if (n.includes('inference') || n.includes('llm')) return qwen2Img;
-    if (n.includes('rerank')) return deepseekImg;
-    return gemmaImg;
-  };
-
-    const getMicroservicesForBlueprint = () => {
+  const getMicroservicesForBlueprint = () => {
     if (!blueprint) {
       return {
         models: [],
