@@ -2,6 +2,19 @@
 
 A modern web application for exploring and interacting with AI models and blueprints, built with React, TypeScript, and Vite.
 
+## Table of Contents
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+  - [Standard Installation](#standard-installation)
+  - [WSL2 Installation (Windows)](#wsl2-installation-windows)
+- [Available Scripts](#available-scripts)
+- [Project Structure](#project-structure)
+- [Technologies Used](#technologies-used)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Features
 
 - **Models Catalog**: Browse and explore different AI models
@@ -28,6 +41,11 @@ cd ih-mockup-demo
 #### 2. Install Dependencies
 ```bash
 npm install
+```
+
+**Note**: If you encounter any missing icon dependencies, you may need to install react-icons:
+```bash
+npm install react-icons
 ```
 
 #### 3. Start the Development Server
@@ -156,6 +174,7 @@ src/
 - Tailwind CSS
 - React Router
 - Heroicons
+- React Icons
 
 ## Contributing
 
