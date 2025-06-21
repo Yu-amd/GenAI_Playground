@@ -1053,6 +1053,13 @@ main();`
             <Link to="/gpu-cloud" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
           </div>
         </nav>
+        
+        {/* Left-aligned glassy blueprint logo/name overlay */}
+        <div className="absolute left-8 top-32 z-10 bg-white/10 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg p-3 flex flex-col items-center w-40">
+          <img src={blueprint.image} alt={blueprint.name} className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl mb-2 border border-neutral-800" />
+          <div className="text-xs font-bold text-white text-center drop-shadow-lg">AI Blueprint</div>
+          <div className="text-base font-extrabold text-center text-white drop-shadow-lg">{blueprint.name}</div>
+        </div>
       </div>
 
       <div className="flex-1 flex flex-col max-w-[1600px] mx-auto w-full p-8">

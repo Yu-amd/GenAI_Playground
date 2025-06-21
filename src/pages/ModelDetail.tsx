@@ -182,7 +182,7 @@ const ModelDetail: React.FC = () => {
     }
   ]);
   const [enabledToolNames] = useState<string[]>(tools.map(t => t.name));
-  const [isCodeModalOpen] = useState(false);
+  const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -414,6 +414,13 @@ const ModelDetail: React.FC = () => {
             <Link to="/gpu-cloud" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
           </div>
         </nav>
+        
+        {/* Left-aligned glassy model logo/name overlay */}
+        <div className="absolute left-8 top-32 z-10 bg-white/10 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg p-3 flex flex-col items-center w-40">
+          <img src={model.image} alt={model.name} className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl mb-2 border border-neutral-800" />
+          <div className="text-xs font-bold text-white text-center drop-shadow-lg">AI Model</div>
+          <div className="text-base font-extrabold text-center text-white drop-shadow-lg">{model.name}</div>
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row max-w-[1600px] mx-auto p-8 gap-8">
@@ -575,7 +582,7 @@ const ModelDetail: React.FC = () => {
                   </button>
                   <div className="flex-grow" />
                   <button
-                    onClick={() => {}}
+                    onClick={() => setIsCodeModalOpen(true)}
                     className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-md transition-colors ml-2"
                     title="View Full Code"
                   >
@@ -610,13 +617,13 @@ const ModelDetail: React.FC = () => {
           )}
         </div>
       </div>
-      <Dialog open={isCodeModalOpen} onClose={() => {}} className="fixed z-50 inset-0 overflow-y-auto">
+      <Dialog open={isCodeModalOpen} onClose={() => setIsCodeModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-black/60" />
           <div className="relative bg-neutral-900 rounded-2xl shadow-2xl max-w-3xl w-full mx-auto p-6 z-10">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-white">Full Code</h3>
-              <button onClick={() => {}} className="text-gray-400 hover:text-white text-2xl">&times;</button>
+              <button onClick={() => setIsCodeModalOpen(false)} className="text-gray-400 hover:text-white text-2xl">&times;</button>
             </div>
             <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
               <Highlight theme={themes.nightOwl} code={codeContent} language={selectedLanguage}>
