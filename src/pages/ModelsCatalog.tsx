@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaShieldAlt, FaCreativeCommons, FaLock } from 'react-icons/fa';
 import bannerWave from '../assets/banner_wave.png';
 import llamaImg from '../assets/models/model_llama3_1.png';
 import qwen2Img from '../assets/models/model_Qwen2-7B.png';
@@ -10,54 +11,104 @@ import PlaygroundLogo from '../components/PlaygroundLogo';
 interface Model {
   id: string;
   org: string;
+  builder: string;
+  family: string;
   name: string;
+  variant: string;
+  size: string;
   description: string;
+  shortDescription: string;
   image: string;
   localCard: string;
-  lastUpdated: string;
   tags: string[];
+  useCase: string;
+  precision: string;
+  license: string;
+  compatibility: string[];
+  readiness: string;
+  badge: string;
 }
 
 const models: Model[] = [
   {
     id: 'meta-llama/Llama-3-8B',
     org: 'Meta',
+    builder: 'Meta',
+    family: 'Llama',
     name: 'Llama 3 8B',
+    variant: '8B',
+    size: '8B',
     description: 'The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models in 8B, 70B and 405B sizes (text in/text out).',
+    shortDescription: 'The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models in 8B, 70B and 405B sizes (text in/text out).',
     image: bannerWave,
     localCard: llamaImg,
-    lastUpdated: '2024-03-15',
-    tags: ['Text Generation', 'Multilingual', 'Instruction Tuned']
+    tags: ['Text Generation', 'Multilingual', 'Instruction Tuned'],
+    useCase: 'Text Generation',
+    precision: 'FP16',
+    license: 'Meta RAIL',
+    compatibility: ['vllm', 'sglang'],
+    readiness: 'production-ready',
+    badge: 'Featured'
   },
   {
     id: 'Qwen/Qwen2-7B-Instruct',
     org: 'Qwen',
+    builder: 'Qwen',
+    family: 'Qwen',
     name: 'Qwen2 7B',
+    variant: '7B',
+    size: '7B',
     description: 'Qwen2 has generally surpassed most open-source models and demonstrated competitiveness against proprietary models across a series of benchmarks targeting for language understanding, language generation, multilingual capability, coding, mathematics, reasoning, etc.',
+    shortDescription: 'Qwen2 has generally surpassed most open-source models and demonstrated competitiveness against proprietary models across a series of benchmarks targeting for language understanding, language generation, multilingual capability, coding, mathematics, reasoning, etc.',
     image: bannerWave,
     localCard: qwen2Img,
-    lastUpdated: '2024-03-20',
-    tags: ['Code Generation', 'Mathematics', 'Reasoning']
+    tags: ['Code Generation', 'Mathematics', 'Reasoning'],
+    useCase: 'Code Generation',
+    precision: 'FP16',
+    license: 'Apache 2.0',
+    compatibility: ['vllm', 'sglang'],
+    readiness: 'tech-preview',
+    badge: 'Tech Preview'
   },
   {
     id: 'deepseek-ai/deepseek-moe-16b-base',
     org: 'DeepSeek',
+    builder: 'DeepSeek',
+    family: 'DeepSeek',
     name: 'DeepSeek MoE 16B',
+    variant: '16B',
+    size: '16.4B',
     description: 'Mixture-of-Experts (MoE) language model with 16.4B parameters. It employs an innovative MoE architecture, which involves two principal strategies: fine-grained expert segmentation and shared experts isolation.',
+    shortDescription: 'Mixture-of-Experts (MoE) language model with 16.4B parameters. It employs an innovative MoE architecture, which involves two principal strategies: fine-grained expert segmentation and shared experts isolation.',
     image: bannerWave,
     localCard: deepseekImg,
-    lastUpdated: '2024-03-25',
-    tags: ['MoE Architecture', 'Efficient', 'Base Model']
+    tags: ['MoE Architecture', 'Efficient', 'Base Model'],
+    useCase: 'Efficient LLM',
+    precision: 'FP16',
+    license: 'Apache 2.0',
+    compatibility: ['vllm'],
+    readiness: 'production-ready',
+    badge: 'New'
   },
   {
     id: 'google/gemma-3-4b-it',
     org: 'Google',
+    builder: 'Google',
+    family: 'Gemma',
     name: 'Gemma 3',
+    variant: '3',
+    size: '4B',
     description: 'Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models. Gemma 3 models are multimodal, handling text and image input and generating text output, with open weights for both pre-trained variants and instruction-tuned variants.',
+    shortDescription: 'Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models. Gemma 3 models are multimodal, handling text and image input and generating text output, with open weights for both pre-trained variants and instruction-tuned variants.',
     image: bannerWave,
     localCard: gemmaImg,
-    lastUpdated: '2024-03-28',
-    tags: ['Multimodal', 'Lightweight', 'Open Weights']
+    tags: ['Multimodal', 'Lightweight', 'Open Weights'],
+    useCase: 'Multimodal',
+    precision: 'FP16',
+    license: 'Apache 2.0',
+    compatibility: ['vllm', 'sglang'],
+    readiness: 'production-ready',
+    badge: 'New'
   }
 ];
 
@@ -84,31 +135,60 @@ const ModelsCatalog: React.FC = () => {
             <Link
               key={model.id}
               to={`/models/${model.id}`}
-              className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-10 flex flex-row items-center hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full"
+              className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-0 flex flex-row items-stretch hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full relative"
+              title="open in playground"
             >
-              <img
-                src={model.localCard}
-                alt={model.name}
-                className="w-36 h-36 object-cover rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0 bg-white/5"
-              />
-              <div className="flex-1 min-w-0 flex flex-col justify-center">
-                <div className="text-base text-blue-400 font-semibold mb-1 truncate">{model.org}</div>
-                <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-400 transition truncate">{model.name}</h2>
-                <div className="flex space-x-2 mb-3">
-                  {model.tags.map((tag, index) => (
-                    <span 
-                      key={index}
-                      className={`px-2 py-1 rounded text-xs ${
-                        index === 0 ? 'bg-blue-900/50 text-blue-200' :
-                        index === 1 ? 'bg-green-900/50 text-green-200' :
-                        'bg-purple-900/50 text-purple-200'
-                      }`}
-                    >
-                      {tag}
-                    </span>
+              {/* Corner Ribbon Badge */}
+              <div className={`absolute top-0 right-0 z-20 px-4 py-1 text-xs font-bold rounded-bl-2xl ${
+                model.badge === 'New' ? 'bg-green-600 text-white' :
+                model.badge === 'Tech Preview' ? 'bg-yellow-500 text-black' :
+                model.badge === 'Featured' ? 'bg-blue-600 text-white' :
+                'bg-neutral-700 text-white'
+              } shadow-lg`}>{model.badge}</div>
+              {/* Logo */}
+              <div className="flex items-center justify-center w-40 h-full bg-white/5 rounded-l-2xl border-r border-white/10">
+                <img
+                  src={model.localCard}
+                  alt={model.name}
+                  className="w-32 h-32 object-cover rounded-xl border-2 border-neutral-700 shadow-md bg-white/10"
+                />
+              </div>
+              {/* Info */}
+              <div className="flex-1 min-w-0 flex flex-col justify-center px-8 py-6">
+                {/* Builder/Publisher */}
+                <div className="text-xs text-blue-300 font-semibold mb-1 truncate">{model.builder}</div>
+                {/* Model Family */}
+                <div className="text-xs text-neutral-400 mb-1 truncate">{model.family}</div>
+                {/* Model Name + Variant */}
+                <div className="flex items-baseline gap-2 mb-1">
+                  <h2 className="text-2xl font-bold group-hover:text-blue-400 transition truncate">{model.name}</h2>
+                </div>
+                {/* Short Description */}
+                <div className="text-sm text-neutral-200 mb-3 line-clamp-2">{model.shortDescription}</div>
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-2">
+                  <span className={`px-2 py-1 rounded text-xs ${
+                    model.useCase === 'Text Generation' ? 'bg-blue-900/50 text-blue-200' :
+                    model.useCase === 'Code Generation' ? 'bg-green-900/50 text-green-200' :
+                    model.useCase === 'Efficient LLM' ? 'bg-purple-900/50 text-purple-200' :
+                    model.useCase === 'Multimodal' ? 'bg-orange-900/50 text-orange-200' :
+                    'bg-blue-900/50 text-blue-200'
+                  }`}>{model.useCase}</span>
+                  <span className="px-2 py-1 rounded text-xs bg-green-900/50 text-green-200">{model.precision}</span>
+                  <div className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-neutral-700/40 text-neutral-300">
+                    {model.license === 'Apache 2.0' ? (
+                      <FaShieldAlt size={12} />
+                    ) : model.license === 'Meta RAIL' ? (
+                      <FaLock size={12} />
+                    ) : (
+                      <FaCreativeCommons size={12} />
+                    )}
+                    <span>{model.license}</span>
+                  </div>
+                  {model.compatibility.map((c, i) => (
+                    <span key={i} className="px-2 py-1 rounded text-xs bg-neutral-700/40 text-neutral-300">{c}</span>
                   ))}
                 </div>
-                <div className="text-sm text-neutral-200 line-clamp-3">{model.description}</div>
               </div>
             </Link>
           ))}
