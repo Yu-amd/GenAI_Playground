@@ -3,11 +3,12 @@
 AIM Recipe YAML Validation Script
 
 This script validates AIM recipe YAML files against the AIM recipe schema.
-It can validate a single file or all recipe YAML files in the current directory.
+It can validate a single file or all recipe YAML files in the recipes directory.
 
 Usage:
     python3 validate_aim_recipe_yaml.py [filename.yaml]
     python3 validate_aim_recipe_yaml.py --all
+    python3 validate_aim_recipe_yaml.py --recipes-dir /path/to/recipes
 """
 
 import json
@@ -25,6 +26,7 @@ def load_schema(schema_path: str = "aim_recipe_schema.json") -> Dict[str, Any]:
             return json.load(f)
     except FileNotFoundError:
         print(f"❌ Schema file '{schema_path}' not found.")
+        print(f"   Expected location: {os.path.abspath(schema_path)}")
         sys.exit(1)
     except json.JSONDecodeError as e:
         print(f"❌ Invalid JSON in schema file: {e}")
@@ -37,6 +39,7 @@ def load_yaml_file(file_path: str) -> Dict[str, Any] | None:
             return yaml.safe_load(f)
     except FileNotFoundError:
         print(f"❌ YAML file '{file_path}' not found.")
+        print(f"   Expected location: {os.path.abspath(file_path)}")
         return None
     except yaml.YAMLError as e:
         print(f"❌ Invalid YAML in '{file_path}': {e}")
@@ -92,27 +95,103 @@ def validate_aim_recipe_files(filenames: List[str]) -> bool:
     
     return all_valid
 
-def get_aim_recipe_files() -> List[str]:
-    """Get all AIM recipe YAML files in the current directory."""
-    # Pattern to match AIM recipe YAML files (ending with -mi300x-fp16.yaml or -mi250-fp16.yaml)
-    pattern = "*-mi300x-fp16.yaml"
-    mi300x_files = glob.glob(pattern)
+def get_aim_recipe_files(recipes_dir: str = "recipes") -> List[str]:
+    """Get all AIM recipe YAML files in the recipes directory."""
+    if not os.path.exists(recipes_dir):
+        print(f"❌ Recipes directory '{recipes_dir}' not found.")
+        return []
     
-    pattern = "*-mi250-fp16.yaml"
-    mi250_files = glob.glob(pattern)
+    # Pattern to match AIM recipe YAML files
+    patterns = [
+        "*-mi300x-fp16.yaml",
+        "*-mi250-fp16.yaml",
+        "*-mi300x-fp8.yaml", 
+        "*-mi250-fp8.yaml",
+        "*-mi300x-bf16.yaml",
+        "*-mi250-bf16.yaml",
+        "*-mi300x-int8.yaml",
+        "*-mi250-int8.yaml",
+        "*-mi300x-int4.yaml",
+        "*-mi250-int4.yaml"
+    ]
     
-    # Combine and sort all recipe files
-    recipe_files = mi300x_files + mi250_files
+    recipe_files = []
+    for pattern in patterns:
+        full_pattern = os.path.join(recipes_dir, pattern)
+        recipe_files.extend(glob.glob(full_pattern))
+    
     return sorted(recipe_files)
+
+def validate_recipe_structure(data: Dict[str, Any], filename: str) -> bool:
+    """Additional validation beyond schema validation."""
+    issues = []
+    
+    # Check if recipe_id matches filename
+    expected_id = os.path.splitext(os.path.basename(filename))[0]
+    if data.get('recipe_id') != expected_id:
+        issues.append(f"recipe_id '{data.get('recipe_id')}' should match filename '{expected_id}'")
+    
+    # Check if model_id and huggingface_id are consistent
+    model_id = data.get('model_id', '')
+    hf_id = data.get('huggingface_id', '')
+    if model_id and hf_id and model_id != hf_id:
+        issues.append(f"model_id '{model_id}' and huggingface_id '{hf_id}' should be consistent")
+    
+    # Check if at least one serving method is enabled
+    vllm_enabled = any(
+        config.get('enabled', False) 
+        for config in data.get('vllm_serve', {}).values()
+    )
+    sglang_enabled = any(
+        config.get('enabled', False) 
+        for config in data.get('sglang_serve', {}).values()
+    )
+    
+    if not vllm_enabled and not sglang_enabled:
+        issues.append("At least one serving method (vllm_serve or sglang_serve) should be enabled")
+    
+    # Check GPU configurations
+    for service_name, service_config in [('vllm_serve', data.get('vllm_serve', {})), 
+                                        ('sglang_serve', data.get('sglang_serve', {}))]:
+        for gpu_config, config in service_config.items():
+            if config.get('enabled', False):
+                # Check if tensor-parallel-size matches GPU count
+                args = config.get('args', {})
+                tensor_parallel = args.get('--tensor-parallel-size', '')
+                gpu_count = gpu_config.split('_')[0]
+                
+                if tensor_parallel and tensor_parallel != gpu_count:
+                    issues.append(f"{service_name}.{gpu_config}: tensor-parallel-size '{tensor_parallel}' should match GPU count '{gpu_count}'")
+    
+    if issues:
+        print(f"⚠️  {filename}: Structure validation warnings:")
+        for issue in issues:
+            print(f"   - {issue}")
+        return False
+    
+    return True
 
 def main():
     """Main function to handle command line arguments and run validation."""
+    recipes_dir = "recipes"
+    
     if len(sys.argv) > 1:
         if sys.argv[1] == "--all" or sys.argv[1] == "-a":
             # Validate all AIM recipe YAML files
-            files = get_aim_recipe_files()
+            files = get_aim_recipe_files(recipes_dir)
             if not files:
-                print("❌ No AIM recipe YAML files found in current directory.")
+                print(f"❌ No AIM recipe YAML files found in '{recipes_dir}' directory.")
+                print(f"   Expected patterns: *-mi300x-fp16.yaml, *-mi250-fp16.yaml, etc.")
+                sys.exit(1)
+            success = validate_aim_recipe_files(files)
+        elif sys.argv[1] == "--recipes-dir":
+            if len(sys.argv) < 3:
+                print("❌ --recipes-dir requires a directory path")
+                sys.exit(1)
+            recipes_dir = sys.argv[2]
+            files = get_aim_recipe_files(recipes_dir)
+            if not files:
+                print(f"❌ No AIM recipe YAML files found in '{recipes_dir}' directory.")
                 sys.exit(1)
             success = validate_aim_recipe_files(files)
         else:
@@ -120,10 +199,20 @@ def main():
             filename = sys.argv[1]
             if not filename.endswith('.yaml'):
                 filename += '.yaml'
+            
+            # If filename doesn't include recipes/ prefix, add it
+            if not filename.startswith('recipes/') and not os.path.exists(filename):
+                filename = os.path.join('recipes', filename)
+            
             success = validate_aim_recipe_files([filename])
     else:
-        # Default: validate llama3-70b-mi300x-fp16.yaml (original behavior)
-        success = validate_aim_recipe_files(["llama3-70b-mi300x-fp16.yaml"])
+        # Default: validate all recipes
+        files = get_aim_recipe_files(recipes_dir)
+        if not files:
+            print(f"❌ No AIM recipe YAML files found in '{recipes_dir}' directory.")
+            print(f"   Expected patterns: *-mi300x-fp16.yaml, *-mi250-fp16.yaml, etc.")
+            sys.exit(1)
+        success = validate_aim_recipe_files(files)
     
     sys.exit(0 if success else 1)
 

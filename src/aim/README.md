@@ -1,135 +1,135 @@
-# Model YAML Validation
+# Model & AIM Recipe Validation Workflow
 
-This directory contains the validation infrastructure for model catalog YAML files.
+This directory contains YAML files and validation workflows for both the model catalog and AIM serving recipes. Both types of YAMLs have their own schema and validation scripts.
 
-## Files
+---
 
-- `model_catalog_schema.json` - JSON schema for validating model YAML files
-- `validate_model_yaml.py` - Python script to validate YAML files against the schema
-- `model_template.yaml` - Template for creating new model YAML files
-- `*.yaml` - Individual model YAML files
+## Directory Structure
 
-## Usage
+- `models/` — Per-model YAML files for the model catalog
+- `recipes/` — AIM recipe YAML files (one per model/hardware/precision combination)
+- `templates/` — Templates for new model YAMLs
+- `model_catalog_schema.json` — JSON schema for validating model YAML files
+- `aim_recipe_schema.json` — JSON schema for validating recipe files
+- `validate_model_yaml.py` — Python script to validate model YAMLs
+- `validate_aim_recipe_yaml.py` — Python script to validate AIM recipes
 
-### Validate a single file
+---
+
+## Requirements
+
+- Python 3.8+
+- `PyYAML` and `jsonschema` Python packages
+
+Install requirements:
 ```bash
-python3 validate_model_yaml.py <filename>
-# or
-python3 validate_model_yaml.py <filename>.yaml
+pip install pyyaml jsonschema
 ```
 
-### Validate all model files
+---
+
+## Model YAML Validation
+
+### Validate a Single Model YAML
+
+```bash
+python3 validate_model_yaml.py models/<model-filename>.yaml
+```
+
+### Validate All Model YAMLs
+
 ```bash
 python3 validate_model_yaml.py --all
-# or
-python3 validate_model_yaml.py -a
 ```
 
-### Validate default file (gemma-3-4b-it.yaml)
-```bash
-python3 validate_model_yaml.py
+#### What the Script Checks
+
+- **Schema validation**: Ensures all required fields, types, and allowed values are present (see `model_catalog_schema.json`).
+
+#### Best Practices
+
+- Place all model YAMLs in the `models/` directory.
+- Use the template in `templates/model_template.yaml` for new models.
+- Run the validation script before submitting or deploying new models.
+
+#### Example Output
+
 ```
-
-## Schema Improvements
-
-The schema has been enhanced with:
-
-### 1. **Comprehensive Validation Rules**
-- **Required fields**: All essential fields are now required
-- **Pattern validation**: URLs, file paths, and IDs are validated with regex patterns
-- **Enum constraints**: Limited values for readiness levels, licenses, hardware, etc.
-- **Length constraints**: Minimum lengths for descriptions and content
-- **Unique items**: Arrays must contain unique values
-
-### 2. **Better Field Definitions**
-- **Descriptions**: Each field has a clear description
-- **Formats**: URLs are validated as proper URIs
-- **Patterns**: File paths, model IDs, and other fields have specific patterns
-- **Enums**: Restricted values for categorical fields
-
-### 3. **Enhanced Data Quality**
-- **Status badges**: Predefined list of valid badges
-- **Tags**: Controlled vocabulary for model categorization
-- **Hardware**: Specific AMD GPU models supported
-- **Precision**: Standard numerical precision formats
-- **Evaluation metrics**: Structured format for benchmark scores
-
-## Validation Script Improvements
-
-### 1. **Enhanced Functionality**
-- **Multiple file support**: Validate one file or all files at once
-- **Better error reporting**: Detailed error messages with paths and expected values
-- **Summary statistics**: Shows validation results summary
-- **Command line interface**: Flexible argument handling
-
-### 2. **Robust Error Handling**
-- **File not found**: Graceful handling of missing files
-- **Invalid YAML**: Clear error messages for YAML syntax issues
-- **Schema errors**: Detailed validation error reporting
-- **Exit codes**: Proper exit codes for CI/CD integration
-
-### 3. **User Experience**
-- **Clear output**: Emoji indicators and formatted output
-- **Progress tracking**: Shows which files are being validated
-- **Helpful messages**: Explains what went wrong and how to fix it
-
-## Example Output
-
-### Successful Validation
-```
-🔍 Validating 4 model YAML file(s)...
+$ python3 validate_model_yaml.py --all
+🔍 Validating 5 model YAML file(s)...
 --------------------------------------------------
-✅ deepseek-moe-16b-base.yaml: Valid
-✅ gemma-3-4b-it.yaml: Valid
-✅ llama-3-8b.yaml: Valid
-✅ qwen2-7b-instruct.yaml: Valid
+✅ models/llama-3-8b.yaml: Valid
+✅ models/deepseek-r1-0528.yaml: Valid
+...
 --------------------------------------------------
-📊 Summary: 4/4 files valid
+📊 Summary: 5/5 files valid
 🎉 All files passed validation!
 ```
 
-### Failed Validation
-```
-🔍 Validating 1 model YAML file(s)...
---------------------------------------------------
-❌ test.yaml: Validation error
-   Path: readiness_level
-   Message: 'Invalid Level' is not one of ['Day-0 Available', 'Tech Preview', 'Production-Ready']
-   Expected: ['Day-0 Available', 'Tech Preview', 'Production-Ready']
---------------------------------------------------
-📊 Summary: 0/1 files valid
-⚠️  Some files failed validation.
-```
+---
 
-## Schema Fields
+## AIM Recipe Validation
 
-### Required Fields
-- `model_id`: Unique identifier (alphanumeric, hyphens, underscores, slashes)
-- `name`: Human-readable display name
-- `builder`: Organization that built the model
-- `family`: Model family name
-- `size`: Model size in parameters
-- `huggingface_id`: HuggingFace model identifier
-- `description`: Detailed description (min 10 chars)
-- `readiness_level`: One of "Day-0 Available", "Tech Preview", "Production-Ready"
-- `status_badges`: Array of predefined badges
-- `tags`: Array of predefined tags
-- `license`: One of predefined license types
-- `endpoint`: Valid HTTPS URL
-- `demo_assets`: Object with notebook and demo_link URLs
-- `aim_recipes`: Array of deployment recipes
-- `api_examples`: Object with programming language examples
-- `model_card`: Detailed model information
+### Validate a Single Recipe
 
-### Optional Fields
-- `logo`: Image filename (png, jpg, jpeg, svg)
-
-## Dependencies
-
-- `jsonschema`: For JSON schema validation
-- `pyyaml`: For YAML file parsing
-
-Install with:
 ```bash
-pip install jsonschema pyyaml
-``` 
+python3 validate_aim_recipe_yaml.py recipes/<recipe-filename>.yaml
+```
+
+### Validate All Recipes
+
+```bash
+python3 validate_aim_recipe_yaml.py --all
+```
+
+### Validate Recipes in a Custom Directory
+
+```bash
+python3 validate_aim_recipe_yaml.py --recipes-dir /path/to/recipes
+```
+
+#### What the Script Checks
+
+- **Schema validation**: Ensures all required fields, types, and allowed values are present (see `aim_recipe_schema.json`).
+- **Structure checks** (planned/optional):
+  - `recipe_id` matches the filename
+  - `model_id` and `huggingface_id` are consistent
+  - At least one serving config is enabled
+  - `tensor-parallel-size` matches the GPU count in each config
+
+#### Best Practices
+
+- Place all recipe YAMLs in the `recipes/` directory.
+- Use the naming convention: `<model-name>-<hardware>-<precision>.yaml` (e.g., `deepseek-r1-0528-mi300x-fp16.yaml`).
+- Run the validation script before submitting or deploying new recipes.
+- Keep the schema (`aim_recipe_schema.json`) up to date with any new fields or requirements.
+
+#### Example Output
+
+```
+$ python3 validate_aim_recipe_yaml.py --all
+🔍 Validating 11 AIM recipe YAML file(s)...
+--------------------------------------------------
+✅ recipes/deepseek-r1-0528-mi300x-fp16.yaml: Valid
+✅ recipes/llama-3-8b-mi250-fp16.yaml: Valid
+...
+--------------------------------------------------
+📊 Summary: 11/11 files valid
+🎉 All files passed validation!
+```
+
+---
+
+## Troubleshooting
+
+- If you see `not found` errors, check that you are running the script from the `src/aim/` directory and that the `models/` or `recipes/` directory exists.
+- If you see schema validation errors, check the error message and update your YAML file to match the schema.
+
+## Extending the Workflow
+
+- You can add stricter structure checks or a `--strict` flag in the scripts.
+- Update the schemas as new fields or serving methods are added.
+
+---
+
+For questions or improvements, please open an issue or contact the maintainers. 
