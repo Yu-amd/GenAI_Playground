@@ -13,26 +13,26 @@ vllm_serve:
     args:
       --model: meta-llama/Meta-Llama-3-70B-Instruct
       --dtype: float16
-      --tensor-parallel-size: 2
-      --max-batch-size: 16
-      --max-context-len: 8192
-      --gpu-memory-utilization: 0.9
+      --tensor-parallel-size: "2"
+      --max-batch-size: "16"
+      --max-context-len: "8192"
+      --gpu-memory-utilization: "0.9"
       --swap-space: 4GiB
-      --trust-remote-code: true
-      --port: 8000
+      --trust-remote-code: "true"
+      --port: "8000"
 
   "4_gpu":
     enabled: true
     args:
       --model: meta-llama/Meta-Llama-3-70B-Instruct
       --dtype: float16
-      --tensor-parallel-size: 4
-      --max-batch-size: 32
-      --max-context-len: 8192
-      --gpu-memory-utilization: 0.9
+      --tensor-parallel-size: "4"
+      --max-batch-size: "32"
+      --max-context-len: "8192"
+      --gpu-memory-utilization: "0.9"
       --swap-space: 4GiB
-      --trust-remote-code: true
-      --port: 8000
+      --trust-remote-code: "true"
+      --port: "8000"
 
   "8_gpu":
     enabled: false
@@ -43,32 +43,32 @@ sglang_serve:
     args:
       --model: meta-llama/Meta-Llama-3-70B-Instruct
       --dtype: float16
-      --max-batch-size: 8
-      --gpu-memory-utilization: 0.9
-      --trust-remote-code: true
-      --port: 8001
+      --max-batch-size: "8"
+      --gpu-memory-utilization: "0.9"
+      --trust-remote-code: "true"
+      --port: "8001"
 
   "2_gpu":
     enabled: true
     args:
       --model: meta-llama/Meta-Llama-3-70B-Instruct
       --dtype: float16
-      --tensor-parallel-size: 2
-      --max-batch-size: 16
-      --gpu-memory-utilization: 0.9
-      --trust-remote-code: true
-      --port: 8001
+      --tensor-parallel-size: "2"
+      --max-batch-size: "16"
+      --gpu-memory-utilization: "0.9"
+      --trust-remote-code: "true"
+      --port: "8001"
 
   "4_gpu":
     enabled: true
     args:
       --model: meta-llama/Meta-Llama-3-70B-Instruct
       --dtype: float16
-      --tensor-parallel-size: 4
-      --max-batch-size: 32
-      --gpu-memory-utilization: 0.9
-      --trust-remote-code: true
-      --port: 8001
+      --tensor-parallel-size: "4"
+      --max-batch-size: "32"
+      --gpu-memory-utilization: "0.9"
+      --trust-remote-code: "true"
+      --port: "8001"
 
   "8_gpu":
     enabled: false

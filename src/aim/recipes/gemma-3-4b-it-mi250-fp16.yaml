@@ -1,0 +1,97 @@
+recipe_id: gemma-3-4b-it-mi250-fp16
+model_id: google/gemma-3-4b-it
+huggingface_id: google/gemma-3-4b-it
+hardware: MI250
+precision: fp16
+
+vllm_serve:
+  "1_gpu":
+    enabled: true
+    args:
+      --model: google/gemma-3-4b-it
+      --dtype: float16
+      --max-batch-size: "32"
+      --max-context-len: "8192"
+      --gpu-memory-utilization: "0.9"
+      --trust-remote-code: "true"
+      --port: "8000"
+
+  "2_gpu":
+    enabled: true
+    args:
+      --model: google/gemma-3-4b-it
+      --dtype: float16
+      --tensor-parallel-size: "2"
+      --max-batch-size: "64"
+      --max-context-len: "8192"
+      --gpu-memory-utilization: "0.9"
+      --trust-remote-code: "true"
+      --port: "8000"
+
+  "4_gpu":
+    enabled: true
+    args:
+      --model: google/gemma-3-4b-it
+      --dtype: float16
+      --tensor-parallel-size: "4"
+      --max-batch-size: "128"
+      --max-context-len: "8192"
+      --gpu-memory-utilization: "0.9"
+      --trust-remote-code: "true"
+      --port: "8000"
+
+  "8_gpu":
+    enabled: true
+    args:
+      --model: google/gemma-3-4b-it
+      --dtype: float16
+      --tensor-parallel-size: "8"
+      --max-batch-size: "256"
+      --max-context-len: "8192"
+      --gpu-memory-utilization: "0.9"
+      --trust-remote-code: "true"
+      --port: "8000"
+
+sglang_serve:
+  "1_gpu":
+    enabled: true
+    args:
+      --model: google/gemma-3-4b-it
+      --dtype: float16
+      --max-batch-size: "16"
+      --gpu-memory-utilization: "0.9"
+      --trust-remote-code: "true"
+      --port: "8001"
+
+  "2_gpu":
+    enabled: true
+    args:
+      --model: google/gemma-3-4b-it
+      --dtype: float16
+      --tensor-parallel-size: "2"
+      --max-batch-size: "32"
+      --gpu-memory-utilization: "0.9"
+      --trust-remote-code: "true"
+      --port: "8001"
+
+  "4_gpu":
+    enabled: true
+    args:
+      --model: google/gemma-3-4b-it
+      --dtype: float16
+      --tensor-parallel-size: "4"
+      --max-batch-size: "64"
+      --gpu-memory-utilization: "0.9"
+      --trust-remote-code: "true"
+      --port: "8001"
+
+  "8_gpu":
+    enabled: true
+    args:
+      --model: google/gemma-3-4b-it
+      --dtype: float16
+      --tensor-parallel-size: "8"
+      --max-batch-size: "128"
+      --gpu-memory-utilization: "0.9"
+      --trust-remote-code: "true"
+      --port: "8001" 
