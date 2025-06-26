@@ -1,40 +1,73 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Model Catalog Entry Schema",
+  "description": "Schema for validating model catalog YAML files",
   "type": "object",
   "required": [
     "model_id",
     "name",
     "builder",
-    "huggingface_id"
+    "family",
+    "size",
+    "huggingface_id",
+    "description",
+    "readiness_level",
+    "status_badges",
+    "tags",
+    "license",
+    "endpoint",
+    "demo_assets",
+    "aim_recipes",
+    "api_examples",
+    "model_card"
   ],
   "properties": {
     "model_id": {
-      "type": "string"
+      "type": "string",
+      "description": "Unique identifier for the model",
+      "pattern": "^[a-zA-Z0-9/_-]+$",
+      "minLength": 1
     },
     "name": {
-      "type": "string"
+      "type": "string",
+      "description": "Human-readable display name for the model",
+      "minLength": 1
     },
     "builder": {
-      "type": "string"
+      "type": "string",
+      "description": "Organization or company that built the model",
+      "minLength": 1
     },
     "family": {
-      "type": "string"
+      "type": "string",
+      "description": "Model family name (e.g., LLaMA, Gemma, Qwen)",
+      "minLength": 1
     },
     "size": {
-      "type": "string"
+      "type": "string",
+      "description": "Model size in parameters (e.g., 7B, 13B, 70B)",
+      "pattern": "^[0-9]+(\\.?[0-9]+)?[KMB]?$",
+      "minLength": 1
     },
     "huggingface_id": {
-      "type": "string"
+      "type": "string",
+      "description": "HuggingFace model identifier",
+      "pattern": "^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$",
+      "minLength": 1
     },
     "description": {
-      "type": "string"
+      "type": "string",
+      "description": "Detailed description of the model",
+      "minLength": 10
     },
     "logo": {
-      "type": "string"
+      "type": "string",
+      "description": "Filename of the model logo/image",
+      "pattern": "^[a-zA-Z0-9._-]+\\.(png|jpg|jpeg|svg)$"
     },
     "readiness_level": {
       "type": "string",
+      "description": "Model readiness level for production use",
       "enum": [
         "Day-0 Available",
         "Tech Preview",
@@ -43,36 +76,88 @@
     },
     "status_badges": {
       "type": "array",
+      "description": "Status badges indicating model capabilities",
       "items": {
-        "type": "string"
-      }
+        "type": "string",
+        "enum": [
+          "FP16",
+          "FP8",
+          "BF16",
+          "INT8",
+          "INT4",
+          "FlashAttention",
+          "Featured",
+          "New",
+          "Tech Preview",
+          "Production-Ready"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
     },
     "tags": {
       "type": "array",
+      "description": "Tags for categorizing the model",
       "items": {
-        "type": "string"
-      }
+        "type": "string",
+        "enum": [
+          "Text Generation",
+          "Code Generation",
+          "Mathematics",
+          "Reasoning",
+          "Multilingual",
+          "Instruction-Tuned",
+          "Base Model",
+          "Multimodal",
+          "Lightweight",
+          "Open Weights",
+          "MoE Architecture",
+          "Efficient",
+          "vLLM-Compatible",
+          "sglang-Compatible"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
     },
     "license": {
-      "type": "string"
+      "type": "string",
+      "description": "Model license information",
+      "enum": [
+        "Apache 2.0",
+        "Meta RAIL",
+        "MIT",
+        "Creative Commons",
+        "Proprietary"
+      ]
     },
     "endpoint": {
-      "type": "string"
+      "type": "string",
+      "description": "API endpoint URL for the model",
+      "format": "uri",
+      "pattern": "^https?://.*"
     },
     "demo_assets": {
       "type": "object",
+      "description": "Demo assets and links",
+      "required": ["notebook", "demo_link"],
       "properties": {
         "notebook": {
-          "type": "string"
+          "type": "string",
+          "description": "URL to demo notebook",
+          "format": "uri"
         },
         "demo_link": {
-          "type": "string"
+          "type": "string",
+          "description": "URL to live demo",
+          "format": "uri"
         }
       },
       "additionalProperties": false
     },
     "aim_recipes": {
       "type": "array",
+      "description": "AIM deployment recipes for different hardware configurations",
       "items": {
         "type": "object",
         "required": [
@@ -83,13 +168,18 @@
         ],
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Recipe name",
+            "minLength": 1
           },
           "hardware": {
-            "type": "string"
+            "type": "string",
+            "description": "Target hardware platform",
+            "enum": ["MI300X", "MI250", "MI210", "MI100"]
           },
           "precision": {
             "type": "string",
+            "description": "Numerical precision for inference",
             "enum": [
               "fp16",
               "bf16",
@@ -99,55 +189,127 @@
             ]
           },
           "recipe_file": {
-            "type": "string"
+            "type": "string",
+            "description": "Path to recipe configuration file",
+            "pattern": "^configs/[a-zA-Z0-9._-]+\\.yaml$"
           }
-        }
-      }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
     },
     "api_examples": {
       "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      }
+      "description": "API usage examples in different programming languages",
+      "required": ["python", "javascript", "shell"],
+      "properties": {
+        "python": {
+          "type": "string",
+          "description": "Python API example",
+          "minLength": 10
+        },
+        "javascript": {
+          "type": "string",
+          "description": "JavaScript API example",
+          "minLength": 10
+        },
+        "shell": {
+          "type": "string",
+          "description": "Shell/curl API example",
+          "minLength": 10
+        },
+        "java": {
+          "type": "string",
+          "description": "Java API example",
+          "minLength": 10
+        },
+        "go": {
+          "type": "string",
+          "description": "Go API example",
+          "minLength": 10
+        },
+        "csharp": {
+          "type": "string",
+          "description": "C# API example",
+          "minLength": 10
+        }
+      },
+      "additionalProperties": false
     },
     "model_card": {
       "type": "object",
+      "description": "Detailed model card information",
+      "required": [
+        "overview",
+        "intended_use",
+        "limitations",
+        "training_data",
+        "evaluation",
+        "known_issues",
+        "references"
+      ],
       "properties": {
         "overview": {
-          "type": "string"
+          "type": "string",
+          "description": "High-level overview of the model",
+          "minLength": 20
         },
         "intended_use": {
           "type": "array",
+          "description": "List of intended use cases",
           "items": {
-            "type": "string"
-          }
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
         },
         "limitations": {
           "type": "array",
+          "description": "List of model limitations",
           "items": {
-            "type": "string"
-          }
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
         },
         "training_data": {
-          "type": "string"
+          "type": "string",
+          "description": "Description of training data",
+          "minLength": 10
         },
         "evaluation": {
           "type": "array",
+          "description": "Evaluation metrics and scores",
           "items": {
-            "type": "string"
-          }
+            "type": "string",
+            "pattern": "^[A-Za-z0-9\\s()%.-]+: [0-9]+(\\.[0-9]+)?%?$",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
         },
         "known_issues": {
           "type": "array",
+          "description": "List of known issues",
           "items": {
-            "type": "string"
-          }
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
         },
         "references": {
           "type": "array",
+          "description": "List of reference links",
           "items": {
-            "type": "string"
-          }
+            "type": "string",
+            "format": "uri",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
         }
       },
       "additionalProperties": false

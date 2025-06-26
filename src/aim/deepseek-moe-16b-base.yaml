@@ -1,0 +1,198 @@
+model_id: deepseek-ai/deepseek-moe-16b-base
+name: DeepSeek MoE 16B Base
+builder: DeepSeek AI
+family: DeepSeek MoE
+size: 16.4B
+huggingface_id: deepseek-ai/deepseek-moe-16b-base
+
+description: >
+  Mixture-of-Experts (MoE) language model with 16.4B parameters. It employs an innovative MoE architecture, which involves two principal strategies: fine-grained expert segmentation and shared experts isolation. This base model provides excellent efficiency and performance for various language tasks.
+
+logo: model_DeepSeek_MoE_18B.png
+
+readiness_level: Day-0 Available
+status_badges:
+  - FP16
+  - FlashAttention
+  - New
+
+tags:
+  - MoE Architecture
+  - Efficient
+  - Base Model
+  - vLLM-Compatible
+  - Lightweight
+
+license: Apache 2.0
+
+endpoint: https://api.inference-hub.com/v1/chat/completions
+
+demo_assets:
+  notebook: https://github.com/inference-hub/notebooks/deepseek-moe-16b-base-demo.ipynb
+  demo_link: https://playground.inference-hub.com/models/deepseek-ai/deepseek-moe-16b-base
+
+aim_recipes:
+  - name: MI300X FP16
+    hardware: MI300X
+    precision: fp16
+    recipe_file: configs/deepseek-moe-16b-base-mi300x-fp16.yaml
+
+  - name: MI250 FP16
+    hardware: MI250
+    precision: fp16
+    recipe_file: configs/deepseek-moe-16b-base-mi250-fp16.yaml
+
+api_examples:
+  python: |
+    import requests
+
+    headers = {
+        "Authorization": "Bearer YOUR_API_KEY",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "deepseek-ai/deepseek-moe-16b-base",
+        "messages": [{"role": "user", "content": "Hello"}],
+        "stream": False
+    }
+
+    response = requests.post("https://api.inference-hub.com/v1/chat/completions", headers=headers, json=payload)
+    print(response.json())
+
+  javascript: |
+    const response = await fetch("https://api.inference-hub.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer YOUR_API_KEY",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "deepseek-ai/deepseek-moe-16b-base",
+        messages: [{ role: "user", content: "Hello" }],
+        stream: false
+      })
+    });
+
+    const data = await response.json();
+    console.log(data.choices[0].message.content);
+
+  shell: |
+    curl -X POST https://api.inference-hub.com/v1/chat/completions \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "model": "deepseek-ai/deepseek-moe-16b-base",
+        "messages": [{"role": "user", "content": "Hello"}],
+        "stream": false
+      }'
+
+  java: |
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create("https://api.inference-hub.com/v1/chat/completions"))
+        .header("Authorization", "Bearer YOUR_API_KEY")
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+          {
+            "model": "deepseek-ai/deepseek-moe-16b-base",
+            "messages": [{"role": "user", "content": "Hello"}],
+            "stream": false
+          }
+        """))
+        .build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    System.out.println(response.body());
+
+  go: |
+    package main
+
+    import (
+        "bytes"
+        "fmt"
+        "io/ioutil"
+        "net/http"
+    )
+
+    func main() {
+        jsonStr := []byte(`{
+            "model": "deepseek-ai/deepseek-moe-16b-base",
+            "messages": [{"role": "user", "content": "Hello"}],
+            "stream": false
+        }`)
+
+        req, _ := http.NewRequest("POST", "https://api.inference-hub.com/v1/chat/completions", bytes.NewBuffer(jsonStr))
+        req.Header.Set("Authorization", "Bearer YOUR_API_KEY")
+        req.Header.Set("Content-Type", "application/json")
+
+        client := &http.Client{}
+        resp, _ := client.Do(req)
+        body, _ := ioutil.ReadAll(resp.Body)
+        fmt.Println(string(body))
+    }
+
+  csharp: |
+    using System.Net.Http;
+    using System.Text;
+    using System.Threading.Tasks;
+
+    var client = new HttpClient();
+    var request = new HttpRequestMessage(HttpMethod.Post, "https://api.inference-hub.com/v1/chat/completions");
+    request.Headers.Add("Authorization", "Bearer YOUR_API_KEY");
+
+    var json = """
+    {
+        "model": "deepseek-ai/deepseek-moe-16b-base",
+        "messages": [{"role": "user", "content": "Hello"}],
+        "stream": false
+    }
+    """;
+
+    request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+    var response = await client.SendAsync(request);
+    var responseBody = await response.Content.ReadAsStringAsync();
+    Console.WriteLine(responseBody);
+
+model_card:
+  overview: >
+    DeepSeek MoE 16B Base is an innovative Mixture-of-Experts language model that employs 
+    fine-grained expert segmentation and shared experts isolation strategies. This architecture 
+    provides excellent efficiency and performance for various language understanding and 
+    generation tasks.
+
+  intended_use:
+    - Text generation and completion
+    - Language understanding
+    - Document processing
+    - Base model for fine-tuning
+    - Research and experimentation
+
+  limitations:
+    - Base model (not instruction-tuned)
+    - May produce biased or harmful content
+    - Not suitable for safety-critical use
+    - Requires additional fine-tuning for specific tasks
+    - Performance may vary on complex reasoning tasks
+
+  training_data: >
+    Diverse web corpus, books, academic papers, and other publicly available text data.
+    Training data cutoff: January 2024.
+
+  evaluation:
+    - "MMLU: 65.3"
+    - "HumanEval (code): 37.5%"
+    - "MT-Bench: 7.8"
+    - "GSM8K: 72.1%"
+
+  known_issues:
+    - Base model behavior (not instruction-tuned)
+    - May produce inconsistent outputs
+    - Requires careful prompting for best results
+    - Performance varies across different domains
+
+  references:
+    - https://huggingface.co/deepseek-ai/deepseek-moe-16b-base
+    - https://github.com/deepseek-ai/DeepSeek-MoE
+    - https://www.deepseek.com/ 
