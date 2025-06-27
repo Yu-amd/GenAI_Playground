@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { models } from '../data/models';
 import bannerWave from '../assets/banner_wave.png';
 import PlaygroundLogo from '../components/PlaygroundLogo';
 import ReactMarkdown from 'react-markdown';
@@ -11,6 +10,8 @@ import { lmStudioService } from '../services/lmStudioService';
 import { Highlight, themes } from 'prism-react-renderer';
 import { getDefaultCode } from '../utils/apiCodeGenerator';
 import { Dialog } from '@headlessui/react';
+import { loadModelData, modelImageMap } from '../utils/modelLoader';
+import type { ModelData } from '../utils/modelLoader';
 
 interface Message {
   role: 'user' | 'assistant' | 'system' | 'tool';
@@ -36,7 +37,7 @@ interface Parameter {
 const ModelDetail: React.FC = () => {
   const { modelId = '', '*': splat = '' } = useParams();
   const fullModelId = splat ? `${modelId}/${splat}` : modelId;
-  const model = models.find((m) => m.id === decodeURIComponent(fullModelId));
+  const [model, setModel] = useState<ModelData | null>(null);
   const [activeTab, setActiveTab] = useState<'model' | 'interact' | 'code'>('interact');
   const [messages, setMessages] = useState<Message[]>([
     { role: 'system', content: 'Hi, what can I do for you today?', timestamp: new Date() }
@@ -201,7 +202,7 @@ const ModelDetail: React.FC = () => {
   useEffect(() => {
     setCodeContent(getDefaultCode(
       selectedLanguage,
-      model?.id || 'your-model-id',
+      model?.model_id || 'your-model-id',
       {
         temperature: parameters.find(p => p.name === 'temperature')?.value as number,
         max_tokens: parameters.find(p => p.name === 'max_tokens')?.value as number,
@@ -209,7 +210,11 @@ const ModelDetail: React.FC = () => {
       },
       inputMessage
     ));
-  }, [messages, selectedLanguage, parameters, model?.id, inputMessage]);
+  }, [messages, selectedLanguage, parameters, model?.model_id, inputMessage]);
+
+  useEffect(() => {
+    loadModelData(decodeURIComponent(fullModelId)).then(setModel);
+  }, [fullModelId]);
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
@@ -298,7 +303,7 @@ const ModelDetail: React.FC = () => {
   const handleCopyCode = async () => {
     const code = getDefaultCode(
       selectedLanguage,
-      model?.id || 'your-model-id',
+      model?.model_id || 'your-model-id',
       {
         temperature: parameters.find(p => p.name === 'temperature')?.value as number,
         max_tokens: parameters.find(p => p.name === 'max_tokens')?.value as number,
@@ -417,7 +422,7 @@ const ModelDetail: React.FC = () => {
         
         {/* Left-aligned glassy model logo/name overlay */}
         <div className="absolute left-8 top-32 z-10 bg-white/10 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg p-3 flex flex-col items-center w-40">
-          <img src={model.image} alt={model.name} className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl mb-2 border border-neutral-800" />
+          <img src={modelImageMap[model.model_id] || model.logo} alt={model.name} className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl mb-2 border border-neutral-800" />
           <div className="text-xs font-bold text-white text-center drop-shadow-lg">AI Model</div>
           <div className="text-base font-extrabold text-center text-white drop-shadow-lg">{model.name}</div>
         </div>
@@ -611,7 +616,7 @@ const ModelDetail: React.FC = () => {
           {activeTab === 'model' && (
             <div className="prose prose-invert max-w-none bg-neutral-900/80 p-6 rounded-xl shadow-lg text-lg custom-prose border border-neutral-800 w-full">
               <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                {model.localCard}
+                {model.model_card.overview}
               </ReactMarkdown>
             </div>
           )}

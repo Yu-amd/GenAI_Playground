@@ -1,118 +1,85 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaShieldAlt, FaCreativeCommons, FaLock } from 'react-icons/fa';
 import bannerWave from '../assets/banner_wave.png';
-import llamaImg from '../assets/models/model_llama3_1.png';
-import qwen2Img from '../assets/models/model_Qwen2-7B.png';
-import deepseekImg from '../assets/models/model_DeepSeek_MoE_18B.png';
-import gemmaImg from '../assets/models/model_Gemma.png';
 import PlaygroundLogo from '../components/PlaygroundLogo';
-
-interface Model {
-  id: string;
-  org: string;
-  builder: string;
-  family: string;
-  name: string;
-  variant: string;
-  size: string;
-  description: string;
-  shortDescription: string;
-  image: string;
-  localCard: string;
-  tags: string[];
-  useCase: string;
-  precision: string;
-  license: string;
-  compatibility: string[];
-  readiness: string;
-  badge: string;
-}
-
-const models: Model[] = [
-  {
-    id: 'meta-llama/Llama-3-8B',
-    org: 'Meta',
-    builder: 'Meta',
-    family: 'Llama',
-    name: 'Llama 3 8B',
-    variant: '8B',
-    size: '8B',
-    description: 'The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models in 8B, 70B and 405B sizes (text in/text out).',
-    shortDescription: 'The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models in 8B, 70B and 405B sizes (text in/text out).',
-    image: bannerWave,
-    localCard: llamaImg,
-    tags: ['Text Generation', 'Multilingual', 'Instruction Tuned'],
-    useCase: 'Text Generation',
-    precision: 'FP16',
-    license: 'Meta RAIL',
-    compatibility: ['vllm', 'sglang'],
-    readiness: 'production-ready',
-    badge: 'Featured'
-  },
-  {
-    id: 'Qwen/Qwen2-7B-Instruct',
-    org: 'Qwen',
-    builder: 'Qwen',
-    family: 'Qwen',
-    name: 'Qwen2 7B',
-    variant: '7B',
-    size: '7B',
-    description: 'Qwen2 has generally surpassed most open-source models and demonstrated competitiveness against proprietary models across a series of benchmarks targeting for language understanding, language generation, multilingual capability, coding, mathematics, reasoning, etc.',
-    shortDescription: 'Qwen2 has generally surpassed most open-source models and demonstrated competitiveness against proprietary models across a series of benchmarks targeting for language understanding, language generation, multilingual capability, coding, mathematics, reasoning, etc.',
-    image: bannerWave,
-    localCard: qwen2Img,
-    tags: ['Code Generation', 'Mathematics', 'Reasoning'],
-    useCase: 'Code Generation',
-    precision: 'FP16',
-    license: 'Apache 2.0',
-    compatibility: ['vllm', 'sglang'],
-    readiness: 'tech-preview',
-    badge: 'Tech Preview'
-  },
-  {
-    id: 'deepseek-ai/deepseek-moe-16b-base',
-    org: 'DeepSeek',
-    builder: 'DeepSeek',
-    family: 'DeepSeek',
-    name: 'DeepSeek MoE 16B',
-    variant: '16B',
-    size: '16.4B',
-    description: 'Mixture-of-Experts (MoE) language model with 16.4B parameters. It employs an innovative MoE architecture, which involves two principal strategies: fine-grained expert segmentation and shared experts isolation.',
-    shortDescription: 'Mixture-of-Experts (MoE) language model with 16.4B parameters. It employs an innovative MoE architecture, which involves two principal strategies: fine-grained expert segmentation and shared experts isolation.',
-    image: bannerWave,
-    localCard: deepseekImg,
-    tags: ['MoE Architecture', 'Efficient', 'Base Model'],
-    useCase: 'Efficient LLM',
-    precision: 'FP16',
-    license: 'Apache 2.0',
-    compatibility: ['vllm'],
-    readiness: 'production-ready',
-    badge: 'New'
-  },
-  {
-    id: 'google/gemma-3-4b-it',
-    org: 'Google',
-    builder: 'Google',
-    family: 'Gemma',
-    name: 'Gemma 3',
-    variant: '3',
-    size: '4B',
-    description: 'Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models. Gemma 3 models are multimodal, handling text and image input and generating text output, with open weights for both pre-trained variants and instruction-tuned variants.',
-    shortDescription: 'Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models. Gemma 3 models are multimodal, handling text and image input and generating text output, with open weights for both pre-trained variants and instruction-tuned variants.',
-    image: bannerWave,
-    localCard: gemmaImg,
-    tags: ['Multimodal', 'Lightweight', 'Open Weights'],
-    useCase: 'Multimodal',
-    precision: 'FP16',
-    license: 'Apache 2.0',
-    compatibility: ['vllm', 'sglang'],
-    readiness: 'production-ready',
-    badge: 'New'
-  }
-];
+import { loadAllModels } from '../utils/modelLoader';
+import type { ModelCatalogItem } from '../utils/modelLoader';
 
 const ModelsCatalog: React.FC = () => {
+  const [models, setModels] = useState<ModelCatalogItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        setLoading(true);
+        const modelData = await loadAllModels();
+        setModels(modelData);
+      } catch (err) {
+        console.error('Failed to load models:', err);
+        setError('Failed to load model catalog. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchModels();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-neutral-900 text-white font-sans flex flex-col">
+        {/* Banner */}
+        <div className="relative w-full h-56 md:h-72 lg:h-80 overflow-hidden">
+          <img src={bannerWave} alt="Banner" className="w-full h-full object-cover" />
+          <nav className="absolute top-0 left-0 w-full flex justify-between items-center pt-8 px-8 z-10">
+            <PlaygroundLogo />
+            <div className="flex gap-16">
+              <Link to="/models" className="text-2xl font-bold transition relative px-2 opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-full after:bg-red-500">Models</Link>
+              <Link to="/blueprints" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Blueprints</Link>
+              <Link to="/gpu-cloud" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
+            </div>
+          </nav>
+        </div>
+
+        {/* Loading State */}
+        <div className="w-full max-w-[1600px] mx-auto py-12 px-8 flex-1">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-xl text-neutral-300">Loading model catalog...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-neutral-900 text-white font-sans flex flex-col">
+        {/* Banner */}
+        <div className="relative w-full h-56 md:h-72 lg:h-80 overflow-hidden">
+          <img src={bannerWave} alt="Banner" className="w-full h-full object-cover" />
+          <nav className="absolute top-0 left-0 w-full flex justify-between items-center pt-8 px-8 z-10">
+            <PlaygroundLogo />
+            <div className="flex gap-16">
+              <Link to="/models" className="text-2xl font-bold transition relative px-2 opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-full after:bg-red-500">Models</Link>
+              <Link to="/blueprints" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Blueprints</Link>
+              <Link to="/gpu-cloud" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
+            </div>
+          </nav>
+        </div>
+
+        {/* Error State */}
+        <div className="w-full max-w-[1600px] mx-auto py-12 px-8 flex-1">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-xl text-red-400">{error}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-neutral-900 text-white font-sans flex flex-col">
       {/* Banner */}
