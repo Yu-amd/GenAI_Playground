@@ -615,9 +615,91 @@ const ModelDetail: React.FC = () => {
 
           {activeTab === 'model' && (
             <div className="prose prose-invert max-w-none bg-neutral-900/80 p-6 rounded-xl shadow-lg text-lg custom-prose border border-neutral-800 w-full">
-              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                {model.model_card.overview}
-              </ReactMarkdown>
+              {model.model_card ? (
+                <>
+                  {/* Overview */}
+                  {model.model_card.overview && (
+                    <section className="mb-6">
+                      <h2 className="text-2xl font-bold mb-2">Overview</h2>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                        {model.model_card.overview}
+                      </ReactMarkdown>
+                    </section>
+                  )}
+                  {/* Intended Use */}
+                  {model.model_card.intended_use && model.model_card.intended_use.length > 0 && (
+                    <section className="mb-6">
+                      <h2 className="text-xl font-semibold mb-2">Intended Use</h2>
+                      <ul className="list-disc pl-6">
+                        {model.model_card.intended_use.map((item: string, idx: number) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
+                  {/* Limitations */}
+                  {model.model_card.limitations && model.model_card.limitations.length > 0 && (
+                    <section className="mb-6">
+                      <h2 className="text-xl font-semibold mb-2">Limitations</h2>
+                      <ul className="list-disc pl-6">
+                        {model.model_card.limitations.map((item: string, idx: number) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
+                  {/* Training Data */}
+                  {model.model_card.training_data && (
+                    <section className="mb-6">
+                      <h2 className="text-xl font-semibold mb-2">Training Data</h2>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                        {model.model_card.training_data}
+                      </ReactMarkdown>
+                    </section>
+                  )}
+                  {/* Evaluation */}
+                  {model.model_card.evaluation && model.model_card.evaluation.length > 0 && (
+                    <section className="mb-6">
+                      <h2 className="text-xl font-semibold mb-2">Evaluation</h2>
+                      <ul className="list-disc pl-6">
+                        {model.model_card.evaluation.map((item: string, idx: number) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
+                  {/* Known Issues */}
+                  {model.model_card.known_issues && model.model_card.known_issues.length > 0 && (
+                    <section className="mb-6">
+                      <h2 className="text-xl font-semibold mb-2">Known Issues</h2>
+                      <ul className="list-disc pl-6">
+                        {model.model_card.known_issues.map((item: string, idx: number) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
+                  {/* References */}
+                  {model.model_card.references && model.model_card.references.length > 0 && (
+                    <section className="mb-6">
+                      <h2 className="text-xl font-semibold mb-2">References</h2>
+                      <ul className="list-disc pl-6">
+                        {model.model_card.references.map((ref: string, idx: number) => (
+                          <li key={idx}>
+                            {ref.startsWith('http') ? (
+                              <a href={ref} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">{ref}</a>
+                            ) : (
+                              ref
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
+                </>
+              ) : (
+                <div>No model card information available.</div>
+              )}
             </div>
           )}
         </div>
