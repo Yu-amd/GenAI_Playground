@@ -603,7 +603,7 @@ const ModelDetail: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('parameters')}
-              className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
+              className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none relative
                 ${activeTab === 'parameters'
                   ? 'border-blue-500 text-blue-500 bg-transparent'
                   : 'border-transparent text-gray-400 hover:text-blue-400'}
@@ -611,6 +611,7 @@ const ModelDetail: React.FC = () => {
               style={{ background: 'none', borderRadius: 0 }}
             >
               Parameters
+              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">BETA</span>
             </button>
           </div>
 
