@@ -12,6 +12,7 @@ import { getDefaultCode } from '../utils/apiCodeGenerator';
 import { Dialog } from '@headlessui/react';
 import { loadModelData, modelImageMap } from '../utils/modelLoader';
 import type { ModelData } from '../utils/modelLoader';
+import './fonts.css';
 
 interface Message {
   role: 'user' | 'assistant' | 'system' | 'tool';
@@ -67,6 +68,7 @@ const ModelDetail: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showParameters, setShowParameters] = useState(false);
+  const [showModelCard, setShowModelCard] = useState(false);
   
   // Enhanced parameters with more comprehensive options
   const [parameters, setParameters] = useState<Parameter[]>([
@@ -539,51 +541,77 @@ const ModelDetail: React.FC = () => {
         }
       `}</style>
       {/* Banner */}
-      <div className="relative w-full h-56 md:h-72 lg:h-80 overflow-hidden">
-        <img src={bannerWave} alt="Banner" className="w-full h-full object-cover" />
-        <nav className="absolute top-0 left-0 w-full flex justify-between items-center pt-8 px-8 z-10">
+      <div className="relative w-full h-72 md:h-96 lg:h-[28rem] overflow-hidden font-sans flex items-center" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+        <img src={bannerWave} alt="Banner" className="w-full h-full object-cover absolute inset-0" />
+        {/* Navigation overlay */}
+        <nav className="absolute top-0 left-0 w-full flex justify-between items-center pt-8 px-8 z-20 bg-black/30 backdrop-blur-md shadow-lg rounded-b-xl pointer-events-auto">
           <PlaygroundLogo />
           <div className="flex gap-16">
-            <Link to="/models" className="text-2xl font-bold transition relative px-2 opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-full after:bg-red-500">Models</Link>
-            <Link to="/blueprints" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Blueprints</Link>
-            <Link to="/gpu-cloud" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
+            <Link to="/models" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Models</Link>
+            <Link to="/blueprints" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Blueprints</Link>
+            <Link to="/gpu-cloud" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
           </div>
         </nav>
-        
-        {/* Left-aligned glassy model logo/name overlay */}
-        <div className="absolute left-8 top-32 z-10 bg-white/10 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg p-3 flex flex-col items-center w-40">
-          <img src={modelImageMap[model.model_id] || model.logo} alt={model.name} className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl mb-2 border border-neutral-800" />
-          <div className="text-xs font-bold text-white text-center drop-shadow-lg">AI Model</div>
-          <div className="text-base font-extrabold text-center text-white drop-shadow-lg">{model.name}</div>
+        {/* Banner content: logo card left, name/desc right */}
+        <div className="relative z-10 flex flex-row items-center justify-center w-full h-full px-8 gap-12 pt-20">
+          {/* Logo Card */}
+          <div className="flex flex-col items-center min-w-[220px]">
+            <div className="relative w-full flex flex-col items-center">
+              <img
+                src={modelImageMap[model.model_id] || model.logo}
+                alt={model.name}
+                className="w-48 h-48 md:w-56 md:h-56 object-cover rounded-2xl border-4 border-white shadow-xl bg-white"
+                style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)' }}
+              />
+              <button
+                className="mt-6 px-7 py-2 rounded-full bg-white/10 backdrop-blur-md border border-blue-400/30 text-blue-300 font-medium shadow hover:bg-blue-600/20 hover:text-white transition-all text-base tracking-wide"
+                onClick={() => setShowModelCard(true)}
+              >
+                Model Card
+              </button>
+            </div>
+          </div>
+          {/* Name, Description, and Tags */}
+          <div className="flex-1 flex flex-col justify-center items-start max-w-2xl">
+            <div className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg mb-4" style={{ letterSpacing: '.01em' }}>{model.name}</div>
+            {model.description && (
+              <div className="text-lg md:text-xl text-white/90 leading-relaxed font-medium drop-shadow max-w-2xl mb-4">
+                {model.description}
+              </div>
+            )}
+            {model.tags && model.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {model.tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold shadow border border-white/20 uppercase tracking-wide whitespace-nowrap
+                      ${idx === 0 ? 'bg-green-900/50 text-green-200' :
+                        idx === 1 ? 'bg-purple-900/50 text-purple-200' :
+                        'bg-orange-900/50 text-orange-200'}`}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row max-w-[1600px] mx-auto p-8 gap-8">
+      <div className="flex flex-col md:flex-row max-w-[1600px] mx-auto p-8 gap-8 -mt-8 relative z-10">
         {/* Main Content */}
         <div className="flex-1">
-          {/* Top Header */}
-          <div className="flex border-b border-neutral-700 mb-6">
+          {/* Top Header - Modern Tab Navigation */}
+          <div className="flex bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-2 mb-8 shadow-xl">
             <button
               onClick={() => setActiveTab('interact')}
-              className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
-                ${activeTab === 'interact'
-                  ? 'border-blue-500 text-blue-500 bg-transparent'
-                  : 'border-transparent text-gray-400 hover:text-blue-400'}
-              `}
-              style={{ background: 'none', borderRadius: 0 }}
+              className={`flex-1 px-6 py-4 text-lg font-semibold rounded-xl transition-all duration-300 focus:outline-none ${
+                activeTab === 'interact'
+                  ? 'bg-blue-600/20 text-blue-400 shadow-lg border border-blue-500/30'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`}
             >
               Interact
-            </button>
-            <button
-              onClick={() => setActiveTab('model')}
-              className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
-                ${activeTab === 'model'
-                  ? 'border-blue-500 text-blue-500 bg-transparent'
-                  : 'border-transparent text-gray-400 hover:text-blue-400'}
-              `}
-              style={{ background: 'none', borderRadius: 0 }}
-            >
-              Model Card
             </button>
           </div>
 
@@ -591,43 +619,37 @@ const ModelDetail: React.FC = () => {
           {activeTab === 'interact' && (
             <div className="flex flex-row gap-8 items-stretch h-[700px]">
               {/* Chatbox (left) */}
-              <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow mb-8 md:mb-0 flex flex-col">
+              <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-transparent backdrop-blur-lg rounded-3xl p-4 border border-white/10 shadow-lg mb-8 md:mb-0 flex flex-col font-sans" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold">Chat</h3>
+                  <h3 className="text-lg font-bold text-white">Chat</h3>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setShowSettings(!showSettings)}
-                      className="text-gray-400 hover:text-white"
+                      className="text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-all"
                       title="Settings"
                     >
-                      <Cog6ToothIcon className="h-6 w-6" />
+                      <Cog6ToothIcon className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => setShowParameters(true)}
-                      className="flex items-center px-3 py-1.5 bg-neutral-800 text-white rounded-lg border border-neutral-700 hover:bg-neutral-700 transition-colors text-sm font-medium relative"
+                      className="flex items-center px-3 py-1.5 bg-blue-600/10 text-blue-400 rounded-full border border-blue-500/10 hover:bg-blue-600/20 transition-all text-xs font-medium"
                       title="Model Parameters"
                     >
                       Parameters
                     </button>
                   </div>
                 </div>
-                {showSettings && renderSettings()}
-                <div className="flex flex-col space-y-4 flex-1 min-h-0">
+                <div className="flex flex-col flex-1 min-h-0">
                   {/* Chat messages */}
                   <div className="flex-1 min-h-0 overflow-y-auto">
                     {messages.map((message, index) => (
                       <div
                         key={index}
-                        className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        className={`flex py-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
-                          className={`max-w-[80%] rounded-lg p-4 ${
-                            message.role === 'user'
-                              ? 'bg-blue-600 text-white'
-                              : message.role === 'tool'
-                              ? 'bg-green-600 text-white'
-                              : 'bg-neutral-800 text-white'
-                          }`}
+                          className={`max-w-[85%] px-1 py-0 text-sm text-white`}
+                          style={{ fontFamily: message.role === 'user' ? 'Inter, system-ui, sans-serif' : 'Lora, serif' }}
                         >
                           <div className="prose prose-invert max-w-none">
                             <ReactMarkdown
@@ -638,12 +660,12 @@ const ModelDetail: React.FC = () => {
                             </ReactMarkdown>
                           </div>
                           {message.tool_calls && (
-                            <div className="mt-2 text-sm">
-                              <div className="font-semibold">Tool Calls:</div>
+                            <div className="mt-2 p-2 bg-black/10 rounded-xl border border-white/5">
+                              <div className="font-semibold text-xs text-blue-300 mb-1">Tool Calls:</div>
                               {message.tool_calls.map((toolCall, i) => (
-                                <div key={i} className="mt-1">
-                                  <div>Function: {toolCall.function.name}</div>
-                                  <div>Arguments: {toolCall.function.arguments}</div>
+                                <div key={i} className="text-xs space-y-1">
+                                  <div className="text-gray-300">Function: <span className="text-blue-300">{toolCall.function.name}</span></div>
+                                  <div className="text-gray-400">Arguments: <span className="text-green-300">{toolCall.function.arguments}</span></div>
                                 </div>
                               ))}
                             </div>
@@ -652,8 +674,8 @@ const ModelDetail: React.FC = () => {
                       </div>
                     ))}
                     {isStreaming && streamingContent && (
-                      <div className="flex justify-start">
-                        <div className="max-w-[80%] rounded-lg p-4 bg-neutral-800 text-white">
+                      <div className="flex justify-start py-2">
+                        <div className="max-w-[85%] px-5 py-3 bg-white/10 text-white border border-white/10 shadow-sm text-sm">
                           <div className="prose prose-invert max-w-none">
                             <ReactMarkdown
                               remarkPlugins={[remarkGfm]}
@@ -668,44 +690,45 @@ const ModelDetail: React.FC = () => {
                     <div ref={messagesEndRef} />
                   </div>
                   {/* Input area */}
-                  <div className="mt-auto">
-                    <div className="flex items-end space-x-2">
+                  <div className="mt-2">
+                    <div className="flex items-end space-x-2 bg-white/5 rounded-full px-3 py-2 border border-white/10">
                       <textarea
                         ref={textareaRef}
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="Type your message..."
-                        className="flex-1 bg-neutral-800 text-white rounded-lg p-3 min-h-[60px] max-h-[200px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 bg-transparent text-white rounded-full p-2 min-h-[36px] max-h-[120px] resize-none focus:outline-none focus:ring-0 border-0 font-sans"
                         disabled={isLoading}
+                        style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
                       />
                       <button
                         onClick={handleSendMessage}
                         disabled={isLoading || !inputMessage.trim()}
-                        className={`p-3 rounded-lg ${
+                        className={`p-2 rounded-full transition-all duration-300 ${
                           isLoading || !inputMessage.trim()
-                            ? 'bg-neutral-700 text-gray-400 cursor-not-allowed'
-                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                            ? 'bg-gray-600/20 text-gray-400 cursor-not-allowed'
+                            : 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-500/20 hover:border-blue-500/40 shadow-sm hover:shadow-md'
                         }`}
                       >
-                        <PaperAirplaneIcon className="h-6 w-6" />
+                        <PaperAirplaneIcon className="h-5 w-5" />
                       </button>
                     </div>
                   </div>
                 </div>
                 {/* Parameters Side Panel */}
                 {showParameters && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/40" onClick={() => setShowParameters(false)}>
-                    <div className="bg-neutral-900 border border-neutral-700 rounded-l-2xl shadow-2xl w-full max-w-md h-full p-8 overflow-y-auto relative" onClick={e => e.stopPropagation()}>
+                  <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm" onClick={() => setShowParameters(false)}>
+                    <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-l-3xl shadow-2xl w-full max-w-md h-full p-8 overflow-y-auto relative" onClick={e => e.stopPropagation()}>
                       <button
-                        className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                        className="absolute top-6 right-6 text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all"
                         onClick={() => setShowParameters(false)}
                         title="Close"
                       >
                         <XMarkIcon className="w-6 h-6" />
                       </button>
-                      <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                        <Cog6ToothIcon className="w-6 h-6 text-blue-400" />
+                      <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+                        <Cog6ToothIcon className="w-7 h-7 text-blue-400" />
                         Model Parameters
                       </h2>
                       {renderParametersPanel(parameters, handleParameterChange, resetToDefaults)}
@@ -714,20 +737,20 @@ const ModelDetail: React.FC = () => {
                 )}
               </div>
               {/* Integration Code (right) */}
-              <div className="w-full md:w-[60%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg border border-neutral-800 shadow flex flex-col">
-                <div className="flex items-center space-x-2 mb-4 pt-6 px-6">
-                  <CodeBracketIcon className="w-5 h-5 text-gray-400" />
-                  <h3 className="text-lg font-medium text-gray-200">API Integration</h3>
+              <div className="w-full md:w-[60%] flex-1 h-full min-h-0 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl flex flex-col">
+                <div className="flex items-center space-x-3 mb-6 pt-6 px-6">
+                  <CodeBracketIcon className="w-6 h-6 text-blue-400" />
+                  <h3 className="text-xl font-bold text-white">API Integration</h3>
                 </div>
-                <div className="flex flex-nowrap gap-2 mb-4 px-6 items-center overflow-x-auto">
+                <div className="flex flex-nowrap gap-3 mb-6 px-6 items-center overflow-x-auto">
                   {['python', 'javascript', 'java', 'go', 'csharp', 'shell'].map((lang) => (
                     <button
                       key={lang}
                       onClick={() => setSelectedLanguage(lang as typeof selectedLanguage)}
-                      className={`px-3 py-1 text-sm rounded-md font-mono border transition-colors duration-150 ${
+                      className={`px-4 py-2 text-sm rounded-xl font-mono border transition-all duration-300 ${
                         selectedLanguage === lang
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'bg-neutral-800 text-gray-300 border-neutral-700 hover:bg-neutral-700'
+                          ? 'bg-blue-600/20 text-blue-400 border-blue-500/50 shadow-lg'
+                          : 'bg-white/10 text-gray-300 border-white/20 hover:bg-white/20 hover:text-white'
                       }`}
                     >
                       {lang === 'csharp' ? 'C#' : lang.charAt(0).toUpperCase() + lang.slice(1)}
@@ -735,7 +758,7 @@ const ModelDetail: React.FC = () => {
                   ))}
                   <button
                     onClick={handleCopyCode}
-                    className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-md transition-colors"
+                    className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all"
                     title="Copy code"
                   >
                     {copied ? (
@@ -747,134 +770,46 @@ const ModelDetail: React.FC = () => {
                   <div className="flex-grow" />
                   <button
                     onClick={() => setIsCodeModalOpen(true)}
-                    className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-md transition-colors ml-2"
+                    className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all ml-2"
                     title="View Full Code"
                   >
                     <CodeBracketIcon className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="px-6 pb-4">
-                  <Highlight theme={themes.nightOwl} code={codeContent} language={selectedLanguage}>
-                    {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                      <pre className={`${className} p-4 text-sm font-mono whitespace-pre-wrap break-words overflow-x-auto overflow-y-auto max-h-[550px]`} style={{ ...style, margin: 0, maxWidth: '100%' }}>
-                        {tokens.map((line, i) => (
-                          <div key={i} {...getLineProps({ line })}>
-                            {line.map((token, key) => (
-                              <span key={key} {...getTokenProps({ token })} />
-                            ))}
-                          </div>
-                        ))}
-                      </pre>
-                    )}
-                  </Highlight>
+                <div className="px-6 pb-6">
+                  <div className="bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden">
+                    <Highlight theme={themes.nightOwl} code={codeContent} language={selectedLanguage}>
+                      {({ className, style, tokens, getLineProps, getTokenProps }) => (
+                        <pre className={`${className} p-6 text-sm font-mono whitespace-pre-wrap break-words overflow-x-auto overflow-y-auto max-h-[550px]`} style={{ ...style, margin: 0, maxWidth: '100%' }}>
+                          {tokens.map((line, i) => (
+                            <div key={i} {...getLineProps({ line })}>
+                              {line.map((token, key) => (
+                                <span key={key} {...getTokenProps({ token })} />
+                              ))}
+                            </div>
+                          ))}
+                        </pre>
+                      )}
+                    </Highlight>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-
-          {activeTab === 'model' && (
-            <div className="prose prose-invert max-w-none bg-neutral-900/80 p-6 rounded-xl shadow-lg text-lg custom-prose border border-neutral-800 w-full">
-              {model.model_card ? (
-                <>
-                  {/* Overview */}
-                  {model.model_card.overview && (
-                    <section className="mb-6">
-                      <h2 className="text-2xl font-bold mb-2">Overview</h2>
-                      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                        {model.model_card.overview}
-                      </ReactMarkdown>
-                    </section>
-                  )}
-                  {/* Intended Use */}
-                  {model.model_card.intended_use && model.model_card.intended_use.length > 0 && (
-                    <section className="mb-6">
-                      <h2 className="text-xl font-semibold mb-2">Intended Use</h2>
-                      <ul className="list-disc pl-6">
-                        {model.model_card.intended_use.map((item: string, idx: number) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </section>
-                  )}
-                  {/* Limitations */}
-                  {model.model_card.limitations && model.model_card.limitations.length > 0 && (
-                    <section className="mb-6">
-                      <h2 className="text-xl font-semibold mb-2">Limitations</h2>
-                      <ul className="list-disc pl-6">
-                        {model.model_card.limitations.map((item: string, idx: number) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </section>
-                  )}
-                  {/* Training Data */}
-                  {model.model_card.training_data && (
-                    <section className="mb-6">
-                      <h2 className="text-xl font-semibold mb-2">Training Data</h2>
-                      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                        {model.model_card.training_data}
-                      </ReactMarkdown>
-                    </section>
-                  )}
-                  {/* Evaluation */}
-                  {model.model_card.evaluation && model.model_card.evaluation.length > 0 && (
-                    <section className="mb-6">
-                      <h2 className="text-xl font-semibold mb-2">Evaluation</h2>
-                      <ul className="list-disc pl-6">
-                        {model.model_card.evaluation.map((item: string, idx: number) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </section>
-                  )}
-                  {/* Known Issues */}
-                  {model.model_card.known_issues && model.model_card.known_issues.length > 0 && (
-                    <section className="mb-6">
-                      <h2 className="text-xl font-semibold mb-2">Known Issues</h2>
-                      <ul className="list-disc pl-6">
-                        {model.model_card.known_issues.map((item: string, idx: number) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </section>
-                  )}
-                  {/* References */}
-                  {model.model_card.references && model.model_card.references.length > 0 && (
-                    <section className="mb-6">
-                      <h2 className="text-xl font-semibold mb-2">References</h2>
-                      <ul className="list-disc pl-6">
-                        {model.model_card.references.map((ref: string, idx: number) => (
-                          <li key={idx}>
-                            {ref.startsWith('http') ? (
-                              <a href={ref} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">{ref}</a>
-                            ) : (
-                              ref
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  )}
-                </>
-              ) : (
-                <div>No model card information available.</div>
-              )}
             </div>
           )}
         </div>
       </div>
       <Dialog open={isCodeModalOpen} onClose={() => setIsCodeModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">
         <div className="flex items-center justify-center min-h-screen px-4">
-          <div className="fixed inset-0 bg-black/60" />
-          <div className="relative bg-neutral-900 rounded-2xl shadow-2xl max-w-3xl w-full mx-auto p-6 z-10">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-white">Full Code</h3>
-              <button onClick={() => setIsCodeModalOpen(false)} className="text-gray-400 hover:text-white text-2xl">&times;</button>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl max-w-4xl w-full mx-auto p-8 z-10 border border-white/20">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold text-white">Full Code</h3>
+              <button onClick={() => setIsCodeModalOpen(false)} className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all text-2xl">&times;</button>
             </div>
-            <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
+            <div className="overflow-x-auto overflow-y-auto max-h-[70vh] bg-black/40 rounded-xl border border-white/10">
               <Highlight theme={themes.nightOwl} code={codeContent} language={selectedLanguage}>
                 {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                  <pre className={`${className} p-4 text-sm font-mono whitespace-pre break-words overflow-x-auto overflow-y-auto max-h-[70vh]`} style={{ ...style, margin: 0, maxWidth: '100%' }}>
+                  <pre className={`${className} p-6 text-sm font-mono whitespace-pre break-words overflow-x-auto overflow-y-auto max-h-[70vh]`} style={{ ...style, margin: 0, maxWidth: '100%' }}>
                     {tokens.map((line, i) => (
                       <div key={i} {...getLineProps({ line })}>
                         {line.map((token, key) => (
@@ -886,9 +821,9 @@ const ModelDetail: React.FC = () => {
                 )}
               </Highlight>
             </div>
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end mt-6">
               <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                className="px-6 py-3 bg-blue-600/20 text-blue-400 rounded-xl border border-blue-500/30 hover:bg-blue-600/30 transition-all font-medium"
                 onClick={handleCopyCode}
               >
                 Copy Code
@@ -897,6 +832,123 @@ const ModelDetail: React.FC = () => {
           </div>
         </div>
       </Dialog>
+      {/* Model Card Overlay */}
+      {showModelCard && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowModelCard(false)}>
+          <div className="relative bg-white/5 backdrop-blur-xl rounded-2xl shadow-2xl text-lg border border-white/10 p-8 w-full max-w-4xl mx-auto overflow-y-auto max-h-[70vh]" onClick={e => e.stopPropagation()}>
+            <button
+              className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all text-2xl"
+              onClick={() => setShowModelCard(false)}
+              title="Close"
+            >
+              &times;
+            </button>
+            {model.model_card ? (
+              <>
+                {/* Overview */}
+                {model.model_card.overview && (
+                  <section className="mb-8">
+                    <h2 className="text-3xl font-bold mb-4 text-white">Overview</h2>
+                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                      <div className="prose prose-invert max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                          {model.model_card.overview}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+                  </section>
+                )}
+                {/* Intended Use */}
+                {model.model_card.intended_use && model.model_card.intended_use.length > 0 && (
+                  <section className="mb-8">
+                    <h2 className="text-2xl font-bold mb-4 text-white">Intended Use</h2>
+                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                      <ul className="list-disc pl-6 space-y-2 text-gray-200">
+                        {model.model_card.intended_use.map((item: string, idx: number) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </section>
+                )}
+                {/* Limitations */}
+                {model.model_card.limitations && model.model_card.limitations.length > 0 && (
+                  <section className="mb-8">
+                    <h2 className="text-2xl font-bold mb-4 text-white">Limitations</h2>
+                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                      <ul className="list-disc pl-6 space-y-2 text-gray-200">
+                        {model.model_card.limitations.map((item: string, idx: number) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </section>
+                )}
+                {/* Training Data */}
+                {model.model_card.training_data && (
+                  <section className="mb-8">
+                    <h2 className="text-2xl font-bold mb-4 text-white">Training Data</h2>
+                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                      <div className="prose prose-invert max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                          {model.model_card.training_data}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+                  </section>
+                )}
+                {/* Evaluation */}
+                {model.model_card.evaluation && model.model_card.evaluation.length > 0 && (
+                  <section className="mb-8">
+                    <h2 className="text-2xl font-bold mb-4 text-white">Evaluation</h2>
+                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                      <ul className="list-disc pl-6 space-y-2 text-gray-200">
+                        {model.model_card.evaluation.map((item: string, idx: number) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </section>
+                )}
+                {/* Known Issues */}
+                {model.model_card.known_issues && model.model_card.known_issues.length > 0 && (
+                  <section className="mb-8">
+                    <h2 className="text-2xl font-bold mb-4 text-white">Known Issues</h2>
+                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                      <ul className="list-disc pl-6 space-y-2 text-gray-200">
+                        {model.model_card.known_issues.map((item: string, idx: number) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </section>
+                )}
+                {/* References */}
+                {model.model_card.references && model.model_card.references.length > 0 && (
+                  <section className="mb-8">
+                    <h2 className="text-2xl font-bold mb-4 text-white">References</h2>
+                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                      <ul className="list-disc pl-6 space-y-2 text-gray-200">
+                        {model.model_card.references.map((ref: string, idx: number) => (
+                          <li key={idx}>
+                            {ref.startsWith('http') ? (
+                              <a href={ref} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline hover:text-blue-300 transition-colors">{ref}</a>
+                            ) : (
+                              ref
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </section>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-12 text-gray-400">No model card information available.</div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -907,24 +959,24 @@ function renderParametersPanel(
   resetToDefaults: () => void
 ) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold">Parameters</h3>
+        <h3 className="text-xl font-bold text-white">Parameters</h3>
         <button
           onClick={resetToDefaults}
-          className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+          className="px-4 py-2 text-sm bg-blue-600/20 text-blue-400 rounded-xl border border-blue-500/30 hover:bg-blue-600/30 transition-all"
         >
           Reset to Defaults
         </button>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {parameters.map((param) => (
-          <div key={param.name} className="space-y-3 p-4 bg-neutral-800 rounded-lg">
+          <div key={param.name} className="space-y-4 p-6 bg-white/5 rounded-xl border border-white/10">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-300 capitalize">
+              <label className="text-sm font-semibold text-white capitalize">
                 {param.name.replace(/_/g, ' ')}
               </label>
-              <span className="text-sm text-blue-400 font-mono bg-neutral-700 px-2 py-1 rounded">
+              <span className="text-sm text-blue-400 font-mono bg-blue-600/20 px-3 py-1 rounded-lg border border-blue-500/30">
                 {param.value}
               </span>
             </div>
@@ -935,9 +987,9 @@ function renderParametersPanel(
               step={param.step}
               value={param.value}
               onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value))}
-              className="w-full h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer slider"
+              className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider border border-white/20"
             />
-            <p className="text-xs text-gray-400">{param.description}</p>
+            <p className="text-xs text-gray-300">{param.description}</p>
           </div>
         ))}
       </div>
