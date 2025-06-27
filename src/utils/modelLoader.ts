@@ -1,7 +1,6 @@
 import llamaImg from '../assets/models/model_llama3_1.png';
 import qwen2Img from '../assets/models/model_Qwen2-7B.png';
 import deepseekImg from '../assets/models/model_DeepSeek_MoE_18B.png';
-import gemmaImg from '../assets/models/model_Gemma.png';
 import llama4MaverickImg from '../assets/models/model_llama4_maverick.png';
 import { generatedModelData } from './generatedModelData';
 
@@ -98,9 +97,9 @@ export async function loadModelData(modelId: string): Promise<ModelData | null> 
     // Try to load from YAML files first
     const response = await fetch(`/src/aim/models/${modelId.split('/').pop()}.yaml`);
     if (response.ok) {
-      const yamlText = await response.text();
       // For now, fall back to generated data since we need a YAML parser
       // In a real implementation, you'd parse the YAML here
+      await response.text(); // Just consume the response
     }
   } catch (error) {
     console.warn(`Failed to load YAML for ${modelId}:`, error);
