@@ -66,6 +66,7 @@ const ModelDetail: React.FC = () => {
   const [codeContent, setCodeContent] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showParameters, setShowParameters] = useState(false);
   
   // Enhanced parameters with more comprehensive options
   const [parameters, setParameters] = useState<Parameter[]>([
@@ -584,18 +585,6 @@ const ModelDetail: React.FC = () => {
             >
               Model Card
             </button>
-            <button
-              onClick={() => setActiveTab('parameters')}
-              className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none relative
-                ${activeTab === 'parameters'
-                  ? 'border-blue-500 text-blue-500 bg-transparent'
-                  : 'border-transparent text-gray-400 hover:text-blue-400'}
-              `}
-              style={{ background: 'none', borderRadius: 0 }}
-            >
-              Parameters
-              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">BETA</span>
-            </button>
           </div>
 
           {/* Tab Content */}
@@ -605,13 +594,23 @@ const ModelDetail: React.FC = () => {
               <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow mb-8 md:mb-0 flex flex-col">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold">Chat</h3>
-                  <button
-                    onClick={() => setShowSettings(!showSettings)}
-                    className="text-gray-400 hover:text-white"
-                    title="Settings"
-                  >
-                    <Cog6ToothIcon className="h-6 w-6" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setShowSettings(!showSettings)}
+                      className="text-gray-400 hover:text-white"
+                      title="Settings"
+                    >
+                      <Cog6ToothIcon className="h-6 w-6" />
+                    </button>
+                    <button
+                      onClick={() => setShowParameters(true)}
+                      className="flex items-center px-3 py-1.5 bg-neutral-800 text-white rounded-lg border border-neutral-700 hover:bg-neutral-700 transition-colors text-sm font-medium relative"
+                      title="Model Parameters"
+                    >
+                      Parameters
+                      <span className="ml-2 bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">BETA</span>
+                    </button>
+                  </div>
                 </div>
                 {showSettings && renderSettings()}
                 <div className="flex flex-col space-y-4 flex-1 min-h-0">
@@ -695,6 +694,25 @@ const ModelDetail: React.FC = () => {
                     </div>
                   </div>
                 </div>
+                {/* Parameters Side Panel */}
+                {showParameters && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/40" onClick={() => setShowParameters(false)}>
+                    <div className="bg-neutral-900 border border-neutral-700 rounded-l-2xl shadow-2xl w-full max-w-md h-full p-8 overflow-y-auto relative" onClick={e => e.stopPropagation()}>
+                      <button
+                        className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                        onClick={() => setShowParameters(false)}
+                        title="Close"
+                      >
+                        <XMarkIcon className="w-6 h-6" />
+                      </button>
+                      <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <Cog6ToothIcon className="w-6 h-6 text-blue-400" />
+                        Model Parameters <span className="bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold ml-2">BETA</span>
+                      </h2>
+                      {renderParametersPanel(parameters, handleParameterChange, resetToDefaults)}
+                    </div>
+                  </div>
+                )}
               </div>
               {/* Integration Code (right) */}
               <div className="w-full md:w-[60%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg border border-neutral-800 shadow flex flex-col">
@@ -844,54 +862,6 @@ const ModelDetail: React.FC = () => {
               )}
             </div>
           )}
-
-          {activeTab === 'parameters' && (
-            <div className="bg-neutral-900 rounded-lg border border-neutral-800 shadow p-8">
-              <div className="max-w-4xl mx-auto">
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold mb-2">Model Parameters</h2>
-                  <p className="text-gray-400">Fine-tune the model's behavior for your specific use case</p>
-                </div>
-
-                {/* Parameter Sliders */}
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-semibold">Parameters</h3>
-                    <button
-                      onClick={resetToDefaults}
-                      className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                    >
-                      Reset to Defaults
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {parameters.map((param) => (
-                      <div key={param.name} className="space-y-3 p-4 bg-neutral-800 rounded-lg">
-                        <div className="flex items-center justify-between">
-                          <label className="text-sm font-medium text-gray-300 capitalize">
-                            {param.name.replace(/_/g, ' ')}
-                          </label>
-                          <span className="text-sm text-blue-400 font-mono bg-neutral-700 px-2 py-1 rounded">
-                            {param.value}
-                          </span>
-                        </div>
-                        <input
-                          type="range"
-                          min={param.min}
-                          max={param.max}
-                          step={param.step}
-                          value={param.value}
-                          onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value))}
-                          className="w-full h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer slider"
-                        />
-                        <p className="text-xs text-gray-400">{param.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
       <Dialog open={isCodeModalOpen} onClose={() => setIsCodeModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">
@@ -931,6 +901,50 @@ const ModelDetail: React.FC = () => {
     </div>
   );
 };
+
+function renderParametersPanel(
+  parameters: Parameter[],
+  handleParameterChange: (paramName: string, value: number) => void,
+  resetToDefaults: () => void
+) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-xl font-semibold">Parameters</h3>
+        <button
+          onClick={resetToDefaults}
+          className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+        >
+          Reset to Defaults
+        </button>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {parameters.map((param) => (
+          <div key={param.name} className="space-y-3 p-4 bg-neutral-800 rounded-lg">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-300 capitalize">
+                {param.name.replace(/_/g, ' ')}
+              </label>
+              <span className="text-sm text-blue-400 font-mono bg-neutral-700 px-2 py-1 rounded">
+                {param.value}
+              </span>
+            </div>
+            <input
+              type="range"
+              min={param.min}
+              max={param.max}
+              step={param.step}
+              value={param.value}
+              onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value))}
+              className="w-full h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer slider"
+            />
+            <p className="text-xs text-gray-400">{param.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default ModelDetail;
 
