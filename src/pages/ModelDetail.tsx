@@ -608,7 +608,6 @@ const ModelDetail: React.FC = () => {
                       title="Model Parameters"
                     >
                       Parameters
-                      <span className="ml-2 bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">BETA</span>
                     </button>
                   </div>
                 </div>
@@ -707,7 +706,7 @@ const ModelDetail: React.FC = () => {
                       </button>
                       <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                         <Cog6ToothIcon className="w-6 h-6 text-blue-400" />
-                        Model Parameters <span className="bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold ml-2">BETA</span>
+                        Model Parameters
                       </h2>
                       {renderParametersPanel(parameters, handleParameterChange, resetToDefaults)}
                     </div>
