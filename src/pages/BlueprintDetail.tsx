@@ -119,7 +119,7 @@ const blueprints = [
 const BlueprintDetail: React.FC = () => {
   const { blueprintId } = useParams<{ blueprintId: string }>();
   const blueprint = blueprints.find(bp => bp.id === blueprintId);
-  const [activeTab, setActiveTab] = useState<'card' | 'aims' | 'interact'>('card');
+  const [activeTab, setActiveTab] = useState<'card' | 'interact'>('card');
   const [markdownContent, setMarkdownContent] = useState<string>('');
   
   // CodeGen specific state
@@ -597,199 +597,58 @@ main();`
     return `Based on the OPEA Framework Technical Specifications, here's what I found about "${query}":\n\n${context}\n\nThis information comes from our internal technical documentation. Is there anything specific about these details you'd like me to clarify?`;
   };
 
-  const renderSettings = () => (
-    <div className="bg-neutral-800 rounded-lg p-4 mb-4 border border-neutral-700">
-      <h4 className="text-sm font-semibold mb-3 text-blue-400">Knowledge Base Configuration</h4>
-      <div className="space-y-3">
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Knowledge Base Type</label>
-          <select
-            value={knowledgeBaseConfig.type}
-            onChange={(e) => setKnowledgeBaseConfig(prev => ({ ...prev, type: e.target.value as any }))}
-            className="w-full bg-neutral-700 text-white rounded px-3 py-2 text-sm border border-neutral-600 focus:border-blue-500 focus:outline-none"
-          >
-            <option value="vector">Vector Database</option>
-            <option value="document">Document Store</option>
-            <option value="database">SQL Database</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Connection String</label>
-          <input
-            type="text"
-            value={knowledgeBaseConfig.connectionString}
-            onChange={(e) => setKnowledgeBaseConfig(prev => ({ ...prev, connectionString: e.target.value }))}
-            className="w-full bg-neutral-700 text-white rounded px-3 py-2 text-sm border border-neutral-600 focus:border-blue-500 focus:outline-none"
-            placeholder="mongodb://localhost:27017/chatqna"
-          />
-        </div>
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Embedding Model</label>
-          <input
-            type="text"
-            value={knowledgeBaseConfig.embeddingModel}
-            onChange={(e) => setKnowledgeBaseConfig(prev => ({ ...prev, embeddingModel: e.target.value }))}
-            className="w-full bg-neutral-700 text-white rounded px-3 py-2 text-sm border border-neutral-600 focus:border-blue-500 focus:outline-none"
-            placeholder="text-embedding-ada-002"
-          />
-        </div>
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Similarity Threshold</label>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.1"
-            value={knowledgeBaseConfig.similarityThreshold}
-            onChange={(e) => setKnowledgeBaseConfig(prev => ({ ...prev, similarityThreshold: parseFloat(e.target.value) }))}
-            className="w-full"
-          />
-          <span className="text-xs text-gray-400">{knowledgeBaseConfig.similarityThreshold}</span>
-        </div>
-      </div>
-    </div>
-  );
+  const getWelcomeMessage = () => {
+    if (!blueprint) return '';
+    
+    switch (blueprint.id) {
+      case 'chatqna':
+        return 'Welcome to ChatQnA! I\'m a RAG-powered chatbot that can answer questions using knowledge retrieval. How can I help you today?';
+      case 'agentqna':
+        return 'Welcome to AgentQnA! I\'m a multi-agent system that can coordinate specialized agents to answer your questions. What would you like to know?';
+      case 'codegen':
+        return 'Welcome to CodeGen! I can help you generate code in various programming languages. What would you like me to create?';
+      case 'codetrans':
+        return 'Welcome to CodeTrans! I can translate code between different programming languages. What code would you like me to translate?';
+      case 'searchqna':
+        return 'Welcome to SearchQnA! I can search the web and provide you with up-to-date information. What would you like me to search for?';
+      case 'docsum':
+        return 'Welcome to DocSum! I can create summaries of different types of text. What would you like me to summarize?';
+      case 'translation':
+        return 'Welcome to Translation! I can translate text between different languages. What would you like me to translate?';
+      case 'avatarchatbot':
+        return 'Welcome to Avatar Chatbot! I\'m a conversational AI with a virtual avatar. How can I assist you today?';
+      default:
+        return 'Welcome! How can I help you today?';
+    }
+  };
 
-  // Helper to map functional microservice names to logos (best fit)
   const getFunctionalLogoByName = (name: string) => {
-    const n = name.toLowerCase();
-    if (n.includes('retriev')) return functionalRetriever;
-    if (n.includes('rerank')) return functionalReranking;
-    if (n.includes('guardrail')) return functionalGuardrails;
-    if (n.includes('finetune')) return functionalFinetuning;
-    if (n.includes('embedding')) return functionalEmbeddings;
-    if (n.includes('dataprep') || n.includes('data preparation')) return functionalDataprep;
-    if (n.includes('asr')) return functionalAsr;
-    if (n.includes('animation')) return functionalAnimation;
-    if (n.includes('agent') || n.includes('orchestrator')) return functionalAgent;
-    if (n.includes('quality')) return functionalGuardrails;
-    if (n.includes('manager')) return functionalAgent;
-    if (n.includes('processing')) return functionalDataprep;
-    if (n.includes('context')) return functionalEmbeddings;
-    if (n.includes('synthesis')) return functionalFinetuning;
-    if (n.includes('validation')) return functionalReranking;
-    if (n.includes('adaptation')) return functionalFinetuning;
-    return functionalAgent;
+    // Map functional service names to their logo images
+    const logoMap: Record<string, string> = {
+      'Data Preparation Service': functionalDataprep,
+      'Knowledge Retriever Service': functionalRetriever,
+      'Embedding Generation Service': functionalEmbeddings,
+      'Agent Orchestrator': functionalAgent,
+      'Task Decomposition Service': functionalAgent,
+      'Response Aggregator': functionalAgent,
+      'Code Generation Service': functionalAgent,
+      'Code Translation Service': functionalAgent,
+      'Search Integration Service': functionalRetriever,
+      'Document Processing Service': functionalDataprep,
+      'Translation Service': functionalAgent,
+      'Avatar Integration Service': functionalAnimation,
+      'Speech Recognition Service': functionalAsr,
+      'Fine-tuning Service': functionalFinetuning,
+      'Guardrails Service': functionalGuardrails,
+      'Reranking Service': functionalReranking
+    };
+    
+    return logoMap[name] || functionalAgent; // Default fallback
   };
 
-  // Helper to generate service ID for routing
   const getServiceId = (serviceName: string): string => {
-    const name = serviceName.toLowerCase();
-    if (name.includes('data preparation')) return 'data-preparation-service';
-    if (name.includes('knowledge retriever')) return 'knowledge-retriever-service';
-    if (name.includes('embedding generation')) return 'embedding-generation-service';
-    if (name.includes('agent orchestrator')) return 'agent-orchestrator';
-    if (name.includes('task decomposition')) return 'task-decomposition-service';
-    if (name.includes('response aggregator')) return 'response-aggregator';
-    if (name.includes('project context')) return 'project-context-service';
-    if (name.includes('code review')) return 'code-review-service';
-    if (name.includes('best practices')) return 'best-practices-service';
-    if (name.includes('language detection')) return 'language-detection-service';
-    if (name.includes('code optimization')) return 'code-optimization-service';
-    if (name.includes('translation validation')) return 'translation-validation-service';
-    if (name.includes('query enhancement')) return 'query-enhancement-service';
-    if (name.includes('result synthesis')) return 'result-synthesis-service';
-    if (name.includes('source validation')) return 'source-validation-service';
-    if (name.includes('document processing')) return 'document-processing-service';
-    if (name.includes('key point extraction')) return 'key-point-extraction-service';
-    if (name.includes('summary quality')) return 'summary-quality-service';
-    if (name.includes('language pair')) return 'language-pair-service';
-    if (name.includes('quality assurance')) return 'quality-assurance-service';
-    if (name.includes('cultural adaptation')) return 'cultural-adaptation-service';
-    if (name.includes('avatar animation')) return 'avatar-animation-service';
-    if (name.includes('interaction manager')) return 'interaction-manager';
-    if (name.includes('multi-modal')) return 'multi-modal-service';
-    if (name.includes('business logic')) return 'business-logic-service';
-    if (name.includes('data service')) return 'data-service';
-    if (name.includes('integration service')) return 'integration-service';
-    
-    // Fallback: convert to kebab case
-    return name.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  };
-
-  const renderAimsContent = () => {
-    const microservices = getMicroservicesForBlueprint();
-    // Assign logos by name for functional microservices
-    const functionalWithLogos = microservices.functional.map((svc) => ({
-      ...svc,
-      logo: getFunctionalLogoByName(svc.name)
-    }));
-    
-    return (
-      <div className="space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full items-stretch">
-          <div className="space-y-4">
-            {/* Removed: <h3 className="text-lg font-semibold text-white">Models Inference Endpoints</h3> */}
-            <div className="space-y-6">
-              {microservices.models.map((model, index) => (
-                <Link
-                  key={index}
-                  to={`/models/${model.name === 'Qwen2 7B' ? 'Qwen/Qwen2-7B-Instruct' : model.name.toLowerCase().replace(/\s+/g, '-')}`}
-                  className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-10 flex flex-row items-center hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full"
-                >
-                  <img
-                    src={model.logo}
-                    alt={model.name}
-                    className="w-36 h-36 rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0 object-cover"
-                  />
-                  <div className="flex-1 min-w-0 flex flex-col justify-center">
-                    <h4 className="font-medium text-white text-xl mb-2">{model.name}</h4>
-                    <div className="flex space-x-2 mb-3">
-                      {model.tags?.map((tag, tagIdx) => (
-                        <span
-                          key={tagIdx}
-                          className={`px-2 py-1 rounded text-xs ${
-                            tagIdx === 0 ? 'bg-green-900/50 text-green-200' :
-                            tagIdx === 1 ? 'bg-purple-900/50 text-purple-200' :
-                            'bg-orange-900/50 text-orange-200'
-                          }`}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <p className="text-sm text-neutral-300 line-clamp-3">AI model for inference and generation</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            {/* Functional Microservices */}
-            <div className="space-y-6">
-              {functionalWithLogos.map((service, index) => (
-                <Link
-                  key={index}
-                  to={`/services/${getServiceId(service.name)}`}
-                  className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-10 flex flex-row items-center hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full"
-                >
-                  <img src={service.logo} alt={service.name} className="w-36 h-36 rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0 object-cover" />
-                  <div className="flex-1 min-w-0 flex flex-col justify-center">
-                    <h4 className="font-medium text-white text-xl mb-2">{service.name}</h4>
-                    <div className="flex space-x-2 mb-3">
-                      {service.tags?.map((tag, tagIdx) => (
-                        <span
-                          key={tagIdx}
-                          className={`px-2 py-1 rounded text-xs ${
-                            tagIdx === 0 ? 'bg-green-900/50 text-green-200' :
-                            tagIdx === 1 ? 'bg-purple-900/50 text-purple-200' :
-                            'bg-orange-900/50 text-orange-200'
-                          }`}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <p className="text-sm text-neutral-300 line-clamp-3">{service.description}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    // Convert service name to URL-friendly format
+    return serviceName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   };
 
   const getArchitectureImage = () => {
@@ -814,56 +673,6 @@ main();`
         return avatarchatbotArchitecture;
       default:
         return null;
-    }
-  };
-
-  const getInputPlaceholder = () => {
-    if (!blueprint) return "Type your message...";
-    
-    switch (blueprint.id) {
-      case 'chatqna':
-        return "Ask a question about your knowledge base...";
-      case 'agentqna':
-        return "Ask a question for the multi-agent system...";
-      case 'codegen':
-        return "Describe the code you want to generate...";
-      case 'codetrans':
-        return "Enter code to translate between languages...";
-      case 'searchqna':
-        return "Ask a question that requires web search...";
-      case 'docsum':
-        return "Enter text or document to summarize...";
-      case 'translation':
-        return "Enter text to translate...";
-      case 'avatarchatbot':
-        return "Chat with the virtual avatar...";
-      default:
-        return "Type your message...";
-    }
-  };
-
-  const getWelcomeMessage = () => {
-    if (!blueprint) return '';
-    
-    switch (blueprint.id) {
-      case 'chatqna':
-        return 'Welcome to ChatQnA! I\'m a RAG-powered chatbot that can answer questions using knowledge retrieval. How can I help you today?';
-      case 'agentqna':
-        return 'Welcome to AgentQnA! I\'m a multi-agent system that can coordinate specialized agents to answer your questions. What would you like to know?';
-      case 'codegen':
-        return 'Welcome to CodeGen! I can help you generate code in various programming languages. What would you like me to create?';
-      case 'codetrans':
-        return 'Welcome to CodeTrans! I can translate code between different programming languages. What code would you like me to translate?';
-      case 'searchqna':
-        return 'Welcome to SearchQnA! I can search the web and provide you with up-to-date information. What would you like me to search for?';
-      case 'docsum':
-        return 'Welcome to DocSum! I can create summaries of different types of text. What would you like me to summarize?';
-      case 'translation':
-        return 'Welcome to Translation! I can translate text between different languages. What would you like me to translate?';
-      case 'avatarchatbot':
-        return 'Welcome to Avatar Chatbot! I\'m a conversational AI with a virtual avatar. How can I assist you today?';
-      default:
-        return 'Welcome! How can I help you today?';
     }
   };
 
@@ -907,59 +716,66 @@ main();`
         };
       case 'codegen':
         return {
-          models: [modelPool[1]],
+          models: [modelPool[0], modelPool[1]],
           functional: [
-            { name: 'Project Context Service', description: 'Maintains an understanding of the project structure and dependencies for context-aware code generation.', logo: getFunctionalLogoByName('Project Context'), tags: ['Context', 'Analysis'] },
-            { name: 'Code Validation Service', description: 'Performs static analysis and validation on generated code to ensure correctness and quality.', logo: getFunctionalLogoByName('Code Validation'), tags: ['Validation', 'QA'] }
+            { name: 'Code Generation Service', description: 'Generates code based on natural language descriptions and requirements.', logo: getFunctionalLogoByName('Code Generation Service'), tags: ['Code Generation', 'Development'] },
+            { name: 'Code Review Service', description: 'Analyzes generated code for best practices, security, and quality.', logo: getFunctionalLogoByName('Code Review Service'), tags: ['Code Review', 'Quality Assurance'] },
+            { name: 'Best Practices Service', description: 'Ensures generated code follows industry standards and best practices.', logo: getFunctionalLogoByName('Best Practices Service'), tags: ['Best Practices', 'Standards'] }
           ]
         };
       case 'codetrans':
         return {
-          models: [modelPool[3]],
+          models: [modelPool[0], modelPool[1]],
           functional: [
-            { name: 'Language Detection Service', description: 'Automatically detects the source programming language of the input code snippet.', logo: getFunctionalLogoByName('Language Detection'), tags: ['Detection', 'Analysis'] },
-            { name: 'Code Optimization Service', description: "Optimizes translated code for the target language's best practices and idioms.", logo: getFunctionalLogoByName('Optimization'), tags: ['Refinement', 'Best Practices'] },
-            { name: 'Translation Validation Service', description: 'Validates translated code for syntactical correctness and functional equivalence.', logo: getFunctionalLogoByName('Translation Validation'), tags: ['Validation', 'Testing'] }
+            { name: 'Language Detection Service', description: 'Automatically detects the programming language of input code.', logo: getFunctionalLogoByName('Language Detection Service'), tags: ['Language Detection', 'Analysis'] },
+            { name: 'Code Translation Service', description: 'Translates code between different programming languages while preserving functionality.', logo: getFunctionalLogoByName('Code Translation Service'), tags: ['Code Translation', 'Transpilation'] },
+            { name: 'Code Optimization Service', description: 'Optimizes translated code for performance and readability.', logo: getFunctionalLogoByName('Code Optimization Service'), tags: ['Optimization', 'Performance'] },
+            { name: 'Translation Validation Service', description: 'Validates that translated code maintains the original functionality.', logo: getFunctionalLogoByName('Translation Validation Service'), tags: ['Validation', 'Testing'] }
           ]
         };
       case 'searchqna':
         return {
-          models: [modelPool[0], modelPool[1]],
+          models: [modelPool[2], modelPool[3]],
           functional: [
-            { name: 'Query Enhancement Service', description: 'Rewrites and expands user queries to improve search engine result relevance and accuracy.', logo: getFunctionalLogoByName('Query Enhancement'), tags: ['Query Processing', 'NLP'] },
-            { name: 'Web Search Service', description: 'Interfaces with external search APIs (e.g., Google, Bing) to retrieve up-to-date web results.', logo: getFunctionalLogoByName('Web Search'), tags: ['Search', 'API'] }
+            { name: 'Query Enhancement Service', description: 'Enhances user queries for better search results and context understanding.', logo: getFunctionalLogoByName('Query Enhancement Service'), tags: ['Query Enhancement', 'NLP'] },
+            { name: 'Search Integration Service', description: 'Integrates with external search engines and APIs for comprehensive results.', logo: getFunctionalLogoByName('Search Integration Service'), tags: ['Search Integration', 'APIs'] },
+            { name: 'Result Synthesis Service', description: 'Synthesizes and ranks search results to provide coherent answers.', logo: getFunctionalLogoByName('Result Synthesis Service'), tags: ['Result Synthesis', 'Ranking'] },
+            { name: 'Source Validation Service', description: 'Validates and verifies the credibility of search result sources.', logo: getFunctionalLogoByName('Source Validation Service'), tags: ['Source Validation', 'Credibility'] }
           ]
         };
       case 'docsum':
         return {
-          models: [modelPool[2]],
+          models: [modelPool[2], modelPool[3]],
           functional: [
-            { name: 'Document Processing Service', description: 'Handles various document formats (PDF, DOCX, etc.) and extracts raw text content.', logo: getFunctionalLogoByName('Document Processing'), tags: ['Parsing', 'Extraction'] },
-            { name: 'Key Point Extraction Service', description: 'Identifies and extracts the most important sentences and concepts from the text.', logo: getFunctionalLogoByName('Key Point Extraction'), tags: ['NLP', 'Analysis'] }
+            { name: 'Document Processing Service', description: 'Processes and prepares documents for summarization analysis.', logo: getFunctionalLogoByName('Document Processing Service'), tags: ['Document Processing', 'Preprocessing'] },
+            { name: 'Key Point Extraction Service', description: 'Extracts key points and important information from documents.', logo: getFunctionalLogoByName('Key Point Extraction Service'), tags: ['Key Extraction', 'Analysis'] },
+            { name: 'Summary Quality Service', description: 'Ensures generated summaries are accurate, coherent, and comprehensive.', logo: getFunctionalLogoByName('Summary Quality Service'), tags: ['Quality Assurance', 'Validation'] }
           ]
         };
       case 'translation':
         return {
-          models: [modelPool[3], modelPool[2]],
+          models: [modelPool[2], modelPool[3]],
           functional: [
-            { name: 'Language Pair Service', description: 'Manages and selects the optimal translation models for specific language pairs.', logo: getFunctionalLogoByName('Language Pair'), tags: ['Model Management', 'Languages'] },
-            { name: 'Cultural Adaptation Service', description: 'Adapts translations for cultural context, localization, and nuanced expressions.', logo: getFunctionalLogoByName('Cultural Adaptation'), tags: ['Localization', 'Context'] }
+            { name: 'Language Pair Service', description: 'Manages language pair configurations and translation models.', logo: getFunctionalLogoByName('Language Pair Service'), tags: ['Language Pairs', 'Configuration'] },
+            { name: 'Translation Service', description: 'Performs high-quality text translation between supported languages.', logo: getFunctionalLogoByName('Translation Service'), tags: ['Translation', 'NLP'] },
+            { name: 'Quality Assurance Service', description: 'Ensures translation quality and accuracy through validation checks.', logo: getFunctionalLogoByName('Quality Assurance Service'), tags: ['Quality Assurance', 'Validation'] },
+            { name: 'Cultural Adaptation Service', description: 'Adapts translations to cultural context and local preferences.', logo: getFunctionalLogoByName('Cultural Adaptation Service'), tags: ['Cultural Adaptation', 'Localization'] }
           ]
         };
       case 'avatarchatbot':
         return {
-          models: [modelPool[0]],
+          models: [modelPool[2], modelPool[3]],
           functional: [
-            { name: 'Avatar Animation Service', description: 'Generates real-time avatar animations, lip-sync, and facial expressions from text.', logo: getFunctionalLogoByName('Avatar Animation'), tags: ['Animation', 'Graphics'] },
-            { name: 'Text-to-Speech Service', description: 'Synthesizes natural-sounding speech for the avatar from the chatbot\'s text responses.', logo: getFunctionalLogoByName('Text-to-Speech'), tags: ['TTS', 'Audio'] }
+            { name: 'Avatar Animation Service', description: 'Generates and manages avatar animations and expressions.', logo: getFunctionalLogoByName('Avatar Animation Service'), tags: ['Animation', 'Visual AI'] },
+            { name: 'Interaction Manager', description: 'Manages user interactions and conversation flow with the avatar.', logo: getFunctionalLogoByName('Interaction Manager'), tags: ['Interaction Management', 'Conversation'] },
+            { name: 'Multi-modal Service', description: 'Handles multi-modal interactions including text, voice, and visual elements.', logo: getFunctionalLogoByName('Multi-modal Service'), tags: ['Multi-modal', 'Integration'] },
+            { name: 'Speech Recognition Service', description: 'Converts speech to text for voice-based interactions.', logo: getFunctionalLogoByName('Speech Recognition Service'), tags: ['Speech Recognition', 'ASR'] }
           ]
         };
       default:
         return {
-          models: [modelPool[0]],
-          functional: [
-            { name: 'Agent Orchestrator', description: 'Coordinates agent workflows and manages agent lifecycles.', logo: getFunctionalLogoByName('Agent Orchestrator'), tags: ['Orchestration', 'Multi-Agent'] }
-          ]
+          models: [],
+          functional: []
         };
     }
   };
@@ -1031,34 +847,128 @@ main();`
     );
   };
 
+  const renderSettings = () => (
+    <div className="bg-neutral-800 rounded-lg p-4 mb-4 border border-neutral-700">
+      <h4 className="text-sm font-semibold mb-3 text-blue-400">Knowledge Base Configuration</h4>
+      <div className="space-y-3">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Knowledge Base Type</label>
+          <select
+            value={knowledgeBaseConfig.type}
+            onChange={(e) => setKnowledgeBaseConfig(prev => ({ ...prev, type: e.target.value as any }))}
+            className="w-full bg-neutral-700 text-white rounded px-3 py-2 text-sm border border-neutral-600 focus:border-blue-500 focus:outline-none"
+          >
+            <option value="vector">Vector Database</option>
+            <option value="document">Document Store</option>
+            <option value="database">SQL Database</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Connection String</label>
+          <input
+            type="text"
+            value={knowledgeBaseConfig.connectionString}
+            onChange={(e) => setKnowledgeBaseConfig(prev => ({ ...prev, connectionString: e.target.value }))}
+            className="w-full bg-neutral-700 text-white rounded px-3 py-2 text-sm border border-neutral-600 focus:border-blue-500 focus:outline-none"
+            placeholder="mongodb://localhost:27017/chatqna"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Embedding Model</label>
+          <input
+            type="text"
+            value={knowledgeBaseConfig.embeddingModel}
+            onChange={(e) => setKnowledgeBaseConfig(prev => ({ ...prev, embeddingModel: e.target.value }))}
+            className="w-full bg-neutral-700 text-white rounded px-3 py-2 text-sm border border-neutral-600 focus:border-blue-500 focus:outline-none"
+            placeholder="text-embedding-ada-002"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Similarity Threshold</label>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={knowledgeBaseConfig.similarityThreshold}
+            onChange={(e) => setKnowledgeBaseConfig(prev => ({ ...prev, similarityThreshold: parseFloat(e.target.value) }))}
+            className="w-full"
+          />
+          <span className="text-xs text-gray-400">{knowledgeBaseConfig.similarityThreshold}</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const getInputPlaceholder = () => {
+    if (!blueprint) return '';
+    
+    switch (blueprint.id) {
+      case 'chatqna':
+        return 'Ask a question about the OPEA Framework...';
+      case 'agentqna':
+        return 'Ask a question about the multi-agent system...';
+      case 'codegen':
+        return 'Describe the code you want to generate...';
+      case 'codetrans':
+        return 'Enter the code you want to translate...';
+      case 'searchqna':
+        return 'Enter a search query...';
+      case 'docsum':
+        return 'Enter text to summarize...';
+      case 'translation':
+        return 'Enter text to translate...';
+      case 'avatarchatbot':
+        return 'Ask a question about the avatar chatbot...';
+      default:
+        return 'Ask a question about the system...';
+    }
+  };
+
   if (!blueprint) {
     return (
-      <div className="min-h-screen bg-neutral-900 text-white flex flex-col items-center justify-center">
-        <div className="text-2xl font-bold mb-4">Blueprint not found</div>
-        <Link to="/blueprints" className="text-blue-400 underline">Back to Blueprints</Link>
+      <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex flex-col">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white mb-4">Blueprint Not Found</h1>
+            <p className="text-gray-400">The requested blueprint could not be found.</p>
+            <Link to="/blueprints" className="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+              Back to Blueprints
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-900 text-white font-sans flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex flex-col">
       {/* Banner */}
       <div className="relative w-full h-56 md:h-72 lg:h-80 overflow-hidden">
         <img src={bannerWave} alt="Banner" className="w-full h-full object-cover" />
+        {/* Navigation overlay */}
         <nav className="absolute top-0 left-0 w-full flex justify-between items-center pt-8 px-8 z-10">
           <PlaygroundLogo />
           <div className="flex gap-16">
-            <Link to="/models" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Models</Link>
-            <Link to="/blueprints" className="text-2xl font-bold transition relative px-2 opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-full after:bg-red-500">Blueprints</Link>
-            <Link to="/gpu-cloud" className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
+            <Link to="/models" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Models</Link>
+            <Link to="/blueprints" className="text-2xl font-bold text-white transition relative px-2 opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-full after:bg-red-500">Blueprints</Link>
+            <Link to="/gpu-cloud" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
           </div>
         </nav>
-        
-        {/* Left-aligned glassy blueprint logo/name overlay */}
+        {/* Left-aligned glassy blueprint card overlay */}
         <div className="absolute left-8 top-32 z-10 bg-white/10 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg p-3 flex flex-col items-center w-40">
-          <img src={blueprint.image} alt={blueprint.name} className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl mb-2 border border-neutral-800" />
+          {blueprint.image && (
+            <img
+              src={blueprint.image}
+              alt={blueprint.name + ' Logo'}
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl mb-2 border border-neutral-800"
+            />
+          )}
           <div className="text-xs font-bold text-white text-center drop-shadow-lg">AI Blueprint</div>
           <div className="text-base font-extrabold text-center text-white drop-shadow-lg">{blueprint.name}</div>
+          {blueprint.description && (
+            <div className="text-xs text-white/80 text-center mt-1 max-w-[140px] truncate">{blueprint.description}</div>
+          )}
         </div>
       </div>
 
@@ -1079,17 +989,6 @@ main();`
               Blueprint Card
             </button>
             <button
-              onClick={() => setActiveTab('aims')}
-              className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
-                ${activeTab === 'aims'
-                  ? 'border-blue-500 text-blue-500 bg-transparent'
-                  : 'border-transparent text-gray-400 hover:text-blue-400'}
-              `}
-              style={{ background: 'none', borderRadius: 0 }}
-            >
-              AIMs
-            </button>
-            <button
               onClick={() => setActiveTab('interact')}
               className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
                 ${activeTab === 'interact'
@@ -1104,12 +1003,6 @@ main();`
           </div>
 
           {/* Tab Content */}
-          {activeTab === 'aims' && (
-            <div className="w-full">
-              {renderAimsContent()}
-            </div>
-          )}
-          
           {activeTab === 'card' && (
             <div className="space-y-8">
               {/* Architecture Overview */}
@@ -1131,6 +1024,81 @@ main();`
                 <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                   {markdownContent}
                 </ReactMarkdown>
+              </div>
+
+              {/* Microservices Section */}
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-white">Components</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full items-stretch">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-white">Model Endpoints</h3>
+                    <div className="space-y-6">
+                      {getMicroservicesForBlueprint().models.map((model, index) => (
+                        <Link
+                          key={index}
+                          to={`/models/${model.name === 'Qwen2 7B' ? 'Qwen/Qwen2-7B-Instruct' : model.name.toLowerCase().replace(/\s+/g, '-')}`}
+                          className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-10 flex flex-row items-center hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full"
+                        >
+                          <img
+                            src={model.logo}
+                            alt={model.name}
+                            className="w-36 h-36 rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0 object-cover"
+                          />
+                          <div className="flex-1 min-w-0 flex flex-col justify-center">
+                            <h4 className="font-medium text-white text-xl mb-2">{model.name}</h4>
+                            <div className="flex space-x-2 mb-3">
+                              {model.tags?.map((tag, tagIdx) => (
+                                <span
+                                  key={tagIdx}
+                                  className={`px-2 py-1 rounded text-xs ${
+                                    tagIdx === 0 ? 'bg-green-900/50 text-green-200' :
+                                    tagIdx === 1 ? 'bg-purple-900/50 text-purple-200' :
+                                    'bg-orange-900/50 text-orange-200'
+                                  }`}
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                            <p className="text-sm text-neutral-300 line-clamp-3">AI model for inference and generation</p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-white">Functional Microservices</h3>
+                    <div className="space-y-6">
+                      {getMicroservicesForBlueprint().functional.map((service, index) => (
+                        <div
+                          key={index}
+                          className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-10 flex flex-row items-center h-[280px] w-full"
+                        >
+                          <img src={getFunctionalLogoByName(service.name)} alt={service.name} className="w-36 h-36 rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0 object-cover" />
+                          <div className="flex-1 min-w-0 flex flex-col justify-center">
+                            <h4 className="font-medium text-white text-xl mb-2">{service.name}</h4>
+                            <div className="flex space-x-2 mb-3">
+                              {service.tags?.map((tag, tagIdx) => (
+                                <span
+                                  key={tagIdx}
+                                  className={`px-2 py-1 rounded text-xs ${
+                                    tagIdx === 0 ? 'bg-green-900/50 text-green-200' :
+                                    tagIdx === 1 ? 'bg-purple-900/50 text-purple-200' :
+                                    'bg-orange-900/50 text-orange-200'
+                                  }`}
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                            <p className="text-sm text-neutral-300 line-clamp-3">{service.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -1280,7 +1248,7 @@ main();`
                       {/* Generation Settings */}
                       <div className="bg-neutral-800 rounded-lg p-4 border border-neutral-700">
                         <h4 className="text-sm font-semibold mb-3 text-blue-400">Generation Settings</h4>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-4">
                           <div>
                             <label className="block text-xs text-gray-400 mb-1">Temperature</label>
                             <input
@@ -1292,8 +1260,67 @@ main();`
                               onChange={(e) => setGenerationSettings(prev => ({ ...prev, temperature: parseFloat(e.target.value) }))}
                               className="w-full"
                             />
-                            <span className="text-xs text-gray-400">{generationSettings.temperature}</span>
+                            <div className="flex justify-between text-xs text-gray-400">
+                              <span>0.0 (Deterministic)</span>
+                              <span>{generationSettings.temperature}</span>
+                              <span>2.0 (Creative)</span>
+                            </div>
                           </div>
+                          
+                          <div>
+                            <label className="block text-xs text-gray-400 mb-1">Top P</label>
+                            <input
+                              type="range"
+                              min="0"
+                              max="1"
+                              step="0.1"
+                              value={generationSettings.topP}
+                              onChange={(e) => setGenerationSettings(prev => ({ ...prev, topP: parseFloat(e.target.value) }))}
+                              className="w-full"
+                            />
+                            <div className="flex justify-between text-xs text-gray-400">
+                              <span>0.0 (Focused)</span>
+                              <span>{generationSettings.topP}</span>
+                              <span>1.0 (Diverse)</span>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-xs text-gray-400 mb-1">Frequency Penalty</label>
+                            <input
+                              type="range"
+                              min="-2"
+                              max="2"
+                              step="0.1"
+                              value={generationSettings.frequencyPenalty}
+                              onChange={(e) => setGenerationSettings(prev => ({ ...prev, frequencyPenalty: parseFloat(e.target.value) }))}
+                              className="w-full"
+                            />
+                            <div className="flex justify-between text-xs text-gray-400">
+                              <span>-2.0 (Repeat)</span>
+                              <span>{generationSettings.frequencyPenalty}</span>
+                              <span>2.0 (Avoid)</span>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-xs text-gray-400 mb-1">Presence Penalty</label>
+                            <input
+                              type="range"
+                              min="-2"
+                              max="2"
+                              step="0.1"
+                              value={generationSettings.presencePenalty}
+                              onChange={(e) => setGenerationSettings(prev => ({ ...prev, presencePenalty: parseFloat(e.target.value) }))}
+                              className="w-full"
+                            />
+                            <div className="flex justify-between text-xs text-gray-400">
+                              <span>-2.0 (Stay)</span>
+                              <span>{generationSettings.presencePenalty}</span>
+                              <span>2.0 (Explore)</span>
+                            </div>
+                          </div>
+                          
                           <div>
                             <label className="block text-xs text-gray-400 mb-1">Max Tokens</label>
                             <input
@@ -1305,7 +1332,11 @@ main();`
                               onChange={(e) => setGenerationSettings(prev => ({ ...prev, maxTokens: parseInt(e.target.value) }))}
                               className="w-full"
                             />
-                            <span className="text-xs text-gray-400">{generationSettings.maxTokens}</span>
+                            <div className="flex justify-between text-xs text-gray-400">
+                              <span>100</span>
+                              <span>{generationSettings.maxTokens}</span>
+                              <span>2000</span>
+                            </div>
                           </div>
                         </div>
                       </div>

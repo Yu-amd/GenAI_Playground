@@ -70,19 +70,10 @@ const ModelDetail: React.FC = () => {
   // Enhanced parameters with more comprehensive options
   const [parameters, setParameters] = useState<Parameter[]>([
     { name: 'temperature', value: 0.7, type: 'number', description: 'Controls randomness in the output (0.0 = deterministic, 2.0 = very random)', min: 0, max: 2, step: 0.1 },
-    { name: 'max_tokens', value: 2048, type: 'number', description: 'Maximum number of tokens to generate', min: 1, max: 8192, step: 1 },
-    { name: 'top_p', value: 0.9, type: 'number', description: 'Controls diversity via nucleus sampling (0.1 = focused, 1.0 = diverse)', min: 0.1, max: 1, step: 0.1 },
-    { name: 'top_k', value: 40, type: 'number', description: 'Limits the number of tokens considered for each step', min: 1, max: 100, step: 1 },
+    { name: 'top_p', value: 0.9, type: 'number', description: 'Controls diversity via nucleus sampling (0.0 = focused, 1.0 = diverse)', min: 0, max: 1, step: 0.1 },
     { name: 'frequency_penalty', value: 0.0, type: 'number', description: 'Reduces repetition of frequent tokens (-2.0 to 2.0)', min: -2, max: 2, step: 0.1 },
     { name: 'presence_penalty', value: 0.0, type: 'number', description: 'Encourages model to talk about new topics (-2.0 to 2.0)', min: -2, max: 2, step: 0.1 },
-    { name: 'repeat_penalty', value: 1.1, type: 'number', description: 'Penalty for repeating tokens (1.0 = no penalty, 2.0 = strong penalty)', min: 1, max: 2, step: 0.1 },
-    { name: 'length_penalty', value: 1.0, type: 'number', description: 'Penalty for response length (0.0 = prefer short, 2.0 = prefer long)', min: 0, max: 2, step: 0.1 },
-    { name: 'min_p', value: 0.05, type: 'number', description: 'Minimum probability threshold for token selection', min: 0, max: 1, step: 0.01 },
-    { name: 'tfs', value: 1.0, type: 'number', description: 'Tail free sampling parameter (0.0 to 1.0)', min: 0, max: 1, step: 0.01 },
-    { name: 'typical_p', value: 1.0, type: 'number', description: 'Typical sampling parameter (0.0 to 1.0)', min: 0, max: 1, step: 0.01 },
-    { name: 'mirostat_mode', value: 0, type: 'number', description: 'Mirostat mode (0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0)', min: 0, max: 2, step: 1 },
-    { name: 'mirostat_tau', value: 5.0, type: 'number', description: 'Mirostat target entropy (1.0 to 10.0)', min: 1, max: 10, step: 0.1 },
-    { name: 'mirostat_eta', value: 0.1, type: 'number', description: 'Mirostat learning rate (0.01 to 1.0)', min: 0.01, max: 1, step: 0.01 }
+    { name: 'max_tokens', value: 2048, type: 'number', description: 'Maximum number of tokens to generate', min: 100, max: 8192, step: 100 }
   ]);
 
   // Parameter presets for different use cases
@@ -95,7 +86,7 @@ const ModelDetail: React.FC = () => {
         top_p: 0.9,
         frequency_penalty: 0.3,
         presence_penalty: 0.1,
-        repeat_penalty: 1.1
+        max_tokens: 2048
       }
     },
     {
@@ -106,7 +97,7 @@ const ModelDetail: React.FC = () => {
         top_p: 0.95,
         frequency_penalty: 0.0,
         presence_penalty: 0.0,
-        repeat_penalty: 1.05
+        max_tokens: 2048
       }
     },
     {
@@ -117,7 +108,7 @@ const ModelDetail: React.FC = () => {
         top_p: 0.9,
         frequency_penalty: 0.1,
         presence_penalty: 0.1,
-        repeat_penalty: 1.1
+        max_tokens: 2048
       }
     },
     {
@@ -128,7 +119,7 @@ const ModelDetail: React.FC = () => {
         top_p: 0.8,
         frequency_penalty: 0.0,
         presence_penalty: 0.0,
-        repeat_penalty: 1.0
+        max_tokens: 2048
       }
     },
     {
@@ -139,7 +130,7 @@ const ModelDetail: React.FC = () => {
         top_p: 0.9,
         frequency_penalty: 0.1,
         presence_penalty: 0.1,
-        repeat_penalty: 1.05
+        max_tokens: 2048
       }
     }
   ];
@@ -319,17 +310,9 @@ const ModelDetail: React.FC = () => {
       value: param.name === 'temperature' ? 0.7 :
              param.name === 'max_tokens' ? 2048 :
              param.name === 'top_p' ? 0.9 :
-             param.name === 'top_k' ? 40 :
              param.name === 'frequency_penalty' ? 0.0 :
              param.name === 'presence_penalty' ? 0.0 :
-             param.name === 'repeat_penalty' ? 1.1 :
-             param.name === 'length_penalty' ? 1.0 :
-             param.name === 'min_p' ? 0.05 :
-             param.name === 'tfs' ? 1.0 :
-             param.name === 'typical_p' ? 1.0 :
-             param.name === 'mirostat_mode' ? 0 :
-             param.name === 'mirostat_tau' ? 5.0 :
-             param.name === 'mirostat_eta' ? 0.1 : param.value
+             param.name === 'max_tokens' ? 2048 : param.value
     })));
   };
 
