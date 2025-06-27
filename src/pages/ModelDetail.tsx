@@ -29,29 +29,31 @@ interface Message {
 
 interface Parameter {
   name: string;
-  value: string | number;
-  type: 'string' | 'number';
+  value: number;
+  type: 'number';
   description: string;
+  min?: number;
+  max?: number;
+  step?: number;
+}
+
+interface ParameterPreset {
+  name: string;
+  description: string;
+  parameters: Record<string, number>;
 }
 
 const ModelDetail: React.FC = () => {
   const { modelId = '', '*': splat = '' } = useParams();
   const fullModelId = splat ? `${modelId}/${splat}` : modelId;
   const [model, setModel] = useState<ModelData | null>(null);
-  const [activeTab, setActiveTab] = useState<'model' | 'interact' | 'code'>('interact');
+  const [activeTab, setActiveTab] = useState<'model' | 'interact' | 'parameters'>('interact');
   const [messages, setMessages] = useState<Message[]>([
     { role: 'system', content: 'Hi, what can I do for you today?', timestamp: new Date() }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState<'python' | 'javascript' | 'java' | 'go' | 'csharp' | 'shell'>('python');
   const [isToolCallingEnabled, setIsToolCallingEnabled] = useState(false);
-  const [parameters] = useState<Parameter[]>([
-    { name: 'temperature', value: 0.7, type: 'number', description: 'Controls randomness in the output' },
-    { name: 'max_tokens', value: 2048, type: 'number', description: 'Maximum number of tokens to generate' },
-    { name: 'top_p', value: 0.9, type: 'number', description: 'Controls diversity via nucleus sampling' }
-  ]);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [endpointConfig, setEndpointConfig] = useState({
     endpoint: 'http://localhost:1234/v1',
@@ -62,6 +64,86 @@ const ModelDetail: React.FC = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [copied, setCopied] = useState(false);
   const [codeContent, setCodeContent] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Enhanced parameters with more comprehensive options
+  const [parameters, setParameters] = useState<Parameter[]>([
+    { name: 'temperature', value: 0.7, type: 'number', description: 'Controls randomness in the output (0.0 = deterministic, 2.0 = very random)', min: 0, max: 2, step: 0.1 },
+    { name: 'max_tokens', value: 2048, type: 'number', description: 'Maximum number of tokens to generate', min: 1, max: 8192, step: 1 },
+    { name: 'top_p', value: 0.9, type: 'number', description: 'Controls diversity via nucleus sampling (0.1 = focused, 1.0 = diverse)', min: 0.1, max: 1, step: 0.1 },
+    { name: 'top_k', value: 40, type: 'number', description: 'Limits the number of tokens considered for each step', min: 1, max: 100, step: 1 },
+    { name: 'frequency_penalty', value: 0.0, type: 'number', description: 'Reduces repetition of frequent tokens (-2.0 to 2.0)', min: -2, max: 2, step: 0.1 },
+    { name: 'presence_penalty', value: 0.0, type: 'number', description: 'Encourages model to talk about new topics (-2.0 to 2.0)', min: -2, max: 2, step: 0.1 },
+    { name: 'repeat_penalty', value: 1.1, type: 'number', description: 'Penalty for repeating tokens (1.0 = no penalty, 2.0 = strong penalty)', min: 1, max: 2, step: 0.1 },
+    { name: 'length_penalty', value: 1.0, type: 'number', description: 'Penalty for response length (0.0 = prefer short, 2.0 = prefer long)', min: 0, max: 2, step: 0.1 },
+    { name: 'min_p', value: 0.05, type: 'number', description: 'Minimum probability threshold for token selection', min: 0, max: 1, step: 0.01 },
+    { name: 'tfs', value: 1.0, type: 'number', description: 'Tail free sampling parameter (0.0 to 1.0)', min: 0, max: 1, step: 0.01 },
+    { name: 'typical_p', value: 1.0, type: 'number', description: 'Typical sampling parameter (0.0 to 1.0)', min: 0, max: 1, step: 0.01 },
+    { name: 'mirostat_mode', value: 0, type: 'number', description: 'Mirostat mode (0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0)', min: 0, max: 2, step: 1 },
+    { name: 'mirostat_tau', value: 5.0, type: 'number', description: 'Mirostat target entropy (1.0 to 10.0)', min: 1, max: 10, step: 0.1 },
+    { name: 'mirostat_eta', value: 0.1, type: 'number', description: 'Mirostat learning rate (0.01 to 1.0)', min: 0.01, max: 1, step: 0.01 }
+  ]);
+
+  // Parameter presets for different use cases
+  const parameterPresets: ParameterPreset[] = [
+    {
+      name: 'Creative Writing',
+      description: 'High creativity, diverse outputs',
+      parameters: {
+        temperature: 0.9,
+        top_p: 0.9,
+        frequency_penalty: 0.3,
+        presence_penalty: 0.1,
+        repeat_penalty: 1.1
+      }
+    },
+    {
+      name: 'Code Generation',
+      description: 'Focused, deterministic code',
+      parameters: {
+        temperature: 0.2,
+        top_p: 0.95,
+        frequency_penalty: 0.0,
+        presence_penalty: 0.0,
+        repeat_penalty: 1.05
+      }
+    },
+    {
+      name: 'Conversation',
+      description: 'Balanced for chat interactions',
+      parameters: {
+        temperature: 0.7,
+        top_p: 0.9,
+        frequency_penalty: 0.1,
+        presence_penalty: 0.1,
+        repeat_penalty: 1.1
+      }
+    },
+    {
+      name: 'Analysis',
+      description: 'Focused, analytical responses',
+      parameters: {
+        temperature: 0.3,
+        top_p: 0.8,
+        frequency_penalty: 0.0,
+        presence_penalty: 0.0,
+        repeat_penalty: 1.0
+      }
+    },
+    {
+      name: 'Creative Coding',
+      description: 'Creative but structured code',
+      parameters: {
+        temperature: 0.6,
+        top_p: 0.9,
+        frequency_penalty: 0.1,
+        presence_penalty: 0.1,
+        repeat_penalty: 1.05
+      }
+    }
+  ];
+
   const [tools] = useState([
     {
       name: 'get_weather',
@@ -182,6 +264,7 @@ const ModelDetail: React.FC = () => {
       }
     }
   ]);
+
   const [enabledToolNames] = useState<string[]>(tools.map(t => t.name));
   const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
 
@@ -215,6 +298,40 @@ const ModelDetail: React.FC = () => {
   useEffect(() => {
     loadModelData(decodeURIComponent(fullModelId)).then(setModel);
   }, [fullModelId]);
+
+  const handleParameterChange = (paramName: string, value: number) => {
+    setParameters(prev => prev.map(param => 
+      param.name === paramName ? { ...param, value } : param
+    ));
+  };
+
+  const applyPreset = (preset: ParameterPreset) => {
+    setParameters(prev => prev.map(param => 
+      preset.parameters[param.name] !== undefined 
+        ? { ...param, value: preset.parameters[param.name] }
+        : param
+    ));
+  };
+
+  const resetToDefaults = () => {
+    setParameters(prev => prev.map(param => ({
+      ...param,
+      value: param.name === 'temperature' ? 0.7 :
+             param.name === 'max_tokens' ? 2048 :
+             param.name === 'top_p' ? 0.9 :
+             param.name === 'top_k' ? 40 :
+             param.name === 'frequency_penalty' ? 0.0 :
+             param.name === 'presence_penalty' ? 0.0 :
+             param.name === 'repeat_penalty' ? 1.1 :
+             param.name === 'length_penalty' ? 1.0 :
+             param.name === 'min_p' ? 0.05 :
+             param.name === 'tfs' ? 1.0 :
+             param.name === 'typical_p' ? 1.0 :
+             param.name === 'mirostat_mode' ? 0 :
+             param.name === 'mirostat_tau' ? 5.0 :
+             param.name === 'mirostat_eta' ? 0.1 : param.value
+    })));
+  };
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
@@ -408,6 +525,35 @@ const ModelDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-neutral-900 text-white font-sans">
+      <style>{`
+        .slider::-webkit-slider-thumb {
+          appearance: none;
+          height: 16px;
+          width: 16px;
+          border-radius: 50%;
+          background: #3b82f6;
+          cursor: pointer;
+          border: 2px solid #1e40af;
+        }
+        .slider::-moz-range-thumb {
+          height: 16px;
+          width: 16px;
+          border-radius: 50%;
+          background: #3b82f6;
+          cursor: pointer;
+          border: 2px solid #1e40af;
+        }
+        .slider::-webkit-slider-track {
+          background: #374151;
+          border-radius: 8px;
+          height: 8px;
+        }
+        .slider::-moz-range-track {
+          background: #374151;
+          border-radius: 8px;
+          height: 8px;
+        }
+      `}</style>
       {/* Banner */}
       <div className="relative w-full h-56 md:h-72 lg:h-80 overflow-hidden">
         <img src={bannerWave} alt="Banner" className="w-full h-full object-cover" />
@@ -455,18 +601,30 @@ const ModelDetail: React.FC = () => {
             >
               Model Card
             </button>
+            <button
+              onClick={() => setActiveTab('parameters')}
+              className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
+                ${activeTab === 'parameters'
+                  ? 'border-blue-500 text-blue-500 bg-transparent'
+                  : 'border-transparent text-gray-400 hover:text-blue-400'}
+              `}
+              style={{ background: 'none', borderRadius: 0 }}
+            >
+              Parameters
+            </button>
           </div>
 
           {/* Tab Content */}
           {activeTab === 'interact' && (
             <div className="flex flex-row gap-8 items-stretch h-[700px]">
               {/* Chatbox (left) */}
-              <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow mb-8 md:mb-0 flex-shrink-0 flex flex-col">
+              <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow mb-8 md:mb-0 flex flex-col">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold">Chat</h3>
                   <button
                     onClick={() => setShowSettings(!showSettings)}
                     className="text-gray-400 hover:text-white"
+                    title="Settings"
                   >
                     <Cog6ToothIcon className="h-6 w-6" />
                   </button>
@@ -700,6 +858,54 @@ const ModelDetail: React.FC = () => {
               ) : (
                 <div>No model card information available.</div>
               )}
+            </div>
+          )}
+
+          {activeTab === 'parameters' && (
+            <div className="bg-neutral-900 rounded-lg border border-neutral-800 shadow p-8">
+              <div className="max-w-4xl mx-auto">
+                <div className="mb-8">
+                  <h2 className="text-2xl font-bold mb-2">Model Parameters</h2>
+                  <p className="text-gray-400">Fine-tune the model's behavior for your specific use case</p>
+                </div>
+
+                {/* Parameter Sliders */}
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-semibold">Parameters</h3>
+                    <button
+                      onClick={resetToDefaults}
+                      className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                    >
+                      Reset to Defaults
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {parameters.map((param) => (
+                      <div key={param.name} className="space-y-3 p-4 bg-neutral-800 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-medium text-gray-300 capitalize">
+                            {param.name.replace(/_/g, ' ')}
+                          </label>
+                          <span className="text-sm text-blue-400 font-mono bg-neutral-700 px-2 py-1 rounded">
+                            {param.value}
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min={param.min}
+                          max={param.max}
+                          step={param.step}
+                          value={param.value}
+                          onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value))}
+                          className="w-full h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer slider"
+                        />
+                        <p className="text-xs text-gray-400">{param.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
