@@ -42,7 +42,6 @@ const ModelDetail: React.FC = () => {
   const { modelId = '', '*': splat = '' } = useParams();
   const fullModelId = splat ? `${modelId}/${splat}` : modelId;
   const [model, setModel] = useState<ModelData | null>(null);
-  const [activeTab, setActiveTab] = useState<'model' | 'interact' | 'parameters'>('interact');
   const [messages, setMessages] = useState<Message[]>([
     { role: 'system', content: 'Hi, what can I do for you today?', timestamp: new Date() }
   ]);
@@ -202,12 +201,6 @@ const ModelDetail: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, streamingContent]);
-
-  useEffect(() => {
-    if (activeTab === 'interact') {
-      textareaRef.current?.focus();
-    }
-  }, [activeTab]);
 
   useEffect(() => {
     setCodeContent(getDefaultCode(
@@ -448,208 +441,192 @@ const ModelDetail: React.FC = () => {
       <div className="flex flex-col md:flex-row max-w-[1600px] mx-auto p-8 gap-8 -mt-8 relative z-10">
         {/* Main Content */}
         <div className="flex-1">
-          {/* Top Header - Modern Tab Navigation */}
-          <div className="flex bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-2 mb-8 shadow-xl">
-            <button
-              onClick={() => setActiveTab('interact')}
-              className={`flex-1 px-6 py-4 text-lg font-semibold rounded-xl transition-all duration-300 focus:outline-none ${
-                activeTab === 'interact'
-                  ? 'bg-blue-600/20 text-blue-400 shadow-lg border border-blue-500/30'
-                  : 'text-gray-300 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              Interact
-            </button>
-          </div>
-
           {/* Tab Content */}
-          {activeTab === 'interact' && (
-            <div className="flex flex-row gap-8 items-stretch h-[700px]">
-              {/* Chatbox (left) */}
-              <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-black rounded-3xl p-4 shadow-lg mb-8 md:mb-0 flex flex-col font-sans" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => { console.log('Settings clicked'); setShowSettings(!showSettings); }}
-                      className="text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-all"
-                      title="Settings"
-                    >
-                      <Cog6ToothIcon className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => setShowParameters(true)}
-                      className="flex items-center px-3 py-1.5 bg-blue-600/10 text-blue-400 rounded-full border border-blue-500/10 hover:bg-blue-600/20 transition-all text-xs font-medium"
-                      title="Model Parameters"
-                    >
-                      Parameters
-                    </button>
-                  </div>
+          <div className="flex flex-row gap-8 items-stretch h-[700px]">
+            {/* Chatbox (left) */}
+            <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-black rounded-3xl p-4 shadow-lg mb-8 md:mb-0 flex flex-col font-sans" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => { console.log('Settings clicked'); setShowSettings(!showSettings); }}
+                    className="text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-all"
+                    title="Settings"
+                  >
+                    <Cog6ToothIcon className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={() => setShowParameters(true)}
+                    className="flex items-center px-3 py-1.5 bg-blue-600/10 text-blue-400 rounded-full border border-blue-500/10 hover:bg-blue-600/20 transition-all text-xs font-medium"
+                    title="Model Parameters"
+                  >
+                    Parameters
+                  </button>
                 </div>
-                <div className="flex flex-col flex-1 min-h-0">
-                  {/* Chat messages */}
-                  <div className="flex-1 min-h-0 overflow-y-auto">
-                    {messages.map((message, index) => (
-                      <div
-                        key={index}
-                        className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} my-3`}
-                      >
-                        {message.role === 'user' ? (
-                          <div
-                            className="max-w-[80%] text-white text-base font-medium"
-                            style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
-                          >
-                            <div className="prose prose-invert max-w-none">
-                              <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                rehypePlugins={[rehypeRaw]}
-                              >
-                                {message.content}
-                              </ReactMarkdown>
-                            </div>
-                          </div>
-                        ) : (
-                          <div
-                            className="max-w-[80%] text-neutral-300 text-base font-normal"
-                            style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
-                          >
-                            <div className="prose prose-invert max-w-none">
-                              <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                rehypePlugins={[rehypeRaw]}
-                              >
-                                {message.content}
-                              </ReactMarkdown>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                    {isStreaming && streamingContent && (
-                      <div className="flex justify-start my-3">
-                        <div className="max-w-[80%] text-neutral-300 text-base font-normal" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+              </div>
+              <div className="flex flex-col flex-1 min-h-0">
+                {/* Chat messages */}
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                  {messages.map((message, index) => (
+                    <div
+                      key={index}
+                      className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} my-3`}
+                    >
+                      {message.role === 'user' ? (
+                        <div
+                          className="max-w-[80%] text-white text-base font-medium"
+                          style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+                        >
                           <div className="prose prose-invert max-w-none">
                             <ReactMarkdown
                               remarkPlugins={[remarkGfm]}
                               rehypePlugins={[rehypeRaw]}
                             >
-                              {streamingContent}
+                              {message.content}
                             </ReactMarkdown>
                           </div>
                         </div>
+                      ) : (
+                        <div
+                          className="max-w-[80%] text-neutral-300 text-base font-normal"
+                          style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+                        >
+                          <div className="prose prose-invert max-w-none">
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              rehypePlugins={[rehypeRaw]}
+                            >
+                              {message.content}
+                            </ReactMarkdown>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {isStreaming && streamingContent && (
+                    <div className="flex justify-start my-3">
+                      <div className="max-w-[80%] text-neutral-300 text-base font-normal" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+                        <div className="prose prose-invert max-w-none">
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            rehypePlugins={[rehypeRaw]}
+                          >
+                            {streamingContent}
+                          </ReactMarkdown>
+                        </div>
                       </div>
-                    )}
-                    <div ref={messagesEndRef} />
-                  </div>
-                  {/* Input area */}
-                  <div className="mt-2">
-                    <div className="flex items-end space-x-2 bg-neutral-900 px-2 py-1">
-                      <textarea
-                        ref={textareaRef}
-                        value={inputMessage}
-                        onChange={(e) => setInputMessage(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        placeholder=""
-                        className="flex-1 bg-transparent text-white p-1 min-h-[32px] max-h-[120px] resize-none focus:outline-none focus:ring-0 border-0 font-sans"
-                        disabled={isLoading}
-                        autoFocus
-                        style={{ 
-                          fontFamily: 'Inter, system-ui, sans-serif',
-                          caretColor: 'white'
-                        }}
-                      />
-                      <button
-                        onClick={handleSendMessage}
-                        disabled={isLoading || !inputMessage.trim()}
-                        className={`p-1.5 rounded-full transition-all duration-300 ${
-                          isLoading || !inputMessage.trim()
-                            ? 'bg-gray-600/20 text-gray-400 cursor-not-allowed'
-                            : 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-500/20 hover:border-blue-500/40 shadow-sm hover:shadow-md'
-                        }`}
-                      >
-                        <PaperAirplaneIcon className="h-4 w-4" />
-                      </button>
                     </div>
-                  </div>
+                  )}
+                  <div ref={messagesEndRef} />
                 </div>
-                {/* Parameters Side Panel */}
-                {showParameters && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm" onClick={() => setShowParameters(false)}>
-                    <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-l-3xl shadow-2xl w-full max-w-md h-full p-8 overflow-y-auto relative" onClick={e => e.stopPropagation()}>
-                      <button
-                        className="absolute top-6 right-6 text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all"
-                        onClick={() => setShowParameters(false)}
-                        title="Close"
-                      >
-                        <XMarkIcon className="w-6 h-6" />
-                      </button>
-                      <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
-                        <Cog6ToothIcon className="w-7 h-7 text-blue-400" />
-                        Model Parameters
-                      </h2>
-                      {renderParametersPanel(parameters, handleParameterChange, resetToDefaults)}
-                    </div>
-                  </div>
-                )}
-              </div>
-              {/* Integration Code (right) */}
-              <div className="w-full md:w-[60%] flex-1 h-full min-h-0 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl flex flex-col">
-                <div className="flex items-center space-x-3 mb-6 pt-6 px-6">
-                  <CodeBracketIcon className="w-6 h-6 text-blue-400" />
-                  <h3 className="text-xl font-bold text-white">API Integration</h3>
-                </div>
-                <div className="flex flex-nowrap gap-3 mb-6 px-6 items-center">
-                  {['python', 'typescript', 'rust', 'go', 'shell'].map((lang) => (
+                {/* Input area */}
+                <div className="mt-2">
+                  <div className="flex items-end space-x-2 bg-neutral-900 px-2 py-1">
+                    <textarea
+                      ref={textareaRef}
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder=""
+                      className="flex-1 bg-transparent text-white p-1 min-h-[32px] max-h-[120px] resize-none focus:outline-none focus:ring-0 border-0 font-sans"
+                      disabled={isLoading}
+                      autoFocus
+                      style={{ 
+                        fontFamily: 'Inter, system-ui, sans-serif',
+                        caretColor: 'white'
+                      }}
+                    />
                     <button
-                      key={lang}
-                      onClick={() => setSelectedLanguage(lang as typeof selectedLanguage)}
-                      className={`px-4 py-2 text-sm rounded-xl font-mono border transition-all duration-300 ${
-                        selectedLanguage === lang
-                          ? 'bg-blue-600/20 text-blue-400 border-blue-500/50 shadow-lg'
-                          : 'bg-white/10 text-gray-300 border-white/20 hover:bg-white/20 hover:text-white'
+                      onClick={handleSendMessage}
+                      disabled={isLoading || !inputMessage.trim()}
+                      className={`p-1.5 rounded-full transition-all duration-300 ${
+                        isLoading || !inputMessage.trim()
+                          ? 'bg-gray-600/20 text-gray-400 cursor-not-allowed'
+                          : 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-500/20 hover:border-blue-500/40 shadow-sm hover:shadow-md'
                       }`}
                     >
-                      {lang === 'typescript' ? 'TypeScript' : lang.charAt(0).toUpperCase() + lang.slice(1)}
+                      <PaperAirplaneIcon className="h-4 w-4" />
                     </button>
-                  ))}
-                  <button
-                    onClick={() => setIsCodeModalOpen(true)}
-                    className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all ml-2"
-                    title="View Full Code"
-                  >
-                    <CodeBracketIcon className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={handleCopyCode}
-                    className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all"
-                    title="Copy code"
-                  >
-                    {copied ? (
-                      <CheckIcon className="w-5 h-5" />
-                    ) : (
-                      <ClipboardIcon className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-                <div className="px-6 pb-6">
-                  <div className="bg-black/40 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden">
-                    <Highlight theme={themes.nightOwl} code={codeContent} language={selectedLanguage}>
-                      {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                        <pre className={`${className} p-6 text-sm font-mono whitespace-pre-wrap break-words overflow-x-auto overflow-y-auto max-h-[550px]`} style={{ ...style, margin: 0, maxWidth: '100%' }}>
-                          {tokens.map((line, i) => (
-                            <div key={i} {...getLineProps({ line })}>
-                              {line.map((token, key) => (
-                                <span key={key} {...getTokenProps({ token })} />
-                              ))}
-                            </div>
-                          ))}
-                        </pre>
-                      )}
-                    </Highlight>
                   </div>
+                </div>
+              </div>
+              {/* Parameters Side Panel */}
+              {showParameters && (
+                <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm" onClick={() => setShowParameters(false)}>
+                  <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-l-3xl shadow-2xl w-full max-w-md h-full p-8 overflow-y-auto relative" onClick={e => e.stopPropagation()}>
+                    <button
+                      className="absolute top-6 right-6 text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all"
+                      onClick={() => setShowParameters(false)}
+                      title="Close"
+                    >
+                      <XMarkIcon className="w-6 h-6" />
+                    </button>
+                    <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+                      <Cog6ToothIcon className="w-7 h-7 text-blue-400" />
+                      Model Parameters
+                    </h2>
+                    {renderParametersPanel(parameters, handleParameterChange, resetToDefaults)}
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Integration Code (right) */}
+            <div className="w-full md:w-[60%] flex-1 h-full min-h-0 rounded-2xl border border-white/10 shadow-2xl flex flex-col">
+              <div className="flex items-center space-x-3 mb-6 pt-6 px-6">
+                <CodeBracketIcon className="w-6 h-6 text-blue-400" />
+                <h3 className="text-xl font-bold text-white">API Integration</h3>
+		</div>
+              <div className="flex flex-nowrap gap-3 mb-6 px-6 items-center">
+                {['python', 'typescript', 'rust', 'go', 'shell'].map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => setSelectedLanguage(lang as typeof selectedLanguage)}
+                    className={`px-4 py-2 text-sm rounded-xl font-mono border transition-all duration-300 ${
+                      selectedLanguage === lang
+                        ? 'bg-blue-600/20 text-blue-400 border-blue-500/50 shadow-lg'
+                        : 'bg-white/10 text-gray-300 border-white/20 hover:bg-white/20 hover:text-white'
+                    }`}
+                  >
+                    {lang === 'typescript' ? 'TypeScript' : lang.charAt(0).toUpperCase() + lang.slice(1)}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setIsCodeModalOpen(true)}
+                  className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all ml-2"
+                  title="View Full Code"
+                >
+                  <CodeBracketIcon className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={handleCopyCode}
+                  className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+                  title="Copy code"
+                >
+                  {copied ? (
+                    <CheckIcon className="w-5 h-5" />
+                  ) : (
+                    <ClipboardIcon className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+              <div className="px-6 pb-6">
+                <div className="rounded-xl overflow-hidden">
+                  <Highlight theme={themes.nightOwl} code={codeContent} language={selectedLanguage}>
+                    {({ className, style, tokens, getLineProps, getTokenProps }) => (
+                      <pre className={`${className} p-6 text-sm font-mono whitespace-pre-wrap break-words overflow-x-auto overflow-y-auto max-h-[550px]`} style={{ ...style, background: 'transparent', margin: 0, maxWidth: '100%' }}>
+                        {tokens.map((line, i) => (
+                          <div key={i} {...getLineProps({ line })}>
+                            {line.map((token, key) => (
+                              <span key={key} {...getTokenProps({ token })} />
+                            ))}
+                          </div>
+                        ))}
+                      </pre>
+                    )}
+                  </Highlight>
                 </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
       <Dialog open={isCodeModalOpen} onClose={() => setIsCodeModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">
