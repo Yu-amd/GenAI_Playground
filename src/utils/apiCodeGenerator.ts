@@ -28,8 +28,8 @@ export const getDefaultCode = (
       return `from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:1234/v1",  # LM-studio endpoint
-    api_key="your-api-key"  # Optional for local LM-studio
+    base_url="http://localhost:1234/v1",  # API endpoint
+    api_key="your-api-key"  # Your API key
 )
 
 response = client.chat.completions.create(
@@ -52,8 +52,8 @@ for chunk in response:
       return `import OpenAI from 'openai';
 
 const client = new OpenAI({
-    baseURL: 'http://localhost:1234/v1',  // LM-studio endpoint
-    apiKey: 'your-api-key'  // Optional for local LM-studio
+    baseURL: 'http://localhost:1234/v1',  # API endpoint
+    apiKey: 'your-api-key'  # Your API key
 });
 
 const response = await client.chat.completions.create({
@@ -64,10 +64,10 @@ ${formattedMessages}
     temperature: ${temperature},
     max_tokens: ${maxTokens},
     top_p: ${topP},
-    stream: true  // Enable streaming for real-time responses
+    stream: true  # Enable streaming for real-time responses
 });
 
-// Print streaming response
+# Print streaming response
 for await (const chunk of response) {
     if (chunk.choices[0]?.delta?.content) {
         process.stdout.write(chunk.choices[0].delta.content);
@@ -142,7 +142,7 @@ import (
 
 func main() {
     client := openai.NewClient("your-api-key")
-    client.BaseURL = "http://localhost:1234/v1"
+    client.BaseURL = "http://localhost:1234/v1" // API endpoint
 
     req := openai.ChatCompletionRequest{
         Model: "${modelId}",
@@ -180,9 +180,9 @@ func main() {
 }`;
 
     case 'shell':
-      return `curl -X POST "http://localhost:1234/v1/chat/completions" \\
-  -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer your-api-key" \\
+      return `curl -X POST "http://localhost:1234/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-api-key" \
   -d '{
     "model": "${modelId}",
     "messages": [
@@ -192,7 +192,7 @@ ${formattedMessages}
     "max_tokens": ${maxTokens},
     "top_p": ${topP},
     "stream": true
-  }' \\
+  }' \
   --no-buffer | while IFS= read -r line; do
     if [[ $line == data:* ]]; then
       content=\${line#data: }

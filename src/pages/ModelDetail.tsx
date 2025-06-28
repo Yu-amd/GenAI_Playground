@@ -351,36 +351,6 @@ const ModelDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-white font-sans">
-      <style>{`
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          height: 16px;
-          width: 16px;
-          border-radius: 50%;
-          background: #3b82f6;
-          cursor: pointer;
-          border: 2px solid #1e40af;
-        }
-        .slider::-moz-range-thumb {
-          height: 16px;
-          width: 16px;
-          border-radius: 50%;
-          background: #3b82f6;
-          cursor: pointer;
-          border: 2px solid #1e40af;
-        }
-        .slider::-webkit-slider-track {
-          background: #374151;
-          border-radius: 8px;
-          height: 8px;
-        }
-        .slider::-moz-range-track {
-          background: #374151;
-          border-radius: 8px;
-          height: 8px;
-        }
-      `}</style>
-      {/* Banner */}
       <div className="relative w-full h-72 md:h-96 lg:h-[28rem] overflow-hidden font-sans flex items-center" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
         <img src={bannerWave} alt="Banner" className="w-full h-full object-cover absolute inset-0" />
         {/* Navigation overlay */}
@@ -437,7 +407,44 @@ const ModelDetail: React.FC = () => {
           </div>
         </div>
       </div>
-
+      {/* Warning Banner (between banner and main content) */}
+      <div className="w-full flex justify-center z-50 mb-6">
+        <div className="flex items-start gap-3 bg-white/20 backdrop-blur-md border border-black text-white px-6 py-2 rounded-xl shadow-md w-[90%] text-sm drop-shadow font-normal">
+          <svg className="w-6 h-6 flex-shrink-0 mt-0.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01"/></svg>
+          <span>
+            AI models generate responses and outputs based on complex algorithms and machine learning techniques, and those responses or outputs may be inaccurate, harmful, biased or indecent. <b className="font-bold">By testing this model, you assume the risk of any harm caused by any response or output of the model.</b> Please do not upload any confidential information or personal data unless expressly permitted. <b className="font-bold">Your use is logged for security purposes.</b>
+          </span>
+        </div>
+      </div>
+      <style>{`
+        .slider::-webkit-slider-thumb {
+          appearance: none;
+          height: 16px;
+          width: 16px;
+          border-radius: 50%;
+          background: #3b82f6;
+          cursor: pointer;
+          border: 2px solid #1e40af;
+        }
+        .slider::-moz-range-thumb {
+          height: 16px;
+          width: 16px;
+          border-radius: 50%;
+          background: #3b82f6;
+          cursor: pointer;
+          border: 2px solid #1e40af;
+        }
+        .slider::-webkit-slider-track {
+          background: #374151;
+          border-radius: 8px;
+          height: 8px;
+        }
+        .slider::-moz-range-track {
+          background: #374151;
+          border-radius: 8px;
+          height: 8px;
+        }
+      `}</style>
       <div className="flex flex-col md:flex-row max-w-[1600px] mx-auto p-8 gap-8 -mt-8 relative z-10">
         {/* Main Content */}
         <div className="flex-1">
