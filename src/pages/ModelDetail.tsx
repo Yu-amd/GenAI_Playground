@@ -631,8 +631,8 @@ const ModelDetail: React.FC = () => {
       </div>
       <Dialog open={isCodeModalOpen} onClose={() => setIsCodeModalOpen(false)} className="fixed z-50 inset-0 overflow-y-auto">
         <div className="flex items-center justify-center min-h-screen px-4">
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
-          <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl max-w-4xl w-full mx-auto p-8 z-10 border border-white/20">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsCodeModalOpen(false)} />
+          <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl max-w-4xl w-full mx-auto p-8 z-10 border border-white/20" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-bold text-white">Full Code</h3>
               <button onClick={() => setIsCodeModalOpen(false)} className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all text-2xl">&times;</button>
