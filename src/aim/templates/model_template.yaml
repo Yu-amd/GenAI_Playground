@@ -60,7 +60,7 @@ api_examples:
     response = requests.post("<endpoint>", headers=headers, json=payload)
     print(response.json())
 
-  javascript: |
+  typescript: |
     const response = await fetch("<endpoint>", {
       method: "POST",
       headers: {
@@ -87,23 +87,60 @@ api_examples:
         "stream": false
       }'
 
-  java: |
-    HttpClient client = HttpClient.newHttpClient();
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create("<endpoint>"))
-        .header("Authorization", "Bearer YOUR_API_KEY")
-        .header("Content-Type", "application/json")
-        .POST(HttpRequest.BodyPublishers.ofString("""
-          {
-            "model": "<model_id>",
-            "messages": [{"role": "user", "content": "Hello"}],
-            "stream": false
-          }
-        """))
-        .build();
+  rust: |
+    use axum::{
+        extract::Json,
+        http::StatusCode,
+        response::sse::{Event, Sse},
+        routing::post,
+        Router,
+    };
+    use serde::{Deserialize, Serialize};
+    use std::convert::Infallible;
+    use tokio_stream::wrappers::ReceiverStream;
 
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-    System.out.println(response.body());
+    #[derive(Deserialize)]
+    struct ChatRequest {
+        model: String,
+        messages: Vec<Message>,
+        temperature: f32,
+        max_tokens: u32,
+        top_p: f32,
+        stream: bool,
+    }
+
+    #[derive(Serialize, Deserialize)]
+    struct Message {
+        role: String,
+        content: String,
+    }
+
+    async fn chat_completion(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
+        let (tx, rx) = tokio::sync::mpsc::channel(100);
+        
+        tokio::spawn(async move {
+            // Simulate streaming response
+            let response = format!("Response for model: {}", payload.model);
+            for chunk in response.chars() {
+                let event = Event::default().data(chunk.to_string());
+                let _ = tx.send(Ok(event)).await;
+                tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+            }
+        });
+        
+        Sse::new(ReceiverStream::new(rx))
+    }
+
+    #[tokio::main]
+    async fn main() {
+        let app = Router::new()
+            .route("/chat/completions", post(chat_completion));
+        
+        axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
+            .serve(app.into_make_service())
+            .await
+            .unwrap();
+    }
 
   go: |
     package main
@@ -131,29 +168,6 @@ api_examples:
         body, _ := ioutil.ReadAll(resp.Body)
         fmt.Println(string(body))
     }
-
-  csharp: |
-    using System.Net.Http;
-    using System.Text;
-    using System.Threading.Tasks;
-
-    var client = new HttpClient();
-    var request = new HttpRequestMessage(HttpMethod.Post, "<endpoint>");
-    request.Headers.Add("Authorization", "Bearer YOUR_API_KEY");
-
-    var json = """
-    {
-        "model": "<model_id>",
-        "messages": [{"role": "user", "content": "Hello"}],
-        "stream": false
-    }
-    """;
-
-    request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
-    var response = await client.SendAsync(request);
-    var responseBody = await response.Content.ReadAsStringAsync();
-    Console.WriteLine(responseBody);
 
 model_card:
   overview: >

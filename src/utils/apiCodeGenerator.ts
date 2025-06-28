@@ -5,7 +5,7 @@ interface Parameters {
 }
 
 export const getDefaultCode = (
-  language: 'python' | 'javascript' | 'java' | 'go' | 'csharp' | 'shell',
+  language: 'python' | 'typescript' | 'rust' | 'go' | 'shell',
   modelId: string,
   parameters: Parameters,
   inputMessage: string
@@ -48,7 +48,7 @@ for chunk in response:
     if chunk.choices[0].delta.content:
         print(chunk.choices[0].delta.content, end="", flush=True)`;
 
-    case 'javascript':
+    case 'typescript':
       return `import OpenAI from 'openai';
 
 const client = new OpenAI({
@@ -74,37 +74,59 @@ for await (const chunk of response) {
     }
 }`;
 
-    case 'java':
-      return `import com.theokanning.openai.completion.chat.ChatCompletionRequest;
-import com.theokanning.openai.completion.chat.ChatMessage;
-import com.theokanning.openai.service.OpenAiService;
-import java.util.ArrayList;
-import java.util.List;
+    case 'rust':
+      return `use axum::{
+    extract::Json,
+    http::StatusCode,
+    response::sse::{Event, Sse},
+    routing::post,
+    Router,
+};
+use serde::{Deserialize, Serialize};
+use std::convert::Infallible;
+use tokio_stream::wrappers::ReceiverStream;
 
-public class ChatExample {
-    public static void main(String[] args) {
-        OpenAiService service = new OpenAiService("your-api-key", "http://localhost:1234/v1");
-        
-        List<ChatMessage> messages = new ArrayList<>();
-        messages.add(new ChatMessage("user", "${formattedMessage}"));
-        
-        ChatCompletionRequest request = ChatCompletionRequest.builder()
-            .model("${modelId}")
-            .messages(messages)
-            .temperature(${temperature})
-            .maxTokens(${maxTokens})
-            .topP(${topP})
-            .stream(true)
-            .build();
-            
-        service.streamChatCompletion(request)
-            .doOnNext(chunk -> {
-                if (chunk.getChoices().get(0).getDelta().getContent() != null) {
-                    System.out.print(chunk.getChoices().get(0).getDelta().getContent());
-                }
-            })
-            .blockingSubscribe();
-    }
+#[derive(Deserialize)]
+struct ChatRequest {
+    model: String,
+    messages: Vec<Message>,
+    temperature: f32,
+    max_tokens: u32,
+    top_p: f32,
+    stream: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Message {
+    role: String,
+    content: String,
+}
+
+async fn chat_completion(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
+    let (tx, rx) = tokio::sync::mpsc::channel(100);
+    
+    tokio::spawn(async move {
+        // Simulate streaming response
+        let response = format!("Response for model: {}", payload.model);
+        for chunk in response.chars() {
+            let event = Event::default().data(chunk.to_string());
+            let _ = tx.send(Ok(event)).await;
+            tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+        }
+    });
+    
+    Sse::new(ReceiverStream::new(rx))
+}
+
+#[tokio::main]
+async fn main() {
+    let app = Router::new()
+        .route("/chat/completions", post(chat_completion));
+    
+    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
+        .serve(app.into_make_service())
+        .await
+        .unwrap();
 }`;
 
     case 'go':
@@ -154,40 +176,6 @@ func main() {
         if len(response.Choices) > 0 && response.Choices[0].Delta.Content != "" {
             fmt.Print(response.Choices[0].Delta.Content)
         }
-    }
-}`;
-
-    case 'csharp':
-      return `using OpenAI;
-using OpenAI.Chat;
-
-var client = new OpenAIClient("your-api-key", new OpenAIClientSettings
-{
-    BaseUrl = "http://localhost:1234/v1"
-});
-
-var request = new ChatRequest
-{
-    Model = "${modelId}",
-    Messages = new List<Message>
-    {
-        new Message
-        {
-            Role = "user",
-            Content = "${formattedMessage}"
-        }
-    },
-    Temperature = ${temperature},
-    MaxTokens = ${maxTokens},
-    TopP = ${topP},
-    Stream = true
-};
-
-await foreach (var chunk in client.StreamChatAsync(request))
-{
-    if (chunk.Choices[0].Delta.Content != null)
-    {
-        Console.Write(chunk.Choices[0].Delta.Content);
     }
 }`;
 

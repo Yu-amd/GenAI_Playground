@@ -646,11 +646,6 @@ main();`
     return logoMap[name] || functionalAgent; // Default fallback
   };
 
-  const getServiceId = (serviceName: string): string => {
-    // Convert service name to URL-friendly format
-    return serviceName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  };
-
   const getArchitectureImage = () => {
     if (!blueprint) return null;
     
@@ -1124,11 +1119,10 @@ main();`
                               onChange={(e) => setInputLanguage(e.target.value)}
                             >
                               <option value="python">Python</option>
-                              <option value="javascript">JavaScript</option>
-                              <option value="java">Java</option>
-                              <option value="go">Go</option>
-                              <option value="csharp">C#</option>
+                              <option value="typescript">TypeScript</option>
                               <option value="rust">Rust</option>
+                              <option value="go">Go</option>
+                              <option value="shell">Shell</option>
                             </select>
                           </div>
                         </div>
@@ -1175,10 +1169,10 @@ main();`
                               onChange={(e) => setOutputLanguage(e.target.value)}
                             >
                               <option value="python">Python</option>
-                              <option value="javascript">JavaScript</option>
-                              <option value="java">Java</option>
+                              <option value="typescript">TypeScript</option>
+                              <option value="rust">Rust</option>
                               <option value="go">Go</option>
-                              <option value="csharp">C#</option>
+                              <option value="shell">Shell</option>
                               <option value="rust">Rust</option>
                             </select>
                             {translatedCode && (
@@ -1195,7 +1189,7 @@ main();`
                           <Highlight
                             theme={themes.nightOwl}
                             code={translatedCode || `// Translated code will appear here...`}
-                            language={outputLanguage === 'csharp' ? 'clike' : outputLanguage}
+                            language={outputLanguage}
                           >
                             {({ style, tokens, getLineProps, getTokenProps }) => (
                               <pre className="p-4 m-0 min-h-full font-mono text-sm" style={style}>
@@ -1227,11 +1221,10 @@ main();`
                               onChange={(e) => setSelectedLanguage(e.target.value)}
                             >
                               <option value="python">Python</option>
-                              <option value="javascript">JavaScript</option>
-                              <option value="java">Java</option>
-                              <option value="go">Go</option>
-                              <option value="csharp">C#</option>
+                              <option value="typescript">TypeScript</option>
                               <option value="rust">Rust</option>
+                              <option value="go">Go</option>
+                              <option value="shell">Shell</option>
                             </select>
                           </div>
                         </div>
@@ -1380,7 +1373,7 @@ main();`
                           <Highlight
                             theme={themes.nightOwl}
                             code={generatedCode || '// Generated code will appear here...'}
-                            language={selectedLanguage === 'csharp' ? 'clike' : selectedLanguage}
+                            language={selectedLanguage}
                           >
                             {({ style, tokens, getLineProps, getTokenProps }) => (
                               <pre className="p-4 m-0 min-h-full font-mono text-sm" style={style}>

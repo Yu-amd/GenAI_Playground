@@ -2,6 +2,79 @@
 // Run 'npm run generate-model-data' to regenerate.
 
 export const generatedModelData = {
+  "deepseek-ai/deepseek-moe-16b-base": {
+    "model_id": "deepseek-ai/deepseek-moe-16b-base",
+    "name": "DeepSeek MoE 16B Base",
+    "builder": "DeepSeek AI",
+    "family": "DeepSeek MoE",
+    "size": "16.4B",
+    "huggingface_id": "deepseek-ai/deepseek-moe-16b-base",
+    "description": "Mixture-of-Experts (MoE) language model with 16.4B parameters. It employs an innovative MoE architecture, which involves two principal strategies: fine-grained expert segmentation and shared experts isolation. This base model provides excellent efficiency and performance for various language tasks.\n",
+    "logo": "model_DeepSeek_MoE_18B.png",
+    "readiness_level": "Day-0 Available",
+    "status_badges": [
+      "FP16",
+      "FlashAttention",
+      "New"
+    ],
+    "tags": [
+      "MoE Architecture",
+      "Efficient",
+      "Base Model",
+      "vLLM-Compatible",
+      "Lightweight"
+    ],
+    "license": "Apache 2.0",
+    "endpoint": "https://api.inference-hub.com/v1/chat/completions",
+    "demo_assets": {
+      "notebook": "https://github.com/inference-hub/notebooks/deepseek-moe-16b-base-demo.ipynb",
+      "demo_link": "https://playground.inference-hub.com/models/deepseek-ai/deepseek-moe-16b-base"
+    },
+    "aim_recipes": [
+      {
+        "name": "MI300X FP16",
+        "hardware": "MI300X",
+        "precision": "fp16",
+        "recipe_file": "configs/deepseek-moe-16b-base-mi300x-fp16.yaml"
+      },
+      {
+        "name": "MI250 FP16",
+        "hardware": "MI250",
+        "precision": "fp16",
+        "recipe_file": "configs/deepseek-moe-16b-base-mi250-fp16.yaml"
+      }
+    ],
+    "api_examples": {
+      "python": "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n}\n\npayload = {\n    \"model\": \"deepseek-ai/deepseek-moe-16b-base\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": False\n}\n\nresponse = requests.post(\"https://api.inference-hub.com/v1/chat/completions\", headers=headers, json=payload)\nprint(response.json())\n",
+      "shell": "curl -X POST https://api.inference-hub.com/v1/chat/completions \\\n  -H \"Authorization: Bearer YOUR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"deepseek-ai/deepseek-moe-16b-base\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n  }'\n",
+      "go": "package main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n    \"io/ioutil\"\n    \"net/http\"\n)\n\nfunc main() {\n    jsonStr := []byte(`{\n        \"model\": \"deepseek-ai/deepseek-moe-16b-base\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n    }`)\n\n    req, _ := http.NewRequest(\"POST\", \"https://api.inference-hub.com/v1/chat/completions\", bytes.NewBuffer(jsonStr))\n    req.Header.Set(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    req.Header.Set(\"Content-Type\", \"application/json\")\n\n    client := &http.Client{}\n    resp, _ := client.Do(req)\n    body, _ := ioutil.ReadAll(resp.Body)\n    fmt.Println(string(body))\n}\n",
+      "typescript": "const response = await fetch(\"https://api.inference-hub.com/v1/chat/completions\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  body: JSON.stringify({\n    model: \"deepseek-ai/deepseek-moe-16b-base\",\n    messages: [{ role: \"user\", content: \"Hello\" }],\n    stream: false\n  })\n});\n\nconst data = await response.json();\nconsole.log(data.choices[0].message.content);\n",
+      "rust": "use axum::{\n    extract::Json,\n    http::StatusCode,\n    response::sse::{Event, Sse},\n    routing::post,\n    Router,\n};\nuse serde::{Deserialize, Serialize};\nuse std::convert::Infallible;\nuse tokio_stream::wrappers::ReceiverStream;\n\n#[derive(Deserialize)]\nstruct ChatRequest {\n    model: String,\n    messages: Vec<Message>,\n    temperature: f32,\n    max_tokens: u32,\n    top_p: f32,\n    stream: bool,\n}\n\n#[derive(Serialize, Deserialize)]\nstruct Message {\n    role: String,\n    content: String,\n}\n\nasync fn chat_completion(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {\n    let (tx, rx) = tokio::sync::mpsc::channel(100);\n    \n    tokio::spawn(async move {\n        // Simulate streaming response\n        let response = format!(\"Response for model: {}\", payload.model);\n        for chunk in response.chars() {\n            let event = Event::default().data(chunk.to_string());\n            let _ = tx.send(Ok(event)).await;\n            tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;\n        }\n    });\n    \n    Sse::new(ReceiverStream::new(rx))\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new()\n        .route(\"/chat/completions\", post(chat_completion));\n    \n    axum::Server::bind(&\"0.0.0.0:3000\".parse().unwrap())\n        .serve(app.into_make_service())\n        .await\n        .unwrap();\n}"
+    },
+    "model_card": {
+      "overview": "license_name: deepseek license_link: https://github.com/deepseek-ai/DeepSeek-MoE/blob/main/LICENSE-MODEL <img width=\"500px\" alt=\"DeepSeek Chat\" src=\"https://github.com/deepseek-ai/DeepSeek-LLM/blob/main/images/logo.png?raw=true\">",
+      "intended_use": [
+        "Text-Generation tasks"
+      ],
+      "limitations": [
+        "May generate biased or harmful content",
+        "Not suitable for safety-critical applications",
+        "Performance may vary across different tasks and domains"
+      ],
+      "training_data": "Training data information not specified in model card.",
+      "evaluation": [
+        "Evaluation metrics not specified in model card"
+      ],
+      "known_issues": [
+        "May produce biased content",
+        "Limited reasoning capabilities",
+        "Performance varies across languages and domains"
+      ],
+      "references": [
+        "https://huggingface.co/deepseek-ai/deepseek-moe-16b-base"
+      ]
+    }
+  },
   "deepseek-ai/DeepSeek-R1-0528": {
     "model_id": "deepseek-ai/DeepSeek-R1-0528",
     "name": "DeepSeek R1 0528",
@@ -48,53 +121,213 @@ export const generatedModelData = {
     ],
     "api_examples": {
       "python": "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n}\n\npayload = {\n    \"model\": \"deepseek-ai/DeepSeek-R1-0528\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": False\n}\n\nresponse = requests.post(\"https://api.inference-hub.com/v1/chat/completions\", headers=headers, json=payload)\nprint(response.json())\n",
-      "javascript": "const response = await fetch(\"https://api.inference-hub.com/v1/chat/completions\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  body: JSON.stringify({\n    model: \"deepseek-ai/DeepSeek-R1-0528\",\n    messages: [{ role: \"user\", content: \"Hello\" }],\n    stream: false\n  })\n});\n\nconst data = await response.json();\nconsole.log(data.choices[0].message.content);\n",
       "shell": "curl -X POST https://api.inference-hub.com/v1/chat/completions \\\n  -H \"Authorization: Bearer YOUR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"deepseek-ai/DeepSeek-R1-0528\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n  }'\n",
-      "java": "HttpClient client = HttpClient.newHttpClient();\nHttpRequest request = HttpRequest.newBuilder()\n    .uri(URI.create(\"https://api.inference-hub.com/v1/chat/completions\"))\n    .header(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    .header(\"Content-Type\", \"application/json\")\n    .POST(HttpRequest.BodyPublishers.ofString(\"\"\"\n      {\n        \"model\": \"deepseek-ai/DeepSeek-R1-0528\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n      }\n    \"\"\"))\n    .build();\n\nHttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());\nSystem.out.println(response.body());\n",
       "go": "package main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n    \"io/ioutil\"\n    \"net/http\"\n)\n\nfunc main() {\n    jsonStr := []byte(`{\n        \"model\": \"deepseek-ai/DeepSeek-R1-0528\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n    }`)\n\n    req, _ := http.NewRequest(\"POST\", \"https://api.inference-hub.com/v1/chat/completions\", bytes.NewBuffer(jsonStr))\n    req.Header.Set(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    req.Header.Set(\"Content-Type\", \"application/json\")\n\n    client := &http.Client{}\n    resp, _ := client.Do(req)\n    body, _ := ioutil.ReadAll(resp.Body)\n    fmt.Println(string(body))\n}\n",
-      "csharp": "using System.Net.Http;\nusing System.Text;\nusing System.Threading.Tasks;\n\nvar client = new HttpClient();\nvar request = new HttpRequestMessage(HttpMethod.Post, \"https://api.inference-hub.com/v1/chat/completions\");\nrequest.Headers.Add(\"Authorization\", \"Bearer YOUR_API_KEY\");\n\nvar json = \"\"\"\n{\n    \"model\": \"deepseek-ai/DeepSeek-R1-0528\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n}\n\"\"\";\n\nrequest.Content = new StringContent(json, Encoding.UTF8, \"application/json\");\n\nvar response = await client.SendAsync(request);\nvar responseBody = await response.Content.ReadAsStringAsync();\nConsole.WriteLine(responseBody);\n"
+      "typescript": "const response = await fetch(\"https://api.inference-hub.com/v1/chat/completions\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  body: JSON.stringify({\n    model: \"deepseek-ai/DeepSeek-R1-0528\",\n    messages: [{ role: \"user\", content: \"Hello\" }],\n    stream: false\n  })\n});\n\nconst data = await response.json();\nconsole.log(data.choices[0].message.content);\n",
+      "rust": "use axum::{\n    extract::Json,\n    http::StatusCode,\n    response::sse::{Event, Sse},\n    routing::post,\n    Router,\n};\nuse serde::{Deserialize, Serialize};\nuse std::convert::Infallible;\nuse tokio_stream::wrappers::ReceiverStream;\n\n#[derive(Deserialize)]\nstruct ChatRequest {\n    model: String,\n    messages: Vec<Message>,\n    temperature: f32,\n    max_tokens: u32,\n    top_p: f32,\n    stream: bool,\n}\n\n#[derive(Serialize, Deserialize)]\nstruct Message {\n    role: String,\n    content: String,\n}\n\nasync fn chat_completion(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {\n    let (tx, rx) = tokio::sync::mpsc::channel(100);\n    \n    tokio::spawn(async move {\n        // Simulate streaming response\n        let response = format!(\"Response for model: {}\", payload.model);\n        for chunk in response.chars() {\n            let event = Event::default().data(chunk.to_string());\n            let _ = tx.send(Ok(event)).await;\n            tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;\n        }\n    });\n    \n    Sse::new(ReceiverStream::new(rx))\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new()\n        .route(\"/chat/completions\", post(chat_completion));\n    \n    axum::Server::bind(&\"0.0.0.0:3000\".parse().unwrap())\n        .serve(app.into_make_service())\n        .await\n        .unwrap();\n}"
     },
     "model_card": {
-      "overview": "DeepSeek-R1-0528 is a state-of-the-art LLM optimized for deep reasoning, mathematics, programming, and general logic. It features improved depth of reasoning, reduced hallucination, and enhanced function calling support. The model achieves top-tier results on a variety of benchmarks and is suitable for both research and production use.\n",
+      "overview": "library_name: transformers",
       "intended_use": [
-        "Advanced reasoning tasks",
-        "Mathematics and logic",
-        "Programming/code generation",
-        "General language understanding",
-        "Research and experimentation"
+        "Text-Generation tasks"
       ],
       "limitations": [
-        "May hallucinate facts",
-        "Not suitable for safety-critical use",
-        "Large model size (685B parameters)",
-        "Requires significant computational resources"
+        "May generate biased or harmful content",
+        "Not suitable for safety-critical applications",
+        "Performance may vary across different tasks and domains"
       ],
-      "training_data": "Diverse web corpus, code, mathematics datasets, and other publicly available data. Training data cutoff: May 2024.\n",
+      "training_data": "Training data information not specified in model card.",
       "evaluation": [
-        "MMLU-Redux (EM): 93.4",
-        "MMLU-Pro (EM): 85.0",
-        "GPQA-Diamond (Pass@1): 81.0",
-        "LiveCodeBench (Pass@1): 73.3",
-        "AIME 2024 (Pass@1): 91.4",
-        "AIME 2025 (Pass@1): 87.5",
-        "HMMT 2025 (Pass@1): 79.4",
-        "CNMO 2024 (Pass@1): 86.9",
-        "SWE Verified (Resolved): 57.6",
-        "Aider-Polyglot (Acc.): 71.6",
-        "FRAMES (Acc.): 83.0",
-        "Humanity's Last Exam (Pass@1): 17.7",
-        "Tau-Bench (Pass@1): 53.5(Airline)/63.9(Retail)"
+        "Evaluation metrics not specified in model card"
       ],
       "known_issues": [
-        "May produce biased or harmful content",
-        "Performance varies across domains and languages",
-        "Requires careful prompting for best results"
+        "May produce biased content",
+        "Limited reasoning capabilities",
+        "Performance varies across languages and domains"
       ],
       "references": [
-        "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528",
-        "https://github.com/deepseek-ai/DeepSeek-R1",
-        "https://arxiv.org/abs/2501.12948"
+        "https://arxiv.org/abs/2501.12948},",
+        "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528"
       ]
+    }
+  },
+  "google/gemma-3-4b-it": {
+    "model_id": "google/gemma-3-4b-it",
+    "name": "Gemma 3 4B IT",
+    "builder": "Google DeepMind",
+    "family": "Gemma",
+    "size": "4B",
+    "huggingface_id": "google/gemma-3-4b-it",
+    "description": "Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models. Gemma 3 models are multimodal, handling text and image input and generating text output, with open weights for both pre-trained variants and instruction-tuned variants.\n",
+    "logo": "model_Gemma.png",
+    "readiness_level": "Production-Ready",
+    "status_badges": [
+      "FP16",
+      "FlashAttention",
+      "Featured"
+    ],
+    "tags": [
+      "Multimodal",
+      "Lightweight",
+      "Open Weights",
+      "Instruction-Tuned",
+      "vLLM-Compatible",
+      "sglang-Compatible"
+    ],
+    "license": "Apache 2.0",
+    "endpoint": "https://api.inference-hub.com/v1/chat/completions",
+    "demo_assets": {
+      "notebook": "https://github.com/inference-hub/notebooks/gemma-3-4b-it-demo.ipynb",
+      "demo_link": "https://playground.inference-hub.com/models/google/gemma-3-4b-it"
+    },
+    "aim_recipes": [
+      {
+        "name": "MI300X FP16",
+        "hardware": "MI300X",
+        "precision": "fp16",
+        "recipe_file": "configs/gemma-3-4b-it-mi300x-fp16.yaml"
+      },
+      {
+        "name": "MI250 FP16",
+        "hardware": "MI250",
+        "precision": "fp16",
+        "recipe_file": "configs/gemma-3-4b-it-mi250-fp16.yaml"
+      }
+    ],
+    "api_examples": {
+      "python": "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n}\n\npayload = {\n    \"model\": \"google/gemma-3-4b-it\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": False\n}\n\nresponse = requests.post(\"https://api.inference-hub.com/v1/chat/completions\", headers=headers, json=payload)\nprint(response.json())\n",
+      "shell": "curl -X POST https://api.inference-hub.com/v1/chat/completions \\\n  -H \"Authorization: Bearer YOUR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"google/gemma-3-4b-it\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n  }'\n",
+      "go": "package main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n    \"io/ioutil\"\n    \"net/http\"\n)\n\nfunc main() {\n    jsonStr := []byte(`{\n        \"model\": \"google/gemma-3-4b-it\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n    }`)\n\n    req, _ := http.NewRequest(\"POST\", \"https://api.inference-hub.com/v1/chat/completions\", bytes.NewBuffer(jsonStr))\n    req.Header.Set(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    req.Header.Set(\"Content-Type\", \"application/json\")\n\n    client := &http.Client{}\n    resp, _ := client.Do(req)\n    body, _ := ioutil.ReadAll(resp.Body)\n    fmt.Println(string(body))\n}\n",
+      "typescript": "const response = await fetch(\"https://api.inference-hub.com/v1/chat/completions\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  body: JSON.stringify({\n    model: \"google/gemma-3-4b-it\",\n    messages: [{ role: \"user\", content: \"Hello\" }],\n    stream: false\n  })\n});\n\nconst data = await response.json();\nconsole.log(data.choices[0].message.content);\n",
+      "rust": "use axum::{\n    extract::Json,\n    http::StatusCode,\n    response::sse::{Event, Sse},\n    routing::post,\n    Router,\n};\nuse serde::{Deserialize, Serialize};\nuse std::convert::Infallible;\nuse tokio_stream::wrappers::ReceiverStream;\n\n#[derive(Deserialize)]\nstruct ChatRequest {\n    model: String,\n    messages: Vec<Message>,\n    temperature: f32,\n    max_tokens: u32,\n    top_p: f32,\n    stream: bool,\n}\n\n#[derive(Serialize, Deserialize)]\nstruct Message {\n    role: String,\n    content: String,\n}\n\nasync fn chat_completion(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {\n    let (tx, rx) = tokio::sync::mpsc::channel(100);\n    \n    tokio::spawn(async move {\n        // Simulate streaming response\n        let response = format!(\"Response for model: {}\", payload.model);\n        for chunk in response.chars() {\n            let event = Event::default().data(chunk.to_string());\n            let _ = tx.send(Ok(event)).await;\n            tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;\n        }\n    });\n    \n    Sse::new(ReceiverStream::new(rx))\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new()\n        .route(\"/chat/completions\", post(chat_completion));\n    \n    axum::Server::bind(&\"0.0.0.0:3000\".parse().unwrap())\n        .serve(app.into_make_service())\n        .await\n        .unwrap();\n}"
+    },
+    "model_card": {
+      "overview": "",
+      "intended_use": [],
+      "limitations": [],
+      "training_data": "",
+      "evaluation": [],
+      "known_issues": [],
+      "references": []
+    }
+  },
+  "amd/Llama-3_1-405B-Instruct-FP8-KV": {
+    "model_id": "amd/Llama-3_1-405B-Instruct-FP8-KV",
+    "name": "Llama 3.1 405B Instruct FP8 KV",
+    "builder": "AMD",
+    "family": "Llama",
+    "size": "405B",
+    "huggingface_id": "amd/Llama-3_1-405B-Instruct-FP8-KV",
+    "description": "AMD's Llama-3.1-405B-Instruct-FP8-KV is a quantized version of Meta's Llama 3.1 405B Instruct model  using AMD's Quark framework. It applies FP8 quantization to weights, activations, and KV cache,  significantly reducing memory usage while maintaining high accuracy. The model uses symmetric per-tensor  quantization for optimal performance on AMD hardware.\n",
+    "logo": "model_llama3_1_405b_fp8.png",
+    "readiness_level": "Production-Ready",
+    "status_badges": [
+      "FP8",
+      "FlashAttention",
+      "Featured"
+    ],
+    "tags": [
+      "Text Generation",
+      "Multilingual",
+      "Instruction-Tuned",
+      "vLLM-Compatible",
+      "Efficient"
+    ],
+    "license": "Meta RAIL",
+    "endpoint": "https://api.inference-hub.com/v1/chat/completions",
+    "demo_assets": {
+      "notebook": "https://github.com/inference-hub/notebooks/llama-3-1-405b-fp8-kv-demo.ipynb",
+      "demo_link": "https://playground.inference-hub.com/models/amd/Llama-3.1-405B-Instruct-FP8-KV"
+    },
+    "aim_recipes": [
+      {
+        "name": "MI300X FP8",
+        "hardware": "MI300X",
+        "precision": "fp8",
+        "recipe_file": "configs/llama-3-1-405b-fp8-kv-mi300x-fp8.yaml"
+      },
+      {
+        "name": "MI250 FP8",
+        "hardware": "MI250",
+        "precision": "fp8",
+        "recipe_file": "configs/llama-3-1-405b-fp8-kv-mi250-fp8.yaml"
+      }
+    ],
+    "api_examples": {
+      "python": "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n}\n\npayload = {\n    \"model\": \"amd/Llama-3.1-405B-Instruct-FP8-KV\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": False\n}\n\nresponse = requests.post(\"https://api.inference-hub.com/v1/chat/completions\", headers=headers, json=payload)\nprint(response.json())\n",
+      "shell": "curl -X POST https://api.inference-hub.com/v1/chat/completions \\\n  -H \"Authorization: Bearer YOUR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"amd/Llama-3.1-405B-Instruct-FP8-KV\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n  }'\n",
+      "go": "package main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n    \"io/ioutil\"\n    \"net/http\"\n)\n\nfunc main() {\n    jsonStr := []byte(`{\n        \"model\": \"amd/Llama-3.1-405B-Instruct-FP8-KV\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n    }`)\n\n    req, _ := http.NewRequest(\"POST\", \"https://api.inference-hub.com/v1/chat/completions\", bytes.NewBuffer(jsonStr))\n    req.Header.Set(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    req.Header.Set(\"Content-Type\", \"application/json\")\n\n    client := &http.Client{}\n    resp, _ := client.Do(req)\n    body, _ := ioutil.ReadAll(resp.Body)\n    fmt.Println(string(body))\n}\n",
+      "typescript": "const response = await fetch(\"https://api.inference-hub.com/v1/chat/completions\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  body: JSON.stringify({\n    model: \"amd/Llama-3.1-405B-Instruct-FP8-KV\",\n    messages: [{ role: \"user\", content: \"Hello\" }],\n    stream: false\n  })\n});\n\nconst data = await response.json();\nconsole.log(data.choices[0].message.content);\n",
+      "rust": "use axum::{\n    extract::Json,\n    http::StatusCode,\n    response::sse::{Event, Sse},\n    routing::post,\n    Router,\n};\nuse serde::{Deserialize, Serialize};\nuse std::convert::Infallible;\nuse tokio_stream::wrappers::ReceiverStream;\n\n#[derive(Deserialize)]\nstruct ChatRequest {\n    model: String,\n    messages: Vec<Message>,\n    temperature: f32,\n    max_tokens: u32,\n    top_p: f32,\n    stream: bool,\n}\n\n#[derive(Serialize, Deserialize)]\nstruct Message {\n    role: String,\n    content: String,\n}\n\nasync fn chat_completion(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {\n    let (tx, rx) = tokio::sync::mpsc::channel(100);\n    \n    tokio::spawn(async move {\n        // Simulate streaming response\n        let response = format!(\"Response for model: {}\", payload.model);\n        for chunk in response.chars() {\n            let event = Event::default().data(chunk.to_string());\n            let _ = tx.send(Ok(event)).await;\n            tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;\n        }\n    });\n    \n    Sse::new(ReceiverStream::new(rx))\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new()\n        .route(\"/chat/completions\", post(chat_completion));\n    \n    axum::Server::bind(&\"0.0.0.0:3000\".parse().unwrap())\n        .serve(app.into_make_service())\n        .await\n        .unwrap();\n}"
+    },
+    "model_card": {
+      "overview": "",
+      "intended_use": [],
+      "limitations": [],
+      "training_data": "",
+      "evaluation": [],
+      "known_issues": [],
+      "references": []
+    }
+  },
+  "meta-llama/Llama-3-8B": {
+    "model_id": "meta-llama/Llama-3-8B",
+    "name": "LLaMA 3 8B",
+    "builder": "Meta AI",
+    "family": "Llama",
+    "size": "8B",
+    "huggingface_id": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "description": "The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models in 8B, 70B and 405B sizes (text in/text out). This 8B variant offers excellent performance for text generation tasks while being lightweight and efficient.\n",
+    "logo": "model_llama3_1.png",
+    "readiness_level": "Production-Ready",
+    "status_badges": [
+      "FP16",
+      "FlashAttention",
+      "Featured"
+    ],
+    "tags": [
+      "Text Generation",
+      "Multilingual",
+      "Instruction-Tuned",
+      "vLLM-Compatible",
+      "sglang-Compatible",
+      "Lightweight"
+    ],
+    "license": "Meta RAIL",
+    "endpoint": "https://api.inference-hub.com/v1/chat/completions",
+    "demo_assets": {
+      "notebook": "https://github.com/inference-hub/notebooks/llama-3-8b-demo.ipynb",
+      "demo_link": "https://playground.inference-hub.com/models/meta-llama/Llama-3-8B"
+    },
+    "aim_recipes": [
+      {
+        "name": "MI300X FP16",
+        "hardware": "MI300X",
+        "precision": "fp16",
+        "recipe_file": "configs/llama-3-8b-mi300x-fp16.yaml"
+      },
+      {
+        "name": "MI250 FP16",
+        "hardware": "MI250",
+        "precision": "fp16",
+        "recipe_file": "configs/llama-3-8b-mi250-fp16.yaml"
+      }
+    ],
+    "api_examples": {
+      "python": "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n}\n\npayload = {\n    \"model\": \"meta-llama/Llama-3-8B\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": False\n}\n\nresponse = requests.post(\"https://api.inference-hub.com/v1/chat/completions\", headers=headers, json=payload)\nprint(response.json())\n",
+      "shell": "curl -X POST https://api.inference-hub.com/v1/chat/completions \\\n  -H \"Authorization: Bearer YOUR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"meta-llama/Llama-3-8B\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n  }'\n",
+      "go": "package main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n    \"io/ioutil\"\n    \"net/http\"\n)\n\nfunc main() {\n    jsonStr := []byte(`{\n        \"model\": \"meta-llama/Llama-3-8B\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n    }`)\n\n    req, _ := http.NewRequest(\"POST\", \"https://api.inference-hub.com/v1/chat/completions\", bytes.NewBuffer(jsonStr))\n    req.Header.Set(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    req.Header.Set(\"Content-Type\", \"application/json\")\n\n    client := &http.Client{}\n    resp, _ := client.Do(req)\n    body, _ := ioutil.ReadAll(resp.Body)\n    fmt.Println(string(body))\n}\n",
+      "typescript": "const response = await fetch(\"https://api.inference-hub.com/v1/chat/completions\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  body: JSON.stringify({\n    model: \"meta-llama/Llama-3-8B\",\n    messages: [{ role: \"user\", content: \"Hello\" }],\n    stream: false\n  })\n});\n\nconst data = await response.json();\nconsole.log(data.choices[0].message.content);\n",
+      "rust": "use axum::{\n    extract::Json,\n    http::StatusCode,\n    response::sse::{Event, Sse},\n    routing::post,\n    Router,\n};\nuse serde::{Deserialize, Serialize};\nuse std::convert::Infallible;\nuse tokio_stream::wrappers::ReceiverStream;\n\n#[derive(Deserialize)]\nstruct ChatRequest {\n    model: String,\n    messages: Vec<Message>,\n    temperature: f32,\n    max_tokens: u32,\n    top_p: f32,\n    stream: bool,\n}\n\n#[derive(Serialize, Deserialize)]\nstruct Message {\n    role: String,\n    content: String,\n}\n\nasync fn chat_completion(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {\n    let (tx, rx) = tokio::sync::mpsc::channel(100);\n    \n    tokio::spawn(async move {\n        // Simulate streaming response\n        let response = format!(\"Response for model: {}\", payload.model);\n        for chunk in response.chars() {\n            let event = Event::default().data(chunk.to_string());\n            let _ = tx.send(Ok(event)).await;\n            tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;\n        }\n    });\n    \n    Sse::new(ReceiverStream::new(rx))\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new()\n        .route(\"/chat/completions\", post(chat_completion));\n    \n    axum::Server::bind(&\"0.0.0.0:3000\".parse().unwrap())\n        .serve(app.into_make_service())\n        .await\n        .unwrap();\n}"
+    },
+    "model_card": {
+      "overview": "",
+      "intended_use": [],
+      "limitations": [],
+      "training_data": "",
+      "evaluation": [],
+      "known_issues": [],
+      "references": []
     }
   },
   "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8": {
@@ -104,7 +337,7 @@ export const generatedModelData = {
     "family": "Llama",
     "size": "17B",
     "huggingface_id": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
-    "description": "LLaMA 4 Maverick is a 17B parameter model with FP8 precision and 128K context length. It's designed for high-performance inference with reduced memory usage through FP8 quantization while maintaining excellent instruction-following capabilities and extended context processing.\n",
+    "description": "LLaMA 4 Maverick is a 17B parameter model with FP8 precision and 128K context length.  It's designed for high-performance inference with reduced memory usage through FP8 quantization  while maintaining excellent instruction-following capabilities and extended context processing.\n",
     "logo": "model_llama4_maverick.png",
     "readiness_level": "Production-Ready",
     "status_badges": [
@@ -141,45 +374,97 @@ export const generatedModelData = {
     ],
     "api_examples": {
       "python": "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n}\n\npayload = {\n    \"model\": \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": False\n}\n\nresponse = requests.post(\"https://api.inference-hub.com/v1/chat/completions\", headers=headers, json=payload)\nprint(response.json())\n",
-      "javascript": "const response = await fetch(\"https://api.inference-hub.com/v1/chat/completions\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  body: JSON.stringify({\n    model: \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n    messages: [{ role: \"user\", content: \"Hello\" }],\n    stream: false\n  })\n});\n\nconst data = await response.json();\nconsole.log(data.choices[0].message.content);\n",
       "shell": "curl -X POST https://api.inference-hub.com/v1/chat/completions \\\n  -H \"Authorization: Bearer YOUR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n  }'\n",
-      "java": "HttpClient client = HttpClient.newHttpClient();\nHttpRequest request = HttpRequest.newBuilder()\n    .uri(URI.create(\"https://api.inference-hub.com/v1/chat/completions\"))\n    .header(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    .header(\"Content-Type\", \"application/json\")\n    .POST(HttpRequest.BodyPublishers.ofString(\"\"\"\n      {\n        \"model\": \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n      }\n    \"\"\"))\n    .build();\n\nHttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());\nSystem.out.println(response.body());\n",
       "go": "package main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n    \"io/ioutil\"\n    \"net/http\"\n)\n\nfunc main() {\n    jsonStr := []byte(`{\n        \"model\": \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n    }`)\n\n    req, _ := http.NewRequest(\"POST\", \"https://api.inference-hub.com/v1/chat/completions\", bytes.NewBuffer(jsonStr))\n    req.Header.Set(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    req.Header.Set(\"Content-Type\", \"application/json\")\n\n    client := &http.Client{}\n    resp, _ := client.Do(req)\n    body, _ := ioutil.ReadAll(resp.Body)\n    fmt.Println(string(body))\n}\n",
-      "csharp": "using System.Net.Http;\nusing System.Text;\nusing System.Threading.Tasks;\n\nvar client = new HttpClient();\nvar request = new HttpRequestMessage(HttpMethod.Post, \"https://api.inference-hub.com/v1/chat/completions\");\nrequest.Headers.Add(\"Authorization\", \"Bearer YOUR_API_KEY\");\n\nvar json = \"\"\"\n{\n    \"model\": \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n}\n\"\"\";\n\nrequest.Content = new StringContent(json, Encoding.UTF8, \"application/json\");\n\nvar response = await client.SendAsync(request);\nvar responseBody = await response.Content.ReadAsStringAsync();\nConsole.WriteLine(responseBody);\n"
+      "typescript": "const response = await fetch(\"https://api.inference-hub.com/v1/chat/completions\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  body: JSON.stringify({\n    model: \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n    messages: [{ role: \"user\", content: \"Hello\" }],\n    stream: false\n  })\n});\n\nconst data = await response.json();\nconsole.log(data.choices[0].message.content);\n",
+      "rust": "use axum::{\n    extract::Json,\n    http::StatusCode,\n    response::sse::{Event, Sse},\n    routing::post,\n    Router,\n};\nuse serde::{Deserialize, Serialize};\nuse std::convert::Infallible;\nuse tokio_stream::wrappers::ReceiverStream;\n\n#[derive(Deserialize)]\nstruct ChatRequest {\n    model: String,\n    messages: Vec<Message>,\n    temperature: f32,\n    max_tokens: u32,\n    top_p: f32,\n    stream: bool,\n}\n\n#[derive(Serialize, Deserialize)]\nstruct Message {\n    role: String,\n    content: String,\n}\n\nasync fn chat_completion(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {\n    let (tx, rx) = tokio::sync::mpsc::channel(100);\n    \n    tokio::spawn(async move {\n        // Simulate streaming response\n        let response = format!(\"Response for model: {}\", payload.model);\n        for chunk in response.chars() {\n            let event = Event::default().data(chunk.to_string());\n            let _ = tx.send(Ok(event)).await;\n            tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;\n        }\n    });\n    \n    Sse::new(ReceiverStream::new(rx))\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new()\n        .route(\"/chat/completions\", post(chat_completion));\n    \n    axum::Server::bind(&\"0.0.0.0:3000\".parse().unwrap())\n        .serve(app.into_make_service())\n        .await\n        .unwrap();\n}"
     },
     "model_card": {
-      "overview": "LLaMA 4 Maverick is a 17B parameter model with FP8 precision and 128K context length from Meta AI. It's designed for high-performance inference with reduced memory usage through FP8 quantization while maintaining excellent instruction-following capabilities and extended context processing.\n",
+      "overview": "",
+      "intended_use": [],
+      "limitations": [],
+      "training_data": "",
+      "evaluation": [],
+      "known_issues": [],
+      "references": []
+    }
+  },
+  "Qwen/Qwen2-7B-Instruct": {
+    "model_id": "Qwen/Qwen2-7B-Instruct",
+    "name": "Qwen2 7B Instruct",
+    "builder": "Alibaba Qwen Team",
+    "family": "Qwen2",
+    "size": "7B",
+    "huggingface_id": "Qwen/Qwen2-7B-Instruct",
+    "description": "Qwen2 has generally surpassed most open-source models and demonstrated competitiveness against proprietary models across a series of benchmarks targeting for language understanding, language generation, multilingual capability, coding, mathematics, reasoning, etc. This 7B instruction-tuned variant excels at code generation and mathematical reasoning.\n",
+    "logo": "model_Qwen2-7B.png",
+    "readiness_level": "Tech Preview",
+    "status_badges": [
+      "FP16",
+      "FlashAttention",
+      "Tech Preview"
+    ],
+    "tags": [
+      "Code Generation",
+      "Mathematics",
+      "Reasoning",
+      "Multilingual",
+      "Instruction-Tuned",
+      "vLLM-Compatible",
+      "sglang-Compatible"
+    ],
+    "license": "Apache 2.0",
+    "endpoint": "https://api.inference-hub.com/v1/chat/completions",
+    "demo_assets": {
+      "notebook": "https://github.com/inference-hub/notebooks/qwen2-7b-instruct-demo.ipynb",
+      "demo_link": "https://playground.inference-hub.com/models/Qwen/Qwen2-7B-Instruct"
+    },
+    "aim_recipes": [
+      {
+        "name": "MI300X FP16",
+        "hardware": "MI300X",
+        "precision": "fp16",
+        "recipe_file": "configs/qwen2-7b-instruct-mi300x-fp16.yaml"
+      },
+      {
+        "name": "MI250 FP16",
+        "hardware": "MI250",
+        "precision": "fp16",
+        "recipe_file": "configs/qwen2-7b-instruct-mi250-fp16.yaml"
+      }
+    ],
+    "api_examples": {
+      "python": "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n}\n\npayload = {\n    \"model\": \"Qwen/Qwen2-7B-Instruct\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": False\n}\n\nresponse = requests.post(\"https://api.inference-hub.com/v1/chat/completions\", headers=headers, json=payload)\nprint(response.json())\n",
+      "shell": "curl -X POST https://api.inference-hub.com/v1/chat/completions \\\n  -H \"Authorization: Bearer YOUR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"Qwen/Qwen2-7B-Instruct\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n  }'\n",
+      "go": "package main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n    \"io/ioutil\"\n    \"net/http\"\n)\n\nfunc main() {\n    jsonStr := []byte(`{\n        \"model\": \"Qwen/Qwen2-7B-Instruct\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n    }`)\n\n    req, _ := http.NewRequest(\"POST\", \"https://api.inference-hub.com/v1/chat/completions\", bytes.NewBuffer(jsonStr))\n    req.Header.Set(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    req.Header.Set(\"Content-Type\", \"application/json\")\n\n    client := &http.Client{}\n    resp, _ := client.Do(req)\n    body, _ := ioutil.ReadAll(resp.Body)\n    fmt.Println(string(body))\n}\n",
+      "typescript": "const response = await fetch(\"https://api.inference-hub.com/v1/chat/completions\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  body: JSON.stringify({\n    model: \"Qwen/Qwen2-7B-Instruct\",\n    messages: [{ role: \"user\", content: \"Hello\" }],\n    stream: false\n  })\n});\n\nconst data = await response.json();\nconsole.log(data.choices[0].message.content);\n",
+      "rust": "use axum::{\n    extract::Json,\n    http::StatusCode,\n    response::sse::{Event, Sse},\n    routing::post,\n    Router,\n};\nuse serde::{Deserialize, Serialize};\nuse std::convert::Infallible;\nuse tokio_stream::wrappers::ReceiverStream;\n\n#[derive(Deserialize)]\nstruct ChatRequest {\n    model: String,\n    messages: Vec<Message>,\n    temperature: f32,\n    max_tokens: u32,\n    top_p: f32,\n    stream: bool,\n}\n\n#[derive(Serialize, Deserialize)]\nstruct Message {\n    role: String,\n    content: String,\n}\n\nasync fn chat_completion(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {\n    let (tx, rx) = tokio::sync::mpsc::channel(100);\n    \n    tokio::spawn(async move {\n        // Simulate streaming response\n        let response = format!(\"Response for model: {}\", payload.model);\n        for chunk in response.chars() {\n            let event = Event::default().data(chunk.to_string());\n            let _ = tx.send(Ok(event)).await;\n            tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;\n        }\n    });\n    \n    Sse::new(ReceiverStream::new(rx))\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new()\n        .route(\"/chat/completions\", post(chat_completion));\n    \n    axum::Server::bind(&\"0.0.0.0:3000\".parse().unwrap())\n        .serve(app.into_make_service())\n        .await\n        .unwrap();\n}"
+    },
+    "model_card": {
+      "overview": "pipeline_tag: text-generation base_model: Qwen/Qwen2-7B",
       "intended_use": [
-        "Long-context document processing",
-        "Conversational agents with extended memory",
-        "Document summarization and analysis",
-        "Retrieval-augmented generation (RAG)",
-        "Multilingual text generation",
-        "Code generation and analysis"
+        "Text-Generation tasks"
       ],
       "limitations": [
-        "May hallucinate facts",
-        "Not suitable for safety-critical use",
-        "FP8 precision may affect numerical accuracy",
-        "Performance may vary with very long sequences"
+        "May generate biased or harmful content",
+        "Not suitable for safety-critical applications",
+        "Performance may vary across different tasks and domains"
       ],
-      "training_data": "Public web corpus, GitHub, Wikipedia, filtered Common Crawl, and other publicly available datasets. Training data cutoff: October 2023.\n",
+      "training_data": "We pretrained the models with a large amount of data, and we post-trained the models with both supervised finetuning and direct preference optimization.",
       "evaluation": [
-        "MMLU: 72.1",
-        "HumanEval (code): 48.3%",
-        "MT-Bench: 8.7",
-        "GSM8K: 82.1%"
+        "We briefly compare Qwen: 2",
+        "including Qwen: 1.5",
+        "Qwen: 1.5",
+        "Qwen: 2",
+        "GSM: 8"
       ],
       "known_issues": [
-        "May produce biased or harmful content",
-        "FP8 quantization may affect certain numerical tasks",
-        "Performance varies across languages",
-        "Memory usage scales with context length"
+        "May produce biased content",
+        "Limited reasoning capabilities",
+        "Performance varies across languages and domains"
       ],
       "references": [
-        "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
-        "https://github.com/facebookresearch/llama",
-        "https://ai.meta.com/llama/"
+        "https://huggingface.co/Qwen/Qwen2-7B-Instruct"
       ]
     }
   },
@@ -190,7 +475,7 @@ export const generatedModelData = {
     "family": "Qwen3",
     "size": "32.8B",
     "huggingface_id": "Qwen/Qwen3-32B",
-    "description": "Qwen3-32B is the latest generation of large language models in the Qwen series, offering groundbreaking advancements in reasoning, instruction-following, agent capabilities, and multilingual support. It uniquely supports seamless switching between thinking mode (for complex logical reasoning, math, and coding) and non-thinking mode (for efficient, general-purpose dialogue) within a single model.\n",
+    "description": "Qwen3-32B is the latest generation of large language models in the Qwen series, offering groundbreaking  advancements in reasoning, instruction-following, agent capabilities, and multilingual support.  It uniquely supports seamless switching between thinking mode (for complex logical reasoning, math, and coding)  and non-thinking mode (for efficient, general-purpose dialogue) within a single model.\n",
     "logo": "model_qwen3_32b.png",
     "readiness_level": "Production-Ready",
     "status_badges": [
@@ -229,131 +514,33 @@ export const generatedModelData = {
     ],
     "api_examples": {
       "python": "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n}\n\npayload = {\n    \"model\": \"Qwen/Qwen3-32B\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": False\n}\n\nresponse = requests.post(\"https://api.inference-hub.com/v1/chat/completions\", headers=headers, json=payload)\nprint(response.json())\n",
-      "javascript": "const response = await fetch(\"https://api.inference-hub.com/v1/chat/completions\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  body: JSON.stringify({\n    model: \"Qwen/Qwen3-32B\",\n    messages: [{ role: \"user\", content: \"Hello\" }],\n    stream: false\n  })\n});\n\nconst data = await response.json();\nconsole.log(data.choices[0].message.content);\n",
       "shell": "curl -X POST https://api.inference-hub.com/v1/chat/completions \\\n  -H \"Authorization: Bearer YOUR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"Qwen/Qwen3-32B\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n  }'\n",
-      "java": "HttpClient client = HttpClient.newHttpClient();\nHttpRequest request = HttpRequest.newBuilder()\n    .uri(URI.create(\"https://api.inference-hub.com/v1/chat/completions\"))\n    .header(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    .header(\"Content-Type\", \"application/json\")\n    .POST(HttpRequest.BodyPublishers.ofString(\"\"\"\n      {\n        \"model\": \"Qwen/Qwen3-32B\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n      }\n    \"\"\"))\n    .build();\n\nHttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());\nSystem.out.println(response.body());\n",
       "go": "package main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n    \"io/ioutil\"\n    \"net/http\"\n)\n\nfunc main() {\n    jsonStr := []byte(`{\n        \"model\": \"Qwen/Qwen3-32B\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n    }`)\n\n    req, _ := http.NewRequest(\"POST\", \"https://api.inference-hub.com/v1/chat/completions\", bytes.NewBuffer(jsonStr))\n    req.Header.Set(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    req.Header.Set(\"Content-Type\", \"application/json\")\n\n    client := &http.Client{}\n    resp, _ := client.Do(req)\n    body, _ := ioutil.ReadAll(resp.Body)\n    fmt.Println(string(body))\n}\n",
-      "csharp": "using System.Net.Http;\nusing System.Text;\nusing System.Threading.Tasks;\n\nvar client = new HttpClient();\nvar request = new HttpRequestMessage(HttpMethod.Post, \"https://api.inference-hub.com/v1/chat/completions\");\nrequest.Headers.Add(\"Authorization\", \"Bearer YOUR_API_KEY\");\n\nvar json = \"\"\"\n{\n    \"model\": \"Qwen/Qwen3-32B\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n}\n\"\"\";\n\nrequest.Content = new StringContent(json, Encoding.UTF8, \"application/json\");\n\nvar response = await client.SendAsync(request);\nvar responseBody = await response.Content.ReadAsStringAsync();\nConsole.WriteLine(responseBody);\n"
+      "typescript": "const response = await fetch(\"https://api.inference-hub.com/v1/chat/completions\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  body: JSON.stringify({\n    model: \"Qwen/Qwen3-32B\",\n    messages: [{ role: \"user\", content: \"Hello\" }],\n    stream: false\n  })\n});\n\nconst data = await response.json();\nconsole.log(data.choices[0].message.content);\n",
+      "rust": "use axum::{\n    extract::Json,\n    http::StatusCode,\n    response::sse::{Event, Sse},\n    routing::post,\n    Router,\n};\nuse serde::{Deserialize, Serialize};\nuse std::convert::Infallible;\nuse tokio_stream::wrappers::ReceiverStream;\n\n#[derive(Deserialize)]\nstruct ChatRequest {\n    model: String,\n    messages: Vec<Message>,\n    temperature: f32,\n    max_tokens: u32,\n    top_p: f32,\n    stream: bool,\n}\n\n#[derive(Serialize, Deserialize)]\nstruct Message {\n    role: String,\n    content: String,\n}\n\nasync fn chat_completion(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {\n    let (tx, rx) = tokio::sync::mpsc::channel(100);\n    \n    tokio::spawn(async move {\n        // Simulate streaming response\n        let response = format!(\"Response for model: {}\", payload.model);\n        for chunk in response.chars() {\n            let event = Event::default().data(chunk.to_string());\n            let _ = tx.send(Ok(event)).await;\n            tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;\n        }\n    });\n    \n    Sse::new(ReceiverStream::new(rx))\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new()\n        .route(\"/chat/completions\", post(chat_completion));\n    \n    axum::Server::bind(&\"0.0.0.0:3000\".parse().unwrap())\n        .serve(app.into_make_service())\n        .await\n        .unwrap();\n}"
     },
     "model_card": {
-      "overview": "Qwen3-32B is the latest generation of large language models in the Qwen series, offering groundbreaking advancements in reasoning, instruction-following, agent capabilities, and multilingual support. It uniquely supports seamless switching between thinking mode (for complex logical reasoning, math, and coding) and non-thinking mode (for efficient, general-purpose dialogue) within a single model.\n",
+      "overview": "library_name: transformers license_link: https://huggingface.co/Qwen/Qwen3-32B/blob/main/LICENSE pipeline_tag: text-generation",
       "intended_use": [
-        "Complex reasoning and problem solving",
-        "Code generation and analysis",
-        "Mathematical computations",
-        "Multilingual text generation",
-        "Agent-based tasks and tool integration",
-        "Creative writing and role-playing",
-        "Multi-turn conversations"
+        "Text-Generation tasks"
       ],
       "limitations": [
-        "May hallucinate facts",
-        "Not suitable for safety-critical use",
-        "Large model size requires significant computational resources",
-        "Performance may vary depending on thinking mode settings"
+        "May generate biased or harmful content",
+        "Not suitable for safety-critical applications",
+        "Performance may vary across different tasks and domains"
       ],
-      "training_data": "Diverse web corpus, code repositories, mathematical datasets, and multilingual content. Training data cutoff: 2024.\n",
+      "training_data": "Training data information not specified in model card.",
       "evaluation": [
-        "MMLU: 78.2",
-        "HumanEval (code): 65.8%",
-        "GSM8K: 89.3%",
-        "MATH: 52.1%",
-        "MT-Bench: 9.1"
+        "Evaluation metrics not specified in model card"
       ],
       "known_issues": [
         "May produce biased content",
-        "Thinking mode requires careful parameter tuning",
-        "Performance varies across different languages and domains",
-        "Requires adequate output length for complex problems"
+        "Limited reasoning capabilities",
+        "Performance varies across languages and domains"
       ],
       "references": [
-        "https://huggingface.co/Qwen/Qwen3-32B",
-        "https://github.com/QwenLM/Qwen3",
-        "https://arxiv.org/abs/2505.09388"
-      ]
-    }
-  },
-  "amd/Llama-3_1-405B-Instruct-FP8-KV": {
-    "model_id": "amd/Llama-3_1-405B-Instruct-FP8-KV",
-    "name": "Llama 3.1 405B Instruct FP8 KV",
-    "builder": "AMD",
-    "family": "Llama",
-    "size": "405B",
-    "huggingface_id": "amd/Llama-3_1-405B-Instruct-FP8-KV",
-    "description": "AMD's Llama-3.1-405B-Instruct-FP8-KV is a quantized version of Meta's Llama 3.1 405B Instruct model using AMD's Quark framework. It applies FP8 quantization to weights, activations, and KV cache, significantly reducing memory usage while maintaining high accuracy. The model uses symmetric per-tensor quantization for optimal performance on AMD hardware.\n",
-    "logo": "model_llama3_1_405b_fp8.png",
-    "readiness_level": "Production-Ready",
-    "status_badges": [
-      "FP8",
-      "FlashAttention",
-      "Featured"
-    ],
-    "tags": [
-      "Text Generation",
-      "Multilingual",
-      "Instruction-Tuned",
-      "vLLM-Compatible",
-      "Efficient"
-    ],
-    "license": "Meta RAIL",
-    "endpoint": "https://api.inference-hub.com/v1/chat/completions",
-    "demo_assets": {
-      "notebook": "https://github.com/inference-hub/notebooks/llama-3-1-405b-fp8-kv-demo.ipynb",
-      "demo_link": "https://playground.inference-hub.com/models/amd/Llama-3.1-405B-Instruct-FP8-KV"
-    },
-    "aim_recipes": [
-      {
-        "name": "MI300X FP8",
-        "hardware": "MI300X",
-        "precision": "fp8",
-        "recipe_file": "configs/llama-3-1-405b-fp8-kv-mi300x-fp8.yaml"
-      },
-      {
-        "name": "MI250 FP8",
-        "hardware": "MI250",
-        "precision": "fp8",
-        "recipe_file": "configs/llama-3-1-405b-fp8-kv-mi250-fp8.yaml"
-      }
-    ],
-    "api_examples": {
-      "python": "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n}\n\npayload = {\n    \"model\": \"amd/Llama-3.1-405B-Instruct-FP8-KV\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": False\n}\n\nresponse = requests.post(\"https://api.inference-hub.com/v1/chat/completions\", headers=headers, json=payload)\nprint(response.json())\n",
-      "javascript": "const response = await fetch(\"https://api.inference-hub.com/v1/chat/completions\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer YOUR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  body: JSON.stringify({\n    model: \"amd/Llama-3.1-405B-Instruct-FP8-KV\",\n    messages: [{ role: \"user\", content: \"Hello\" }],\n    stream: false\n  })\n});\n\nconst data = await response.json();\nconsole.log(data.choices[0].message.content);\n",
-      "shell": "curl -X POST https://api.inference-hub.com/v1/chat/completions \\\n  -H \"Authorization: Bearer YOUR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"amd/Llama-3.1-405B-Instruct-FP8-KV\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n  }'\n",
-      "java": "HttpClient client = HttpClient.newHttpClient();\nHttpRequest request = HttpRequest.newBuilder()\n    .uri(URI.create(\"https://api.inference-hub.com/v1/chat/completions\"))\n    .header(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    .header(\"Content-Type\", \"application/json\")\n    .POST(HttpRequest.BodyPublishers.ofString(\"\"\"\n      {\n        \"model\": \"amd/Llama-3.1-405B-Instruct-FP8-KV\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n      }\n    \"\"\"))\n    .build();\n\nHttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());\nSystem.out.println(response.body());\n",
-      "go": "package main\n\nimport (\n    \"bytes\"\n    \"fmt\"\n    \"io/ioutil\"\n    \"net/http\"\n)\n\nfunc main() {\n    jsonStr := []byte(`{\n        \"model\": \"amd/Llama-3.1-405B-Instruct-FP8-KV\",\n        \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n        \"stream\": false\n    }`)\n\n    req, _ := http.NewRequest(\"POST\", \"https://api.inference-hub.com/v1/chat/completions\", bytes.NewBuffer(jsonStr))\n    req.Header.Set(\"Authorization\", \"Bearer YOUR_API_KEY\")\n    req.Header.Set(\"Content-Type\", \"application/json\")\n\n    client := &http.Client{}\n    resp, _ := client.Do(req)\n    body, _ := ioutil.ReadAll(resp.Body)\n    fmt.Println(string(body))\n}\n",
-      "csharp": "using System.Net.Http;\nusing System.Text;\nusing System.Threading.Tasks;\n\nvar client = new HttpClient();\nvar request = new HttpRequestMessage(HttpMethod.Post, \"https://api.inference-hub.com/v1/chat/completions\");\nrequest.Headers.Add(\"Authorization\", \"Bearer YOUR_API_KEY\");\n\nvar json = \"\"\"\n{\n    \"model\": \"amd/Llama-3.1-405B-Instruct-FP8-KV\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}],\n    \"stream\": false\n}\n\"\"\";\n\nrequest.Content = new StringContent(json, Encoding.UTF8, \"application/json\");\n\nvar response = await client.SendAsync(request);\nvar responseBody = await response.Content.ReadAsStringAsync();\nConsole.WriteLine(responseBody);\n"
-    },
-    "model_card": {
-      "overview": "AMD's Llama-3.1-405B-Instruct-FP8-KV is a quantized version of Meta's Llama 3.1 405B Instruct model using AMD's Quark framework. It applies FP8 quantization to weights, activations, and KV cache, significantly reducing memory usage while maintaining high accuracy. The model uses symmetric per-tensor quantization for optimal performance on AMD hardware.\n",
-      "intended_use": [
-        "High-performance text generation",
-        "Complex reasoning tasks",
-        "Large-scale language understanding",
-        "Research and development",
-        "Enterprise applications requiring efficiency"
-      ],
-      "limitations": [
-        "May hallucinate facts",
-        "Not suitable for safety-critical use",
-        "Requires significant computational resources",
-        "FP8 quantization may affect certain numerical tasks"
-      ],
-      "training_data": "Based on Meta's Llama 3.1 405B Instruct model training data. Quantization applied using Pile dataset calibration samples.\n",
-      "evaluation": [
-        "Perplexity-wikitext2: 1.8951",
-        "Original PPL: 1.8561",
-        "Quantization loss: 2.1%"
-      ],
-      "known_issues": [
-        "May produce biased content",
-        "FP8 quantization may affect certain numerical tasks",
-        "Performance varies across different domains",
-        "Requires AMD hardware for optimal performance"
-      ],
-      "references": [
-        "https://huggingface.co/amd/Llama-3.1-405B-Instruct-FP8-KV",
-        "https://github.com/AMD/Quark",
-        "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct"
+        "https://arxiv.org/abs/2505.09388},",
+        "https://huggingface.co/Qwen/Qwen3-32B"
       ]
     }
   }

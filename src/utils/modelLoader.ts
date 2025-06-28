@@ -30,11 +30,10 @@ export interface ModelData {
   }>;
   api_examples: {
     python: string;
-    javascript: string;
+    typescript: string;
     shell: string;
-    java: string;
+    rust: string;
     go: string;
-    csharp: string;
   };
   model_card: {
     overview: string;

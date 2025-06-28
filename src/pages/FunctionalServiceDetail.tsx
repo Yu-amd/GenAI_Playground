@@ -44,7 +44,7 @@ const FunctionalServiceDetail: React.FC = () => {
     { role: 'system', content: 'Hi, I\'m a functional microservice. How can I help you today?', timestamp: new Date() }
   ]);
   const [inputMessage, setInputMessage] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState<'python' | 'javascript' | 'java' | 'go' | 'csharp' | 'shell'>('python');
+  const [selectedLanguage, setSelectedLanguage] = useState<'python' | 'typescript' | 'rust' | 'go' | 'shell'>('python');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -1048,10 +1048,9 @@ The Integration Service handles integration with external systems and APIs.
                       className="px-4 py-2 bg-neutral-800 text-white border border-neutral-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="python">Python</option>
-                      <option value="javascript">JavaScript</option>
-                      <option value="java">Java</option>
+                      <option value="typescript">TypeScript</option>
+                      <option value="rust">Rust</option>
                       <option value="go">Go</option>
-                      <option value="csharp">C#</option>
                       <option value="shell">Shell</option>
                     </select>
                     <button
@@ -1085,7 +1084,7 @@ The Integration Service handles integration with external systems and APIs.
                   <Highlight
                     theme={themes.nightOwl}
                     code={codeContent || '// Generated code will appear here...'}
-                    language={selectedLanguage === 'csharp' ? 'clike' : selectedLanguage}
+                    language={selectedLanguage}
                   >
                     {({ style, tokens, getLineProps, getTokenProps }) => (
                       <pre className="p-4 m-0 min-h-full font-mono text-sm" style={style}>

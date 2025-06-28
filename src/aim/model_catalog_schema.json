@@ -201,16 +201,16 @@
     "api_examples": {
       "type": "object",
       "description": "API usage examples in different programming languages",
-      "required": ["python", "javascript", "shell"],
+      "required": ["python", "typescript", "shell"],
       "properties": {
         "python": {
           "type": "string",
           "description": "Python API example",
           "minLength": 10
         },
-        "javascript": {
+        "typescript": {
           "type": "string",
-          "description": "JavaScript API example",
+          "description": "TypeScript API example",
           "minLength": 10
         },
         "shell": {
@@ -218,19 +218,14 @@
           "description": "Shell/curl API example",
           "minLength": 10
         },
-        "java": {
+        "rust": {
           "type": "string",
-          "description": "Java API example",
+          "description": "Rust API example",
           "minLength": 10
         },
         "go": {
           "type": "string",
           "description": "Go API example",
-          "minLength": 10
-        },
-        "csharp": {
-          "type": "string",
-          "description": "C# API example",
           "minLength": 10
         }
       },

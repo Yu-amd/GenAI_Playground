@@ -8,7 +8,7 @@ describe('API Code Generation', () => {
     max_tokens: 2048,
     top_p: 0.9
   };
-  const mockInputMessage = 'Hello, how are you?';
+  const mockInputMessage = 'Hello, world!';
 
   describe('Python Code Generation', () => {
     it('should generate valid Python code with all required components', () => {
@@ -34,9 +34,9 @@ describe('API Code Generation', () => {
     });
   });
 
-  describe('JavaScript Code Generation', () => {
-    it('should generate valid JavaScript code with all required components', () => {
-      const code = getDefaultCode('javascript', mockModelId, mockParameters, mockInputMessage);
+  describe('TypeScript Code Generation', () => {
+    it('should generate valid TypeScript code with all required components', () => {
+      const code = getDefaultCode('typescript', mockModelId, mockParameters, mockInputMessage);
       
       expect(code).toContain('import OpenAI from \'openai\'');
       expect(code).toContain('baseURL: \'http://localhost:1234/v1\'');
@@ -49,18 +49,17 @@ describe('API Code Generation', () => {
     });
   });
 
-  describe('Java Code Generation', () => {
-    it('should generate valid Java code with all required components', () => {
-      const code = getDefaultCode('java', mockModelId, mockParameters, mockInputMessage);
+  describe('Rust Code Generation', () => {
+    it('should generate valid Rust code with all required components', () => {
+      const code = getDefaultCode('rust', mockModelId, mockParameters, mockInputMessage);
       
-      expect(code).toContain('import com.theokanning.openai.completion.chat.ChatCompletionRequest');
-      expect(code).toContain('import com.theokanning.openai.completion.chat.ChatMessage');
-      expect(code).toContain('import com.theokanning.openai.service.OpenAiService');
-      expect(code).toContain(`model("${mockModelId}")`);
-      expect(code).toContain(`temperature(${mockParameters.temperature})`);
-      expect(code).toContain(`maxTokens(${mockParameters.max_tokens})`);
-      expect(code).toContain(`topP(${mockParameters.top_p})`);
-      expect(code).toContain('stream(true)');
+      expect(code).toContain('use axum::');
+      expect(code).toContain('use serde::{Deserialize, Serialize}');
+      expect(code).toContain('struct ChatRequest');
+      expect(code).toContain('struct Message');
+      expect(code).toContain('async fn chat_completion');
+      expect(code).toContain('Router::new()');
+      expect(code).toContain('.route("/chat/completions", post(chat_completion))');
     });
   });
 
@@ -82,21 +81,6 @@ describe('API Code Generation', () => {
       expect(code).toContain('Stream:      true');
       expect(code).toContain('stream, err := client.CreateChatCompletionStream');
       expect(code).toContain('if len(response.Choices) > 0 && response.Choices[0].Delta.Content != ""');
-    });
-  });
-
-  describe('C# Code Generation', () => {
-    it('should generate valid C# code with all required components', () => {
-      const code = getDefaultCode('csharp', mockModelId, mockParameters, mockInputMessage);
-      
-      expect(code).toContain('using OpenAI;');
-      expect(code).toContain('using OpenAI.Chat;');
-      expect(code).toContain(`Model = "${mockModelId}"`);
-      expect(code).toContain(`Temperature = ${mockParameters.temperature}`);
-      expect(code).toContain(`MaxTokens = ${mockParameters.max_tokens}`);
-      expect(code).toContain(`TopP = ${mockParameters.top_p}`);
-      expect(code).toContain('Stream = true');
-      expect(code).toContain('Console.Write(chunk.Choices[0].Delta.Content)');
     });
   });
 

@@ -1,1 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap'); 
+
+/* Custom underscore cursor */
+.underscore-cursor {
+  position: relative;
+}
+
+.underscore-cursor::after {
+  content: '_';
+  position: absolute;
+  color: white;
+  animation: blink 1s infinite;
+  font-weight: bold;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Fast blinking cursor */
+.fast-cursor {
+  caret-color: transparent !important;
+}
+
+.fast-cursor::after {
+  content: '|';
+  position: absolute;
+  color: white;
+  animation: fastBlink 0.6s infinite;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+@keyframes fastBlink {
+  0%, 45% { opacity: 1; }
+  46%, 100% { opacity: 0; }
+} 

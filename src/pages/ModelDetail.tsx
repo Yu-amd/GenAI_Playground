@@ -38,12 +38,6 @@ interface Parameter {
   step?: number;
 }
 
-interface ParameterPreset {
-  name: string;
-  description: string;
-  parameters: Record<string, number>;
-}
-
 const ModelDetail: React.FC = () => {
   const { modelId = '', '*': splat = '' } = useParams();
   const fullModelId = splat ? `${modelId}/${splat}` : modelId;
@@ -53,13 +47,9 @@ const ModelDetail: React.FC = () => {
     { role: 'system', content: 'Hi, what can I do for you today?', timestamp: new Date() }
   ]);
   const [inputMessage, setInputMessage] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState<'python' | 'javascript' | 'java' | 'go' | 'csharp' | 'shell'>('python');
+  const [selectedLanguage, setSelectedLanguage] = useState<'python' | 'typescript' | 'rust' | 'go' | 'shell'>('python');
   const [isToolCallingEnabled, setIsToolCallingEnabled] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [endpointConfig, setEndpointConfig] = useState({
-    endpoint: 'http://localhost:1234/v1',
-    apiKey: ''
-  });
   const [streamingContent, setStreamingContent] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -69,6 +59,8 @@ const ModelDetail: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showParameters, setShowParameters] = useState(false);
   const [showModelCard, setShowModelCard] = useState(false);
+  const [endpoint, setEndpoint] = useState('http://localhost:1234/v1');
+  const [endpointSaved, setEndpointSaved] = useState(false);
   
   // Enhanced parameters with more comprehensive options
   const [parameters, setParameters] = useState<Parameter[]>([
@@ -78,65 +70,6 @@ const ModelDetail: React.FC = () => {
     { name: 'presence_penalty', value: 0.0, type: 'number', description: 'Encourages model to talk about new topics (-2.0 to 2.0)', min: -2, max: 2, step: 0.1 },
     { name: 'max_tokens', value: 2048, type: 'number', description: 'Maximum number of tokens to generate', min: 100, max: 8192, step: 100 }
   ]);
-
-  // Parameter presets for different use cases
-  const parameterPresets: ParameterPreset[] = [
-    {
-      name: 'Creative Writing',
-      description: 'High creativity, diverse outputs',
-      parameters: {
-        temperature: 0.9,
-        top_p: 0.9,
-        frequency_penalty: 0.3,
-        presence_penalty: 0.1,
-        max_tokens: 2048
-      }
-    },
-    {
-      name: 'Code Generation',
-      description: 'Focused, deterministic code',
-      parameters: {
-        temperature: 0.2,
-        top_p: 0.95,
-        frequency_penalty: 0.0,
-        presence_penalty: 0.0,
-        max_tokens: 2048
-      }
-    },
-    {
-      name: 'Conversation',
-      description: 'Balanced for chat interactions',
-      parameters: {
-        temperature: 0.7,
-        top_p: 0.9,
-        frequency_penalty: 0.1,
-        presence_penalty: 0.1,
-        max_tokens: 2048
-      }
-    },
-    {
-      name: 'Analysis',
-      description: 'Focused, analytical responses',
-      parameters: {
-        temperature: 0.3,
-        top_p: 0.8,
-        frequency_penalty: 0.0,
-        presence_penalty: 0.0,
-        max_tokens: 2048
-      }
-    },
-    {
-      name: 'Creative Coding',
-      description: 'Creative but structured code',
-      parameters: {
-        temperature: 0.6,
-        top_p: 0.9,
-        frequency_penalty: 0.1,
-        presence_penalty: 0.1,
-        max_tokens: 2048
-      }
-    }
-  ];
 
   const [tools] = useState([
     {
@@ -299,14 +232,6 @@ const ModelDetail: React.FC = () => {
     ));
   };
 
-  const applyPreset = (preset: ParameterPreset) => {
-    setParameters(prev => prev.map(param => 
-      preset.parameters[param.name] !== undefined 
-        ? { ...param, value: preset.parameters[param.name] }
-        : param
-    ));
-  };
-
   const resetToDefaults = () => {
     setParameters(prev => prev.map(param => ({
       ...param,
@@ -419,86 +344,8 @@ const ModelDetail: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleUpdateEndpoint = () => {
-    // Ensure the endpoint ends with /v1
-    const endpoint = endpointConfig.endpoint.trim();
-    const formattedEndpoint = endpoint.endsWith('/v1') ? endpoint : `${endpoint}/v1`;
-    
-    lmStudioService.setConfig({
-      ...endpointConfig,
-      endpoint: formattedEndpoint
-    });
-    setShowSettings(false);
-  };
-
-  const renderSettings = () => (
-    <div className="p-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold">Settings</h3>
-          <p className="text-sm text-gray-400">(LM-studio for testing only)</p>
-        </div>
-        <button
-          onClick={() => setShowSettings(false)}
-          className="text-gray-400 hover:text-white"
-        >
-          <XMarkIcon className="h-6 w-6" />
-        </button>
-      </div>
-
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            Endpoint URL
-          </label>
-          <div className="flex items-center gap-2">
-            <div className="flex-1">
-              <input
-                type="text"
-                value={endpointConfig.endpoint.replace('/v1', '')}
-                onChange={(e) =>
-                  setEndpointConfig((prev) => ({
-                    ...prev,
-                    endpoint: e.target.value,
-                  }))
-                }
-                className="w-full bg-gray-800 text-white rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="http://localhost:1234"
-              />
-            </div>
-            <span className="text-gray-400 whitespace-nowrap">/v1</span>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            API Key (Optional)
-          </label>
-          <input
-            type="password"
-            value={endpointConfig.apiKey}
-            onChange={(e) =>
-              setEndpointConfig((prev) => ({
-                ...prev,
-                apiKey: e.target.value,
-              }))
-            }
-            className="w-full bg-gray-800 text-white rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your API key"
-          />
-        </div>
-
-        <div className="pt-4">
-          <button
-            onClick={handleUpdateEndpoint}
-            className="w-full bg-blue-600 text-white rounded-lg p-2 hover:bg-blue-700"
-          >
-            Save Settings
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  // Debug log for settings modal
+  console.log('showSettings:', showSettings);
 
   if (!model) {
     return (
@@ -510,7 +357,7 @@ const ModelDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-900 text-white font-sans">
+    <div className="min-h-screen bg-black text-white font-sans">
       <style>{`
         .slider::-webkit-slider-thumb {
           appearance: none;
@@ -619,12 +466,11 @@ const ModelDetail: React.FC = () => {
           {activeTab === 'interact' && (
             <div className="flex flex-row gap-8 items-stretch h-[700px]">
               {/* Chatbox (left) */}
-              <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-transparent backdrop-blur-lg rounded-3xl p-4 border border-white/10 shadow-lg mb-8 md:mb-0 flex flex-col font-sans" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+              <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-black rounded-3xl p-4 shadow-lg mb-8 md:mb-0 flex flex-col font-sans" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-white">Chat</h3>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setShowSettings(!showSettings)}
+                      onClick={() => { console.log('Settings clicked'); setShowSettings(!showSettings); }}
                       className="text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-all"
                       title="Settings"
                     >
@@ -645,37 +491,42 @@ const ModelDetail: React.FC = () => {
                     {messages.map((message, index) => (
                       <div
                         key={index}
-                        className={`flex py-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} my-3`}
                       >
-                        <div
-                          className={`max-w-[85%] px-1 py-0 text-sm text-white`}
-                          style={{ fontFamily: message.role === 'user' ? 'Inter, system-ui, sans-serif' : 'Lora, serif' }}
-                        >
-                          <div className="prose prose-invert max-w-none">
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm]}
-                              rehypePlugins={[rehypeRaw]}
-                            >
-                              {message.content}
-                            </ReactMarkdown>
-                          </div>
-                          {message.tool_calls && (
-                            <div className="mt-2 p-2 bg-black/10 rounded-xl border border-white/5">
-                              <div className="font-semibold text-xs text-blue-300 mb-1">Tool Calls:</div>
-                              {message.tool_calls.map((toolCall, i) => (
-                                <div key={i} className="text-xs space-y-1">
-                                  <div className="text-gray-300">Function: <span className="text-blue-300">{toolCall.function.name}</span></div>
-                                  <div className="text-gray-400">Arguments: <span className="text-green-300">{toolCall.function.arguments}</span></div>
-                                </div>
-                              ))}
+                        {message.role === 'user' ? (
+                          <div
+                            className="max-w-[80%] text-white text-base font-medium"
+                            style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+                          >
+                            <div className="prose prose-invert max-w-none">
+                              <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                rehypePlugins={[rehypeRaw]}
+                              >
+                                {message.content}
+                              </ReactMarkdown>
                             </div>
-                          )}
-                        </div>
+                          </div>
+                        ) : (
+                          <div
+                            className="max-w-[80%] text-neutral-300 text-base font-normal"
+                            style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+                          >
+                            <div className="prose prose-invert max-w-none">
+                              <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                rehypePlugins={[rehypeRaw]}
+                              >
+                                {message.content}
+                              </ReactMarkdown>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                     {isStreaming && streamingContent && (
-                      <div className="flex justify-start py-2">
-                        <div className="max-w-[85%] px-5 py-3 bg-white/10 text-white border border-white/10 shadow-sm text-sm">
+                      <div className="flex justify-start my-3">
+                        <div className="max-w-[80%] text-neutral-300 text-base font-normal" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
                           <div className="prose prose-invert max-w-none">
                             <ReactMarkdown
                               remarkPlugins={[remarkGfm]}
@@ -691,27 +542,31 @@ const ModelDetail: React.FC = () => {
                   </div>
                   {/* Input area */}
                   <div className="mt-2">
-                    <div className="flex items-end space-x-2 bg-white/5 rounded-full px-3 py-2 border border-white/10">
+                    <div className="flex items-end space-x-2 bg-neutral-900 px-2 py-1">
                       <textarea
                         ref={textareaRef}
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder="Type your message..."
-                        className="flex-1 bg-transparent text-white rounded-full p-2 min-h-[36px] max-h-[120px] resize-none focus:outline-none focus:ring-0 border-0 font-sans"
+                        placeholder=""
+                        className="flex-1 bg-transparent text-white p-1 min-h-[32px] max-h-[120px] resize-none focus:outline-none focus:ring-0 border-0 font-sans"
                         disabled={isLoading}
-                        style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+                        autoFocus
+                        style={{ 
+                          fontFamily: 'Inter, system-ui, sans-serif',
+                          caretColor: 'white'
+                        }}
                       />
                       <button
                         onClick={handleSendMessage}
                         disabled={isLoading || !inputMessage.trim()}
-                        className={`p-2 rounded-full transition-all duration-300 ${
+                        className={`p-1.5 rounded-full transition-all duration-300 ${
                           isLoading || !inputMessage.trim()
                             ? 'bg-gray-600/20 text-gray-400 cursor-not-allowed'
                             : 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-500/20 hover:border-blue-500/40 shadow-sm hover:shadow-md'
                         }`}
                       >
-                        <PaperAirplaneIcon className="h-5 w-5" />
+                        <PaperAirplaneIcon className="h-4 w-4" />
                       </button>
                     </div>
                   </div>
@@ -742,8 +597,8 @@ const ModelDetail: React.FC = () => {
                   <CodeBracketIcon className="w-6 h-6 text-blue-400" />
                   <h3 className="text-xl font-bold text-white">API Integration</h3>
                 </div>
-                <div className="flex flex-nowrap gap-3 mb-6 px-6 items-center overflow-x-auto">
-                  {['python', 'javascript', 'java', 'go', 'csharp', 'shell'].map((lang) => (
+                <div className="flex flex-nowrap gap-3 mb-6 px-6 items-center">
+                  {['python', 'typescript', 'rust', 'go', 'shell'].map((lang) => (
                     <button
                       key={lang}
                       onClick={() => setSelectedLanguage(lang as typeof selectedLanguage)}
@@ -753,7 +608,7 @@ const ModelDetail: React.FC = () => {
                           : 'bg-white/10 text-gray-300 border-white/20 hover:bg-white/20 hover:text-white'
                       }`}
                     >
-                      {lang === 'csharp' ? 'C#' : lang.charAt(0).toUpperCase() + lang.slice(1)}
+                      {lang === 'typescript' ? 'TypeScript' : lang.charAt(0).toUpperCase() + lang.slice(1)}
                     </button>
                   ))}
                   <button
@@ -946,6 +801,59 @@ const ModelDetail: React.FC = () => {
             ) : (
               <div className="text-center py-12 text-gray-400">No model card information available.</div>
             )}
+          </div>
+        </div>
+      )}
+      {/* Minimal Settings Modal (moved to root) */}
+      {showSettings && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowSettings(false)}>
+          <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl w-full max-w-md p-8 flex flex-col items-center" onClick={e => e.stopPropagation()}>
+            <button
+              className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all text-2xl"
+              onClick={() => setShowSettings(false)}
+              title="Close"
+            >
+              &times;
+            </button>
+            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <Cog6ToothIcon className="w-6 h-6 text-blue-400" />
+              Settings
+            </h2>
+            <div className="w-full flex flex-col gap-6">
+              <div className="flex flex-col gap-2 w-full">
+                <label className="text-gray-200 font-medium" htmlFor="endpoint-input">Model Endpoint</label>
+                <input
+                  id="endpoint-input"
+                  type="text"
+                  className="w-full rounded-lg bg-neutral-900 text-white border border-white/10 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  value={endpoint}
+                  onChange={e => { setEndpoint(e.target.value); setEndpointSaved(false); }}
+                  placeholder="http://localhost:1234/v1"
+                />
+                <button
+                  className="mt-2 px-4 py-1 rounded-full bg-blue-600/80 text-white font-semibold hover:bg-blue-700 transition-all self-end"
+                  onClick={() => {
+                    // Remove trailing /v1 or /v1/ if present
+                    let cleanEndpoint = endpoint.trim().replace(/\/?v1\/?$/, '');
+                    setEndpoint(cleanEndpoint);
+                    setEndpointSaved(true);
+                    setShowSettings(false);
+                  }}
+                >
+                  Save
+                </button>
+                {endpointSaved && <div className="text-green-400 text-xs mt-1">Endpoint saved!</div>}
+              </div>
+              <div className="flex items-center justify-between w-full">
+                <span className="text-gray-200 font-medium">Clear Chat</span>
+                <button
+                  className="px-4 py-1 rounded-full bg-red-600/80 text-white font-semibold hover:bg-red-700 transition-all"
+                  onClick={() => { setMessages([{ role: 'system', content: 'Hi, what can I do for you today?', timestamp: new Date() }]); setShowSettings(false); }}
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

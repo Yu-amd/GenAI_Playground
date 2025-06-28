@@ -115,13 +115,13 @@ export class LMStudioService {
   ): Promise<ChatCompletionResponse> {
     try {
       console.log('Sending request to LM-studio:', {
-        url: `${this.config.endpoint}/chat/completions`,
+        url: `${this.config.endpoint}/v1/chat/completions`,
         request
       });
 
       if (onStreamChunk) {
         // Handle streaming response
-        const response = await fetch(`${this.config.endpoint}/chat/completions`, {
+        const response = await fetch(`${this.config.endpoint}/v1/chat/completions`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -189,7 +189,7 @@ export class LMStudioService {
         };
       } else {
         // Handle regular response
-        const response = await this.axiosInstance.post('/chat/completions', request);
+        const response = await this.axiosInstance.post('/v1/chat/completions', request);
         console.log('Received response from LM-studio:', response.data);
         return response.data;
       }
