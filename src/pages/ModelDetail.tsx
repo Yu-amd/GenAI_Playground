@@ -612,6 +612,13 @@ const ModelDetail: React.FC = () => {
                     </button>
                   ))}
                   <button
+                    onClick={() => setIsCodeModalOpen(true)}
+                    className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all ml-2"
+                    title="View Full Code"
+                  >
+                    <CodeBracketIcon className="w-5 h-5" />
+                  </button>
+                  <button
                     onClick={handleCopyCode}
                     className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all"
                     title="Copy code"
@@ -621,14 +628,6 @@ const ModelDetail: React.FC = () => {
                     ) : (
                       <ClipboardIcon className="w-5 h-5" />
                     )}
-                  </button>
-                  <div className="flex-grow" />
-                  <button
-                    onClick={() => setIsCodeModalOpen(true)}
-                    className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all ml-2"
-                    title="View Full Code"
-                  >
-                    <CodeBracketIcon className="w-5 h-5" />
                   </button>
                 </div>
                 <div className="px-6 pb-6">
