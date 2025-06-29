@@ -481,6 +481,7 @@ const ModelDetail: React.FC = () => {
   const [showDeploymentGuide, setShowDeploymentGuide] = useState(false);
   const [isModelCardEditing, setIsModelCardEditing] = useState(false);
   const [modelCardContent, setModelCardContent] = useState<any>(null);
+  const [showCursor, setShowCursor] = useState(true);
   
   // Enhanced parameters with more comprehensive options
   const [parameters, setParameters] = useState<Parameter[]>([
@@ -676,6 +677,18 @@ const ModelDetail: React.FC = () => {
       setModelCardContent(model.model_card);
     }
   }, [model, modelCardContent]);
+
+  // Blinking cursor effect
+  useEffect(() => {
+    if (!inputMessage.trim()) {
+      const interval = setInterval(() => {
+        setShowCursor(prev => !prev);
+      }, 500);
+      return () => clearInterval(interval);
+    } else {
+      setShowCursor(true);
+    }
+  }, [inputMessage]);
 
   const handleParameterChange = (paramName: string, value: number) => {
     setParameters(prev => prev.map(param => 
@@ -884,7 +897,7 @@ const ModelDetail: React.FC = () => {
         {/* Main Content with Loading State */}
         <div className="flex flex-col md:flex-row max-w-[1600px] mx-auto p-8 gap-8 -mt-8 relative z-10">
           <div className="flex-1">
-            <div className="flex flex-row gap-8 items-stretch h-[700px]">
+            <div className="flex flex-row gap-8 items-stretch h-[700px]" style={{ position: 'relative' }}>
               {/* Chatbox (left) - Always rendered */}
               <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-black rounded-3xl p-4 shadow-lg mb-8 md:mb-0 flex flex-col font-sans" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
                 <div className="flex items-center justify-between mb-4">
@@ -945,38 +958,56 @@ const ModelDetail: React.FC = () => {
                       <div className="text-sm">Please wait while we load the model details</div>
                     </div>
                   </div>
-                  {/* Input area - disabled when loading */}
-                  <div className="mt-2">
-                    <div className="flex items-end space-x-2 bg-neutral-900 px-2 py-1">
-                      <textarea
-                        ref={textareaRef}
-                        value={inputMessage}
-                        onChange={(e) => setInputMessage(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        placeholder=""
-                        role="textbox"
-                        className="flex-1 bg-transparent text-white p-1 min-h-[32px] max-h-[120px] resize-none focus:outline-none focus:ring-0 border-0 font-sans opacity-50"
-                        disabled={true}
-                        tabIndex={0}
-                        style={{ 
-                          fontFamily: 'Inter, system-ui, sans-serif',
-                          caretColor: 'white'
-                        }}
-                      />
+                  {/* Input area */}
+                  <div className="mt-4">
+                    <div className="flex items-end space-x-3 relative">
+                      <div className="flex-1 relative">
+                        <textarea
+                          ref={textareaRef}
+                          value={inputMessage}
+                          onChange={(e) => setInputMessage(e.target.value)}
+                          onKeyPress={handleKeyPress}
+                          placeholder=""
+                          role="textbox"
+                          className="w-full bg-transparent text-white p-4 min-h-[80px] max-h-[300px] resize-none focus:outline-none focus:ring-0 border border-white/20 rounded-xl font-sans text-lg cursor-text"
+                          disabled={isLoading}
+                          autoFocus
+                          tabIndex={0}
+                          style={{ 
+                            fontFamily: 'Inter, system-ui, sans-serif',
+                            caretColor: inputMessage.trim() ? 'white' : 'transparent'
+                          }}
+                        />
+                        {!inputMessage.trim() && (
+                          <div 
+                            className="absolute left-4 top-4 pointer-events-none"
+                            style={{ 
+                              width: '2px', 
+                              height: '1.5em', 
+                              backgroundColor: showCursor ? 'white' : 'transparent',
+                              transition: 'opacity 0.1s ease-in-out'
+                            }}
+                          />
+                        )}
+                      </div>
                       <button
                         aria-label="Send"
                         onClick={handleSendMessage}
-                        disabled={true}
-                        className="p-1.5 rounded-full transition-all duration-300 bg-gray-600/20 text-gray-400 cursor-not-allowed"
+                        disabled={isLoading || !inputMessage.trim()}
+                        className={`p-3 rounded-full transition-all duration-300 ${
+                          isLoading || !inputMessage.trim()
+                            ? 'bg-gray-600/20 text-gray-400 cursor-not-allowed'
+                            : 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-500/20 hover:border-blue-500/40 shadow-sm hover:shadow-md'
+                        }`}
                       >
-                        <PaperAirplaneIcon className="h-4 w-4" />
+                        <PaperAirplaneIcon className="h-6 w-6" />
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
               {/* Integration Code (right) - Loading state */}
-              <div className="w-full md:w-[60%] flex-1 h-full min-h-0 rounded-2xl border border-white/10 shadow-2xl flex flex-col">
+              <div className="w-full md:w-[60%] flex-1 h-full min-h-0 rounded-2xl border border-white/10 shadow-2xl flex flex-col api-integration-container">
                 <div className="flex items-center space-x-3 mb-6 pt-6 px-6">
                   <CodeBracketIcon className="w-6 h-6 text-blue-400" />
                   <h3 className="text-xl font-bold text-white">API Integration</h3>
@@ -1090,12 +1121,22 @@ const ModelDetail: React.FC = () => {
           border-radius: 8px;
           height: 8px;
         }
+        .api-integration-container {
+          position: relative;
+          width: 100%;
+          min-height: 700px;
+        }
+        .code-display-container {
+          position: relative;
+          width: 100%;
+          min-height: 550px;
+        }
       `}</style>
       <div className="flex flex-col md:flex-row max-w-[1600px] mx-auto p-8 gap-8 -mt-8 relative z-10">
         {/* Main Content */}
         <div className="flex-1">
           {/* Tab Content */}
-          <div className="flex flex-row gap-8 items-stretch h-[700px]">
+          <div className="flex flex-row gap-8 items-stretch h-[700px]" style={{ position: 'relative' }}>
             {/* Chatbox (left) */}
             <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-black rounded-3xl p-4 shadow-lg mb-8 md:mb-0 flex flex-col font-sans" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
               <div className="flex items-center justify-between mb-4">
@@ -1212,35 +1253,48 @@ const ModelDetail: React.FC = () => {
                   <div ref={messagesEndRef} />
                 </div>
                 {/* Input area */}
-                <div className="mt-2">
-                  <div className="flex items-end space-x-2 bg-neutral-900 px-2 py-1">
-                    <textarea
-                      ref={textareaRef}
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder=""
-                      role="textbox"
-                      className="flex-1 bg-transparent text-white p-1 min-h-[32px] max-h-[120px] resize-none focus:outline-none focus:ring-0 border-0 font-sans"
-                      disabled={isLoading}
-                      autoFocus
-                      tabIndex={0}
-                      style={{ 
-                        fontFamily: 'Inter, system-ui, sans-serif',
-                        caretColor: 'white'
-                      }}
-                    />
+                <div className="mt-4">
+                  <div className="flex items-end space-x-3 relative">
+                    <div className="flex-1 relative">
+                      <textarea
+                        ref={textareaRef}
+                        value={inputMessage}
+                        onChange={(e) => setInputMessage(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder=""
+                        role="textbox"
+                        className="w-full bg-transparent text-white p-4 min-h-[80px] max-h-[300px] resize-none focus:outline-none focus:ring-0 border border-white/20 rounded-xl font-sans text-lg cursor-text"
+                        disabled={isLoading}
+                        autoFocus
+                        tabIndex={0}
+                        style={{ 
+                          fontFamily: 'Inter, system-ui, sans-serif',
+                          caretColor: inputMessage.trim() ? 'white' : 'transparent'
+                        }}
+                      />
+                      {!inputMessage.trim() && (
+                        <div 
+                          className="absolute left-4 top-4 pointer-events-none"
+                          style={{ 
+                            width: '2px', 
+                            height: '1.5em', 
+                            backgroundColor: showCursor ? 'white' : 'transparent',
+                            transition: 'opacity 0.1s ease-in-out'
+                          }}
+                        />
+                      )}
+                    </div>
                     <button
                       aria-label="Send"
                       onClick={handleSendMessage}
                       disabled={isLoading || !inputMessage.trim()}
-                      className={`p-1.5 rounded-full transition-all duration-300 ${
+                      className={`p-3 rounded-full transition-all duration-300 ${
                         isLoading || !inputMessage.trim()
                           ? 'bg-gray-600/20 text-gray-400 cursor-not-allowed'
                           : 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-500/20 hover:border-blue-500/40 shadow-sm hover:shadow-md'
                       }`}
                     >
-                      <PaperAirplaneIcon className="h-4 w-4" />
+                      <PaperAirplaneIcon className="h-6 w-6" />
                     </button>
                   </div>
                   {sendError && (
@@ -1269,17 +1323,17 @@ const ModelDetail: React.FC = () => {
               )}
             </div>
             {/* Integration Code (right) */}
-            <div className="w-full md:w-[60%] flex-1 h-full min-h-0 rounded-2xl border border-white/10 shadow-2xl flex flex-col">
+            <div className="w-full md:w-[60%] flex-1 h-full min-h-0 rounded-2xl border border-white/10 shadow-2xl flex flex-col" style={{ minWidth: '600px' }}>
               <div className="flex items-center space-x-3 mb-6 pt-6 px-6">
                 <CodeBracketIcon className="w-6 h-6 text-blue-400" />
                 <h3 className="text-xl font-bold text-white">API Integration</h3>
               </div>
-              <div className="flex-nowrap gap-3 mb-6 px-6 items-center">
+              <div className="flex flex-wrap gap-3 mb-6 px-6 items-center">
                 {['python', 'typescript', 'rust', 'go', 'shell'].map((lang) => (
                   <button
                     key={lang}
                     onClick={() => setSelectedLanguage(lang as typeof selectedLanguage)}
-                    className={`px-4 py-2 text-sm rounded-xl font-mono border transition-all duration-300 ${
+                    className={`px-4 py-2 text-sm rounded-xl font-mono border transition-all duration-300 whitespace-nowrap ${
                       selectedLanguage === lang
                         ? 'bg-blue-600/20 text-blue-400 border-blue-500/50 shadow-lg'
                         : 'bg-white/10 text-gray-300 border-white/20 hover:bg-white/20 hover:text-white'
@@ -1290,7 +1344,7 @@ const ModelDetail: React.FC = () => {
                 ))}
                 <button
                   onClick={() => setIsCodeModalOpen(true)}
-                  className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all ml-2"
+                  className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all"
                   title="View Full Code"
                 >
                   <CodeBracketIcon className="w-5 h-5" />
@@ -1307,11 +1361,11 @@ const ModelDetail: React.FC = () => {
                   )}
                 </button>
               </div>
-              <div className="px-6 pb-6">
-                <div className="rounded-xl overflow-hidden">
-                  <Highlight theme={themes.nightOwl} code={codeContent} language={selectedLanguage}>
+              <div className="px-6 pb-6 flex-1" style={{ minHeight: '550px', position: 'relative' }}>
+                <div className="rounded-xl overflow-hidden absolute inset-0 m-6" style={{ minHeight: '500px' }}>
+                  <Highlight key={selectedLanguage} theme={themes.nightOwl} code={codeContent} language={selectedLanguage}>
                     {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                      <pre className={`${className} p-6 text-sm font-mono whitespace-pre-wrap break-words overflow-x-auto overflow-y-auto max-h-[550px]`} style={{ ...style, background: 'transparent', margin: 0, maxWidth: '100%' }}>
+                      <pre className={`${className} p-6 text-sm font-mono whitespace-pre-wrap break-words overflow-x-auto overflow-y-auto h-full`} style={{ ...style, background: 'transparent', margin: 0, maxWidth: '100%', minHeight: '500px' }}>
                         {tokens.map((line, i) => (
                           <div key={i} {...getLineProps({ line })}>
                             {line.map((token, key) => (
