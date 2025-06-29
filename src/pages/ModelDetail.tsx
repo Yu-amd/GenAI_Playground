@@ -19,6 +19,428 @@ import ToolTestPanel from '../components/ToolTestPanel';
 import DeploymentGuide from '../components/DeploymentGuide';
 import './fonts.css';
 
+// Helper component for viewing model card content
+const ModelCardViewContent: React.FC<{ modelCard: any }> = ({ modelCard }) => {
+  if (!modelCard) {
+    return <div className="text-center py-12 text-gray-400">No model card information available.</div>;
+  }
+
+  // Define standard sections
+  const standardSections = ['overview', 'intended_use', 'limitations', 'training_data', 'evaluation', 'known_issues', 'references'];
+  
+  // Get custom sections (any keys that aren't standard sections)
+  const customSections = Object.keys(modelCard).filter(key => !standardSections.includes(key));
+
+  const renderSection = (sectionKey: string, sectionData: any) => {
+    const sectionName = sectionKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    
+    if (Array.isArray(sectionData) && sectionData.length > 0) {
+      return (
+        <section key={sectionKey} className="mb-8">
+          <h2 className="text-2xl font-bold mb-4 text-white">{sectionName}</h2>
+          <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+            <ul className="list-disc pl-6 space-y-2 text-gray-200">
+              {sectionData.map((item: string, idx: number) => (
+                <li key={idx}>
+                  {item.startsWith('http') ? (
+                    <a href={item} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline hover:text-blue-300 transition-colors">{item}</a>
+                  ) : (
+                    item
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      );
+    } else if (typeof sectionData === 'string' && sectionData.trim()) {
+      return (
+        <section key={sectionKey} className="mb-8">
+          <h2 className="text-2xl font-bold mb-4 text-white">{sectionName}</h2>
+          <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+            <div className="prose prose-invert max-w-none">
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                {sectionData}
+              </ReactMarkdown>
+            </div>
+          </div>
+        </section>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <>
+      {/* Render all sections in the order they appear in the data */}
+      {Object.keys(modelCard).map(sectionKey => renderSection(sectionKey, modelCard[sectionKey]))}
+    </>
+  );
+};
+
+// Helper component for editing model card content
+const ModelCardEditingContent: React.FC<{ 
+  content: any; 
+  onSave: (content: any) => void; 
+  onCancel: () => void; 
+}> = ({ content, onSave, onCancel }) => {
+  const [editingContent, setEditingContent] = useState<any>(() => {
+    // Initialize with all existing content, including custom sections
+    const initialContent: any = {
+      overview: content?.overview || '',
+      intended_use: [...(content?.intended_use || [])],
+      limitations: [...(content?.limitations || [])],
+      training_data: content?.training_data || '',
+      evaluation: [...(content?.evaluation || [])],
+      known_issues: [...(content?.known_issues || [])],
+      references: [...(content?.references || [])]
+    };
+    
+    // Add any custom sections that exist in the content
+    if (content) {
+      const standardSections = ['overview', 'intended_use', 'limitations', 'training_data', 'evaluation', 'known_issues', 'references'];
+      Object.keys(content).forEach(key => {
+        if (!standardSections.includes(key) && content[key] !== undefined) {
+          if (Array.isArray(content[key])) {
+            initialContent[key] = [...content[key]];
+          } else {
+            initialContent[key] = content[key];
+          }
+        }
+      });
+    }
+    
+    return initialContent;
+  });
+  const [showAddSection, setShowAddSection] = useState(false);
+  const [newSectionName, setNewSectionName] = useState<string>('');
+  const [newSectionType, setNewSectionType] = useState<'text' | 'list'>('text');
+
+  const addListItem = (field: string) => {
+    setEditingContent({
+      ...editingContent,
+      [field]: [...editingContent[field], '']
+    });
+  };
+
+  const updateListItem = (field: string, index: number, value: string) => {
+    const newArray = [...editingContent[field]];
+    newArray[index] = value;
+    setEditingContent({
+      ...editingContent,
+      [field]: newArray
+    });
+  };
+
+  const removeListItem = (field: string, index: number) => {
+    const newArray = [...editingContent[field]];
+    newArray.splice(index, 1);
+    setEditingContent({
+      ...editingContent,
+      [field]: newArray
+    });
+  };
+
+  const removeSection = (sectionKey: string) => {
+    const newContent = { ...editingContent };
+    delete newContent[sectionKey];
+    setEditingContent(newContent);
+  };
+
+  const moveSectionUp = (sectionKey: string) => {
+    const sectionKeys = Object.keys(editingContent);
+    const currentIndex = sectionKeys.indexOf(sectionKey);
+    if (currentIndex > 0) {
+      const newContent: any = {};
+      sectionKeys.forEach((key, index) => {
+        if (index === currentIndex - 1) {
+          newContent[sectionKey] = editingContent[sectionKey];
+        } else if (index === currentIndex) {
+          newContent[sectionKeys[currentIndex - 1]] = editingContent[sectionKeys[currentIndex - 1]];
+        } else {
+          newContent[key] = editingContent[key];
+        }
+      });
+      setEditingContent(newContent);
+    }
+  };
+
+  const moveSectionDown = (sectionKey: string) => {
+    const sectionKeys = Object.keys(editingContent);
+    const currentIndex = sectionKeys.indexOf(sectionKey);
+    if (currentIndex < sectionKeys.length - 1) {
+      const newContent: any = {};
+      sectionKeys.forEach((key, index) => {
+        if (index === currentIndex) {
+          newContent[sectionKeys[currentIndex + 1]] = editingContent[sectionKeys[currentIndex + 1]];
+        } else if (index === currentIndex + 1) {
+          newContent[sectionKey] = editingContent[sectionKey];
+        } else {
+          newContent[key] = editingContent[key];
+        }
+      });
+      setEditingContent(newContent);
+    }
+  };
+
+  const addNewSection = () => {
+    if (!newSectionName.trim()) return;
+    
+    const sectionKey = newSectionName.toLowerCase().replace(/\s+/g, '_');
+    
+    if (newSectionType === 'text') {
+      setEditingContent({
+        ...editingContent,
+        [sectionKey]: ''
+      });
+    } else {
+      setEditingContent({
+        ...editingContent,
+        [sectionKey]: []
+      });
+    }
+    setShowAddSection(false);
+    setNewSectionName('');
+    setNewSectionType('text');
+  };
+
+  const handleSave = () => {
+    onSave(editingContent);
+    onCancel();
+  };
+
+  const sectionTypes = [
+    { value: 'overview', label: 'Overview', type: 'text' },
+    { value: 'intended_use', label: 'Intended Use', type: 'list' },
+    { value: 'limitations', label: 'Limitations', type: 'list' },
+    { value: 'training_data', label: 'Training Data', type: 'text' },
+    { value: 'evaluation', label: 'Evaluation', type: 'list' },
+    { value: 'known_issues', label: 'Known Issues', type: 'list' },
+    { value: 'references', label: 'References', type: 'list' }
+  ];
+
+  const getSectionColor = (sectionType: string) => {
+    switch (sectionType) {
+      case 'intended_use': return 'green';
+      case 'limitations': return 'orange';
+      case 'evaluation': return 'blue';
+      case 'known_issues': return 'red';
+      case 'references': return 'purple';
+      default: return 'gray';
+    }
+  };
+
+  const renderSection = (sectionKey: string, sectionData: any) => {
+    const sectionName = sectionKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    const isStandardSection = ['overview', 'intended_use', 'limitations', 'training_data', 'evaluation', 'known_issues', 'references'].includes(sectionKey);
+    const sectionKeys = Object.keys(editingContent);
+    const currentIndex = sectionKeys.indexOf(sectionKey);
+    const canMoveUp = currentIndex > 0;
+    const canMoveDown = currentIndex < sectionKeys.length - 1;
+    
+    if (Array.isArray(sectionData)) {
+      return (
+        <div key={sectionKey} className="bg-gray-800/30 rounded-xl p-6 border border-gray-600/30">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold text-white">{sectionName}</h3>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => addListItem(sectionKey)}
+                className={`flex items-center gap-2 px-3 py-1.5 bg-${getSectionColor(sectionKey)}-600/20 text-${getSectionColor(sectionKey)}-400 rounded-lg border border-${getSectionColor(sectionKey)}-500/30 hover:bg-${getSectionColor(sectionKey)}-600/30 transition-all text-sm`}
+              >
+                <span>+</span>
+                Add Item
+              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => moveSectionUp(sectionKey)}
+                  disabled={!canMoveUp}
+                  className="flex items-center gap-1 px-2 py-1.5 bg-gray-600/20 text-gray-400 rounded-lg border border-gray-500/30 hover:bg-gray-600/30 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Move section up"
+                >
+                  ↑
+                </button>
+                <button
+                  onClick={() => moveSectionDown(sectionKey)}
+                  disabled={!canMoveDown}
+                  className="flex items-center gap-1 px-2 py-1.5 bg-gray-600/20 text-gray-400 rounded-lg border border-gray-500/30 hover:bg-gray-600/30 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Move section down"
+                >
+                  ↓
+                </button>
+              </div>
+              <button
+                onClick={() => removeSection(sectionKey)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-red-600/20 text-red-400 rounded-lg border border-red-500/30 hover:bg-red-600/30 transition-all text-sm"
+                title={`Remove ${sectionName} section`}
+              >
+                <span>×</span>
+                Remove
+              </button>
+            </div>
+          </div>
+          <div className="space-y-3">
+            {sectionData.map((item: string, index: number) => (
+              <div key={index} className="flex items-center gap-3">
+                <input
+                  type="text"
+                  value={item}
+                  onChange={(e) => updateListItem(sectionKey, index, e.target.value)}
+                  className="flex-1 bg-gray-900/50 border border-gray-600/30 rounded-lg p-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  placeholder={`Enter ${sectionName.toLowerCase()} item...`}
+                />
+                <button
+                  onClick={() => removeListItem(sectionKey, index)}
+                  className="p-2 text-red-400 hover:text-red-300 hover:bg-red-600/20 rounded-lg transition-all"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    } else if (typeof sectionData === 'string') {
+      return (
+        <div key={sectionKey} className="bg-gray-800/30 rounded-xl p-6 border border-gray-600/30">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold text-white">{sectionName}</h3>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => moveSectionUp(sectionKey)}
+                  disabled={!canMoveUp}
+                  className="flex items-center gap-1 px-2 py-1.5 bg-gray-600/20 text-gray-400 rounded-lg border border-gray-500/30 hover:bg-gray-600/30 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Move section up"
+                >
+                  ↑
+                </button>
+                <button
+                  onClick={() => moveSectionDown(sectionKey)}
+                  disabled={!canMoveDown}
+                  className="flex items-center gap-1 px-2 py-1.5 bg-gray-600/20 text-gray-400 rounded-lg border border-gray-500/30 hover:bg-gray-600/30 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Move section down"
+                >
+                  ↓
+                </button>
+              </div>
+              <button
+                onClick={() => removeSection(sectionKey)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-red-600/20 text-red-400 rounded-lg border border-red-500/30 hover:bg-red-600/30 transition-all text-sm"
+                title={`Remove ${sectionName} section`}
+              >
+                <span>×</span>
+                Remove
+              </button>
+            </div>
+          </div>
+          <textarea
+            value={sectionData}
+            onChange={(e) => setEditingContent({ ...editingContent, [sectionKey]: e.target.value })}
+            className="w-full h-32 bg-gray-900/50 border border-gray-600/30 rounded-lg p-3 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
+            placeholder={`Enter ${sectionName.toLowerCase()}...`}
+          />
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Get all sections including custom ones
+  const allSections = Object.keys(editingContent).filter(key => editingContent[key] !== undefined);
+
+  return (
+    <div className="space-y-6">
+      {/* Add Section Button */}
+      <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-600/30">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-semibold text-white">Add New Section</h3>
+          <button
+            onClick={() => setShowAddSection(!showAddSection)}
+            className="flex items-center gap-2 px-3 py-1.5 bg-blue-600/20 text-blue-400 rounded-lg border border-blue-500/30 hover:bg-blue-600/30 transition-all text-sm"
+          >
+            <span>+</span>
+            Add Section
+          </button>
+        </div>
+        {showAddSection && (
+          <div className="space-y-4 p-4 bg-gray-900/50 rounded-lg border border-gray-600/30">
+            <div>
+              <label className="block text-gray-200 font-medium mb-2">Section Name</label>
+              <input
+                type="text"
+                value={newSectionName}
+                onChange={(e) => setNewSectionName(e.target.value)}
+                className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg p-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                placeholder="Enter section name (e.g., 'Technical Details', 'Usage Examples')"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-200 font-medium mb-2">Section Type</label>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 text-gray-200">
+                  <input
+                    type="radio"
+                    value="text"
+                    checked={newSectionType === 'text'}
+                    onChange={(e) => setNewSectionType(e.target.value as 'text' | 'list')}
+                    className="text-blue-500 focus:ring-blue-500"
+                  />
+                  <span>Text Field</span>
+                </label>
+                <label className="flex items-center gap-2 text-gray-200">
+                  <input
+                    type="radio"
+                    value="list"
+                    checked={newSectionType === 'list'}
+                    onChange={(e) => setNewSectionType(e.target.value as 'text' | 'list')}
+                    className="text-blue-500 focus:ring-blue-500"
+                  />
+                  <span>List</span>
+                </label>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={addNewSection}
+                disabled={!newSectionName.trim()}
+                className="px-4 py-2 bg-green-600/20 text-green-400 rounded-lg border border-green-500/30 hover:bg-green-600/30 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Add Section
+              </button>
+              <button
+                onClick={() => setShowAddSection(false)}
+                className="px-4 py-2 bg-gray-700/50 text-gray-300 rounded-lg border border-gray-600/30 hover:bg-gray-600/50 transition-all font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Render sections */}
+      {allSections.map((sectionKey) => renderSection(sectionKey, editingContent[sectionKey]))}
+
+      {/* Save/Cancel Buttons */}
+      <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-600/30">
+        <button
+          onClick={onCancel}
+          className="px-6 py-2 bg-gray-700/50 text-gray-300 rounded-lg border border-gray-600/30 hover:bg-gray-600/50 transition-all font-medium"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleSave}
+          className="px-6 py-2 bg-blue-600/20 text-blue-400 rounded-lg border border-blue-500/30 hover:bg-blue-600/30 transition-all font-medium"
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  );
+};
+
 interface Message {
   role: 'user' | 'assistant' | 'system' | 'tool';
   content: string;
@@ -74,6 +496,8 @@ const ModelDetail: React.FC = () => {
   const [endpointSaved, setEndpointSaved] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
   const [showDeploymentGuide, setShowDeploymentGuide] = useState(false);
+  const [isModelCardEditing, setIsModelCardEditing] = useState(false);
+  const [modelCardContent, setModelCardContent] = useState<any>(null);
   
   // Enhanced parameters with more comprehensive options
   const [parameters, setParameters] = useState<Parameter[]>([
@@ -263,6 +687,13 @@ const ModelDetail: React.FC = () => {
     loadModelData(decodeURIComponent(fullModelId)).then(setModel);
   }, [fullModelId]);
 
+  // Initialize modelCardContent when model loads
+  useEffect(() => {
+    if (model && model.model_card && !modelCardContent) {
+      setModelCardContent(model.model_card);
+    }
+  }, [model, modelCardContent]);
+
   const handleParameterChange = (paramName: string, value: number) => {
     setParameters(prev => prev.map(param => 
       param.name === paramName ? { ...param, value } : param
@@ -412,6 +843,19 @@ const ModelDetail: React.FC = () => {
     setTimeout(() => {
       handleSendMessage();
     }, 100);
+  };
+
+  const handleModelCardSave = (content: any) => {
+    // Update the model's model_card with the new content
+    if (model) {
+      setModel({
+        ...model,
+        model_card: content
+      });
+      setModelCardContent(content);
+    }
+    setIsModelCardEditing(false);
+    console.log('Model card content saved:', content);
   };
 
   if (!model) {
@@ -847,7 +1291,7 @@ const ModelDetail: React.FC = () => {
                 <CodeBracketIcon className="w-6 h-6 text-blue-400" />
                 <h3 className="text-xl font-bold text-white">API Integration</h3>
               </div>
-              <div className="flex flex-nowrap gap-3 mb-6 px-6 items-center">
+              <div className="flex-nowrap gap-3 mb-6 px-6 items-center">
                 {['python', 'typescript', 'rust', 'go', 'shell'].map((lang) => (
                   <button
                     key={lang}
@@ -939,115 +1383,39 @@ const ModelDetail: React.FC = () => {
       {showModelCard && (
         <div data-testid="dialog" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowModelCard(false)}>
           <div className="relative bg-white/5 backdrop-blur-xl rounded-2xl shadow-2xl text-lg border border-white/10 p-8 w-full max-w-4xl mx-auto overflow-y-auto max-h-[70vh]" onClick={e => e.stopPropagation()}>
-            <button
-              className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all text-2xl"
-              onClick={() => setShowModelCard(false)}
-              title="Close"
-            >
-              &times;
-            </button>
-            {model.model_card ? (
-              <>
-                {/* Overview */}
-                {model.model_card.overview && (
-                  <section className="mb-8">
-                    <h2 className="text-3xl font-bold mb-4 text-white">Overview</h2>
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                      <div className="prose prose-invert max-w-none">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                          {model.model_card.overview}
-                        </ReactMarkdown>
-                      </div>
-                    </div>
-                  </section>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white">Model Card</h2>
+              <div className="flex items-center gap-2">
+                {isDevelopment && (
+                  <button
+                    onClick={() => setIsModelCardEditing(!isModelCardEditing)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all text-sm font-medium ${
+                      isModelCardEditing
+                        ? 'bg-green-600/20 text-green-400 border border-green-500/30'
+                        : 'bg-purple-600/20 text-purple-400 border border-purple-500/30 hover:bg-purple-600/30'
+                    }`}
+                  >
+                    {isModelCardEditing ? 'Preview' : 'Edit'}
+                  </button>
                 )}
-                {/* Intended Use */}
-                {model.model_card.intended_use && model.model_card.intended_use.length > 0 && (
-                  <section className="mb-8">
-                    <h2 className="text-2xl font-bold mb-4 text-white">Intended Use</h2>
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                      <ul className="list-disc pl-6 space-y-2 text-gray-200">
-                        {model.model_card.intended_use.map((item: string, idx: number) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </section>
-                )}
-                {/* Limitations */}
-                {model.model_card.limitations && model.model_card.limitations.length > 0 && (
-                  <section className="mb-8">
-                    <h2 className="text-2xl font-bold mb-4 text-white">Limitations</h2>
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                      <ul className="list-disc pl-6 space-y-2 text-gray-200">
-                        {model.model_card.limitations.map((item: string, idx: number) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </section>
-                )}
-                {/* Training Data */}
-                {model.model_card.training_data && (
-                  <section className="mb-8">
-                    <h2 className="text-2xl font-bold mb-4 text-white">Training Data</h2>
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                      <div className="prose prose-invert max-w-none">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                          {model.model_card.training_data}
-                        </ReactMarkdown>
-                      </div>
-                    </div>
-                  </section>
-                )}
-                {/* Evaluation */}
-                {model.model_card.evaluation && model.model_card.evaluation.length > 0 && (
-                  <section className="mb-8">
-                    <h2 className="text-2xl font-bold mb-4 text-white">Evaluation</h2>
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                      <ul className="list-disc pl-6 space-y-2 text-gray-200">
-                        {model.model_card.evaluation.map((item: string, idx: number) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </section>
-                )}
-                {/* Known Issues */}
-                {model.model_card.known_issues && model.model_card.known_issues.length > 0 && (
-                  <section className="mb-8">
-                    <h2 className="text-2xl font-bold mb-4 text-white">Known Issues</h2>
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                      <ul className="list-disc pl-6 space-y-2 text-gray-200">
-                        {model.model_card.known_issues.map((item: string, idx: number) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </section>
-                )}
-                {/* References */}
-                {model.model_card.references && model.model_card.references.length > 0 && (
-                  <section className="mb-8">
-                    <h2 className="text-2xl font-bold mb-4 text-white">References</h2>
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                      <ul className="list-disc pl-6 space-y-2 text-gray-200">
-                        {model.model_card.references.map((ref: string, idx: number) => (
-                          <li key={idx}>
-                            {ref.startsWith('http') ? (
-                              <a href={ref} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline hover:text-blue-300 transition-colors">{ref}</a>
-                            ) : (
-                              ref
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </section>
-                )}
-              </>
+                <button
+                  className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all text-2xl"
+                  onClick={() => setShowModelCard(false)}
+                  title="Close"
+                >
+                  &times;
+                </button>
+              </div>
+            </div>
+            
+            {isModelCardEditing && isDevelopment ? (
+              <ModelCardEditingContent 
+                content={modelCardContent || model.model_card} 
+                onSave={handleModelCardSave}
+                onCancel={() => setIsModelCardEditing(false)}
+              />
             ) : (
-              <div className="text-center py-12 text-gray-400">No model card information available.</div>
+              <ModelCardViewContent modelCard={modelCardContent || model.model_card} />
             )}
           </div>
         </div>
