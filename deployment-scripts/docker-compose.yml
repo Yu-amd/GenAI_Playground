@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  ai-playground:
+    image: your-registry/ai-playground:${MODEL_NAME:-gpt2}-rocm
+    container_name: ai-playground-${MODEL_NAME:-gpt2}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: ${GPU_COUNT:-1}
+              capabilities: [gpu]
+    ports:
+      - "${PORT:-1234}:1234"
+    environment:
+      - MODEL_NAME=${MODEL_NAME:-gpt2}
+      - PORT=1234
+      - MAX_MEMORY=${MAX_MEMORY:-16GB VRAM, 32GB RAM}
+      - ENABLE_HEALTH_CHECK=${ENABLE_HEALTH_CHECK:-true}
+      - ENABLE_MONITORING=${ENABLE_MONITORING:-true}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - model-cache:/app/models
+      - logs:/app/logs
+      - config:/app/config
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1234/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - ai-network
+
+  # Optional: Monitoring service
+  monitoring:
+    image: grafana/grafana:latest
+    container_name: ai-playground-monitoring
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+    networks:
+      - ai-network
+    profiles:
+      - monitoring
+
+  # Optional: Load balancer for multiple instances
+  nginx:
+    image: nginx:alpine
+    container_name: ai-playground-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - ai-playground
+    restart: unless-stopped
+    networks:
+      - ai-network
+    profiles:
+      - load-balancer
+
+volumes:
+  model-cache:
+    driver: local
+  logs:
+    driver: local
+  config:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  ai-network:
+    driver: bridge 

@@ -5,7 +5,7 @@ import PlaygroundLogo from '../components/PlaygroundLogo';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { PaperAirplaneIcon, CodeBracketIcon, Cog6ToothIcon, ClipboardIcon, CheckIcon, XMarkIcon, WrenchScrewdriverIcon, QuestionMarkCircleIcon, BeakerIcon } from '@heroicons/react/24/outline';
+import { PaperAirplaneIcon, CodeBracketIcon, Cog6ToothIcon, ClipboardIcon, CheckIcon, XMarkIcon, WrenchScrewdriverIcon, QuestionMarkCircleIcon, BeakerIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 import { lmStudioService } from '../services/lmStudioService';
 import { toolService } from '../services/toolService';
 import { Highlight, themes } from 'prism-react-renderer';
@@ -16,6 +16,7 @@ import type { ModelData } from '../utils/modelLoader';
 import ToolSelector from '../components/ToolSelector';
 import ToolDocumentation from '../components/ToolDocumentation';
 import ToolTestPanel from '../components/ToolTestPanel';
+import DeploymentGuide from '../components/DeploymentGuide';
 import './fonts.css';
 
 interface Message {
@@ -72,6 +73,7 @@ const ModelDetail: React.FC = () => {
   const [endpoint, setEndpoint] = useState('http://localhost:1234/v1');
   const [endpointSaved, setEndpointSaved] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [showDeploymentGuide, setShowDeploymentGuide] = useState(false);
   
   // Enhanced parameters with more comprehensive options
   const [parameters, setParameters] = useState<Parameter[]>([
@@ -712,6 +714,14 @@ const ModelDetail: React.FC = () => {
                       Test
                     </button>
                   )}
+                  <button
+                    onClick={() => setShowDeploymentGuide(true)}
+                    className="flex items-center px-3 py-1.5 bg-orange-600/10 text-orange-400 rounded-full border border-orange-500/10 hover:bg-orange-600/20 transition-all text-xs font-medium"
+                    title="Deploy Model"
+                  >
+                    <RocketLaunchIcon className="h-4 w-4 mr-1" />
+                    Deploy
+                  </button>
                 </div>
                 <div className="flex items-center gap-2">
                   <label className={`flex items-center gap-2 text-xs transition-colors ${
@@ -1129,6 +1139,20 @@ const ModelDetail: React.FC = () => {
           onTestMessage={handleTestMessage}
           enabledTools={enabledToolNames}
           isToolCallingEnabled={isToolCallingEnabled}
+        />
+      )}
+      {/* Deployment Guide Modal */}
+      {showDeploymentGuide && model && (
+        <DeploymentGuide
+          isOpen={showDeploymentGuide}
+          onClose={() => setShowDeploymentGuide(false)}
+          modelInfo={{
+            name: model.name,
+            size: model.size || '7B',
+            requirements: model.size && model.size.includes('B') ? 
+              `${parseInt(model.size) >= 32 ? '64GB' : '32GB'} VRAM, ${parseInt(model.size) >= 32 ? '128GB' : '64GB'} RAM` : 
+              '16GB VRAM, 32GB RAM'
+          }}
         />
       )}
     </div>
