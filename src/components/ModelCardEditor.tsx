@@ -6,13 +6,11 @@ import {
   PlusIcon,
   TrashIcon,
   CheckIcon,
-  XMarkIcon,
   Cog6ToothIcon,
   CodeBracketIcon,
   ListBulletIcon,
   LinkIcon,
-  CloudIcon,
-  ChevronDownIcon
+  CloudIcon
 } from '@heroicons/react/24/outline';
 
 interface ModelCard {

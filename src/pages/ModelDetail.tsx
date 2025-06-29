@@ -25,12 +25,6 @@ const ModelCardViewContent: React.FC<{ modelCard: any }> = ({ modelCard }) => {
     return <div className="text-center py-12 text-gray-400">No model card information available.</div>;
   }
 
-  // Define standard sections
-  const standardSections = ['overview', 'intended_use', 'limitations', 'training_data', 'evaluation', 'known_issues', 'references'];
-  
-  // Get custom sections (any keys that aren't standard sections)
-  const customSections = Object.keys(modelCard).filter(key => !standardSections.includes(key));
-
   const renderSection = (sectionKey: string, sectionData: any) => {
     const sectionName = sectionKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     
@@ -209,16 +203,6 @@ const ModelCardEditingContent: React.FC<{
     onCancel();
   };
 
-  const sectionTypes = [
-    { value: 'overview', label: 'Overview', type: 'text' },
-    { value: 'intended_use', label: 'Intended Use', type: 'list' },
-    { value: 'limitations', label: 'Limitations', type: 'list' },
-    { value: 'training_data', label: 'Training Data', type: 'text' },
-    { value: 'evaluation', label: 'Evaluation', type: 'list' },
-    { value: 'known_issues', label: 'Known Issues', type: 'list' },
-    { value: 'references', label: 'References', type: 'list' }
-  ];
-
   const getSectionColor = (sectionType: string) => {
     switch (sectionType) {
       case 'intended_use': return 'green';
@@ -232,7 +216,6 @@ const ModelCardEditingContent: React.FC<{
 
   const renderSection = (sectionKey: string, sectionData: any) => {
     const sectionName = sectionKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    const isStandardSection = ['overview', 'intended_use', 'limitations', 'training_data', 'evaluation', 'known_issues', 'references'].includes(sectionKey);
     const sectionKeys = Object.keys(editingContent);
     const currentIndex = sectionKeys.indexOf(sectionKey);
     const canMoveUp = currentIndex > 0;
