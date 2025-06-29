@@ -8,7 +8,7 @@ export interface CloudProvider {
   type: 'openai' | 'azure' | 'aws' | 'gcp' | 'custom';
   endpoint: string;
   apiKey?: string;
-  config?: Record<string, any>;
+  config?: Record<string, unknown>;
   priority: number; // Lower number = higher priority
   enabled: boolean;
   healthCheck?: {
@@ -56,7 +56,7 @@ export interface ChatCompletionRequest {
       description: string;
       parameters: {
         type: string;
-        properties: Record<string, any>;
+        properties: Record<string, unknown>;
         required: string[];
       };
     };
@@ -229,22 +229,21 @@ export class CloudInferenceService {
 
   private getNextProvider(): CloudProvider | null {
     switch (this.config.loadBalancing) {
-      case 'round-robin':
+      case 'round-robin': {
         const healthyProviders = this.providers.filter(p => 
           this.healthStatus.get(p.id)?.isHealthy !== false
         );
         if (healthyProviders.length === 0) return null;
-        
         this.currentProviderIndex = (this.currentProviderIndex + 1) % healthyProviders.length;
         return healthyProviders[this.currentProviderIndex];
-
-      case 'priority':
+      }
+      case 'priority': {
         const sortedProviders = [...this.providers].sort((a, b) => a.priority - b.priority);
         return sortedProviders.find(p => 
           this.healthStatus.get(p.id)?.isHealthy !== false
         ) || null;
-
-      case 'health-based':
+      }
+      case 'health-based': {
         const healthyProvidersHealth = this.providers
           .filter(p => this.healthStatus.get(p.id)?.isHealthy !== false)
           .map(p => ({
@@ -252,9 +251,8 @@ export class CloudInferenceService {
             health: this.healthStatus.get(p.id)!
           }))
           .sort((a, b) => a.health.responseTime - b.health.responseTime);
-        
         return healthyProvidersHealth[0]?.provider || null;
-
+      }
       default:
         return this.providers[0] || null;
     }
@@ -287,7 +285,7 @@ export class CloudInferenceService {
   private prepareRequestForProvider(
     provider: CloudProvider,
     request: ChatCompletionRequest
-  ): any {
+  ): Record<string, unknown> {
     const baseRequest = { ...request };
 
     switch (provider.type) {
@@ -321,7 +319,7 @@ export class CloudInferenceService {
         // Custom endpoint format
         return {
           ...baseRequest,
-          ...provider.config?.customFormat
+          ...(provider.config?.customFormat || {})
         };
 
       default:
@@ -331,7 +329,7 @@ export class CloudInferenceService {
 
   private async handleStreamingRequest(
     provider: CloudProvider,
-    request: any,
+    request: Record<string, unknown>,
     onStreamChunk: (chunk: StreamChunk) => void
   ): Promise<ChatCompletionResponse> {
     const response = await fetch(`${provider.endpoint}/v1/chat/completions`, {
@@ -384,7 +382,7 @@ export class CloudInferenceService {
       id: 'stream-completion',
       object: 'chat.completion',
       created: Date.now(),
-      model: request.model || 'unknown',
+      model: typeof request.model === 'string' ? request.model : 'unknown',
       choices: [{
         index: 0,
         message: {

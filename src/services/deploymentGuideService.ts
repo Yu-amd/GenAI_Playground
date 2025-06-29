@@ -252,7 +252,7 @@ class DeploymentGuideService {
    * Note: In a real implementation, this would require backend API or file system access
    * For now, this returns the content that should be saved
    */
-  static async saveContent(content: any): Promise<void> {
+  static async saveContent(content: DeploymentGuideContent): Promise<void> {
     try {
       // In a real implementation, this would make an API call to save the content
       // For now, we'll just validate and return the content
@@ -279,25 +279,25 @@ class DeploymentGuideService {
   /**
    * Validate content structure before saving
    */
-  private static validateContent(content: any): any {
+  private static validateContent(content: DeploymentGuideContent): DeploymentGuideContent {
     if (!content || !content.categories || !Array.isArray(content.categories)) {
       throw new Error('Invalid content structure: missing categories array');
     }
 
     // Validate each category
-    content.categories.forEach((category: any, categoryIndex: number) => {
+    content.categories.forEach((category: DeploymentCategory, categoryIndex: number) => {
       if (!category.id || !category.name || !category.tabs || !Array.isArray(category.tabs)) {
         throw new Error(`Invalid category structure at index ${categoryIndex}`);
       }
 
       // Validate each tab
-      category.tabs.forEach((tab: any, tabIndex: number) => {
+      category.tabs.forEach((tab: DeploymentTab, tabIndex: number) => {
         if (!tab.id || !tab.name || !tab.sections || !Array.isArray(tab.sections)) {
           throw new Error(`Invalid tab structure at category ${categoryIndex}, tab ${tabIndex}`);
         }
 
         // Validate each section
-        tab.sections.forEach((section: any, sectionIndex: number) => {
+        tab.sections.forEach((section: DeploymentSection, sectionIndex: number) => {
           if (!section.type || !section.title) {
             throw new Error(`Invalid section structure at category ${categoryIndex}, tab ${tabIndex}, section ${sectionIndex}`);
           }

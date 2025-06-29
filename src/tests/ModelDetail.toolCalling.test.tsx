@@ -44,7 +44,7 @@ vi.mock('@headlessui/react', () => ({
 
 // Mock the Highlight component
 vi.mock('prism-react-renderer', () => ({
-  Highlight: ({ children }: { children: (props: any) => React.ReactNode }) => 
+  Highlight: ({ children }: { children: (props: { tokens: unknown[]; getLineProps: () => Record<string, unknown>; getTokenProps: () => Record<string, unknown> }) => React.ReactNode }) => 
     children({ tokens: [], getLineProps: () => ({}), getTokenProps: () => ({}) }),
   themes: {
     nightOwl: {}
@@ -58,22 +58,37 @@ vi.mock('../utils/apiCodeGenerator', () => ({
 
 // Mock the tool components
 vi.mock('../components/ToolSelector', () => ({
-  default: ({ onClose, enabledTools, onToolToggle, onEnableAll, onDisableAll, onTestTools, isDevelopment }: any) => (
-    <div data-testid="tool-selector">
-      <button onClick={onClose}>Close Tool Selector</button>
-      <div data-testid="enabled-tools-count">{enabledTools.length}</div>
-      <button onClick={() => onToolToggle('get_weather')}>Toggle Weather</button>
-      <button onClick={onEnableAll}>Enable All</button>
-      <button onClick={onDisableAll}>Disable All</button>
-      {isDevelopment && onTestTools && (
-        <button onClick={onTestTools}>Test Tools</button>
-      )}
-    </div>
-  )
+  default: ({ onClose, enabledTools, onToolToggle, onEnableAll, onDisableAll, onTestTools, isDevelopment }: {
+    onClose: () => void;
+    enabledTools: string[];
+    onToolToggle: (toolName: string) => void;
+    onEnableAll: () => void;
+    onDisableAll: () => void;
+    onTestTools?: () => void;
+    isDevelopment: boolean;
+  }) => {
+    // Create a proper React component that re-renders when props change
+    const MockToolSelector = () => {
+      return (
+        <div data-testid="tool-selector">
+          <button onClick={onClose}>Close Tool Selector</button>
+          <div data-testid="enabled-tools-count">{enabledTools.length}</div>
+          <button onClick={() => onToolToggle('get_weather')}>Toggle Weather</button>
+          <button onClick={onEnableAll}>Enable All</button>
+          <button onClick={onDisableAll}>Disable All</button>
+          {isDevelopment && onTestTools && (
+            <button onClick={onTestTools}>Test Tools</button>
+          )}
+        </div>
+      );
+    };
+    
+    return <MockToolSelector />;
+  }
 }));
 
 vi.mock('../components/ToolDocumentation', () => ({
-  default: ({ onClose }: any) => (
+  default: ({ onClose }: { onClose: () => void }) => (
     <div data-testid="tool-documentation">
       <button onClick={onClose}>Close Documentation</button>
     </div>
@@ -81,7 +96,12 @@ vi.mock('../components/ToolDocumentation', () => ({
 }));
 
 vi.mock('../components/ToolTestPanel', () => ({
-  default: ({ onClose, onTestMessage, enabledTools, isToolCallingEnabled }: any) => (
+  default: ({ onClose, onTestMessage, enabledTools, isToolCallingEnabled }: {
+    onClose: () => void;
+    onTestMessage: (message: string) => void;
+    enabledTools: string[];
+    isToolCallingEnabled: boolean;
+  }) => (
     <div data-testid="tool-test-panel">
       <button onClick={onClose}>Close Test Panel</button>
       <div data-testid="enabled-tools-test">{enabledTools.join(',')}</div>
@@ -213,13 +233,13 @@ describe('ModelDetail Tool Calling', () => {
     vi.clearAllMocks();
     
     // Mock loadModelData to return our test data
-    (loadModelData as any).mockResolvedValue(mockModelData);
+    (loadModelData as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockModelData);
     
     // Mock lmStudioService
-    (lmStudioService as any).chatCompletion = vi.fn().mockResolvedValue(mockChatResponse);
+    (lmStudioService as unknown as { chatCompletion: ReturnType<typeof vi.fn> }).chatCompletion = vi.fn().mockResolvedValue(mockChatResponse);
     
     // Mock toolService
-    (toolService as any).executeTool = vi.fn().mockResolvedValue({
+    (toolService as unknown as { executeTool: ReturnType<typeof vi.fn> }).executeTool = vi.fn().mockResolvedValue({
       content: 'Weather data: Sunny, 75°F'
     });
   });
@@ -347,8 +367,10 @@ describe('ModelDetail Tool Calling', () => {
       const enableAllButton = screen.getByText('Enable All');
       await user.click(enableAllButton);
       
-      // Should show all 6 tools enabled
-      expect(screen.getByTestId('enabled-tools-count')).toHaveTextContent('6');
+      // Should show all 6 tools enabled - wait for state to update
+      await waitFor(() => {
+        expect(screen.getByTestId('enabled-tools-count')).toHaveTextContent('6');
+      });
     });
 
     it('should disable all tools when disable all is clicked', async () => {
@@ -368,8 +390,10 @@ describe('ModelDetail Tool Calling', () => {
       const disableAllButton = screen.getByText('Disable All');
       await user.click(disableAllButton);
       
-      // Should show 0 tools enabled
-      expect(screen.getByTestId('enabled-tools-count')).toHaveTextContent('0');
+      // Should show 0 tools enabled - wait for state to update
+      await waitFor(() => {
+        expect(screen.getByTestId('enabled-tools-count')).toHaveTextContent('0');
+      });
     });
 
     it('should toggle individual tools', async () => {
@@ -389,8 +413,10 @@ describe('ModelDetail Tool Calling', () => {
       const toggleWeatherButton = screen.getByText('Toggle Weather');
       await user.click(toggleWeatherButton);
       
-      // Should show 5 tools enabled (one disabled)
-      expect(screen.getByTestId('enabled-tools-count')).toHaveTextContent('5');
+      // Should show 5 tools enabled (one disabled) - wait for state to update
+      await waitFor(() => {
+        expect(screen.getByTestId('enabled-tools-count')).toHaveTextContent('5');
+      });
     });
   });
 
@@ -601,7 +627,7 @@ describe('ModelDetail Tool Calling', () => {
       const user = userEvent.setup();
       
       // Mock tool call response
-      (lmStudioService as any).chatCompletion = vi.fn().mockResolvedValue(mockToolCallResponse);
+      (lmStudioService as unknown as { chatCompletion: ReturnType<typeof vi.fn> }).chatCompletion = vi.fn().mockResolvedValue(mockToolCallResponse);
       
       await act(async () => {
         renderWithRouter(<ModelDetail />);
@@ -638,7 +664,7 @@ describe('ModelDetail Tool Calling', () => {
       const user = userEvent.setup();
       
       // Mock tool call response
-      (lmStudioService as any).chatCompletion = vi.fn().mockResolvedValue(mockToolCallResponse);
+      (lmStudioService as unknown as { chatCompletion: ReturnType<typeof vi.fn> }).chatCompletion = vi.fn().mockResolvedValue(mockToolCallResponse);
       
       await act(async () => {
         renderWithRouter(<ModelDetail />);
@@ -702,7 +728,7 @@ describe('ModelDetail Tool Calling', () => {
         }]
       };
       
-      (lmStudioService as any).chatCompletion = vi.fn().mockResolvedValue(multiToolResponse);
+      (lmStudioService as unknown as { chatCompletion: ReturnType<typeof vi.fn> }).chatCompletion = vi.fn().mockResolvedValue(multiToolResponse);
       
       await act(async () => {
         renderWithRouter(<ModelDetail />);
@@ -749,10 +775,10 @@ describe('ModelDetail Tool Calling', () => {
       const user = userEvent.setup();
       
       // Mock tool call response
-      (lmStudioService as any).chatCompletion = vi.fn().mockResolvedValue(mockToolCallResponse);
+      (lmStudioService as unknown as { chatCompletion: ReturnType<typeof vi.fn> }).chatCompletion = vi.fn().mockResolvedValue(mockToolCallResponse);
       
       // Mock tool execution error
-      (toolService as any).executeTool = vi.fn().mockRejectedValue(new Error('Tool execution failed'));
+      (toolService as unknown as { executeTool: ReturnType<typeof vi.fn> }).executeTool = vi.fn().mockRejectedValue(new Error('Tool execution failed'));
       
       await act(async () => {
         renderWithRouter(<ModelDetail />);
@@ -781,7 +807,7 @@ describe('ModelDetail Tool Calling', () => {
       const user = userEvent.setup();
       
       // Mock API error
-      (lmStudioService as any).chatCompletion = vi.fn().mockRejectedValue(new Error('API Error'));
+      (lmStudioService as unknown as { chatCompletion: ReturnType<typeof vi.fn> }).chatCompletion = vi.fn().mockRejectedValue(new Error('API Error'));
       
       await act(async () => {
         renderWithRouter(<ModelDetail />);

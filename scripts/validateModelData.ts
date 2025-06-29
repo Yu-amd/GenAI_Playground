@@ -11,6 +11,27 @@ interface ValidationResult {
   warnings: string[];
 }
 
+interface Model {
+  id: string;
+  org: string;
+  builder: string;
+  family: string;
+  name: string;
+  variant: string;
+  size: string;
+  description: string;
+  shortDescription: string;
+  image: string;
+  localCard: string;
+  tags: string[];
+  useCase: string;
+  precision: string;
+  license: string;
+  compatibility: string[];
+  readiness: string;
+  badge?: string;
+}
+
 async function validateModelData(): Promise<ValidationResult> {
   const result: ValidationResult = {
     success: true,
@@ -84,7 +105,7 @@ async function validateModelData(): Promise<ValidationResult> {
   return result;
 }
 
-function validateModelStructure(model: any, index: number): string[] {
+function validateModelStructure(model: Model, index: number): string[] {
   const errors: string[] = [];
   const requiredFields = [
     'id', 'org', 'builder', 'family', 'name', 'variant', 'size',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -330,12 +330,36 @@ Emergency hotline: +1-555-OPEA-911
     }
   };
 
-  // Add initial welcome message when component loads
+  const getWelcomeMessage = useCallback(() => {
+    if (!blueprint) return 'Hello! How can I help you today?';
+    
+    switch (blueprint.id) {
+      case 'chatqna':
+        return 'Hello! I\'m your ChatQnA assistant. I can help you with questions about the OPEA Framework, RAG systems, and more. What would you like to know?';
+      case 'agentqna':
+        return 'Hello! I\'m your AgentQnA assistant. I can help you understand multi-agent systems, agent architectures, and coordination patterns. What would you like to explore?';
+      case 'codegen':
+        return 'Hello! I\'m your CodeGen assistant. I can help you generate code in various programming languages. Just describe what you want to build!';
+      case 'codetrans':
+        return 'Hello! I\'m your CodeTrans assistant. I can help you translate code between different programming languages. What code would you like to translate?';
+      case 'searchqna':
+        return 'Hello! I\'m your SearchQnA assistant. I can help you with search queries and information retrieval. What are you looking for?';
+      case 'docsum':
+        return 'Hello! I\'m your DocSum assistant. I can help you summarize documents and extract key information. What would you like me to summarize?';
+      case 'translation':
+        return 'Hello! I\'m your Translation assistant. I can help you translate text between different languages. What would you like to translate?';
+      case 'avatarchatbot':
+        return 'Hello! I\'m your Avatar Chatbot assistant. I can help you understand avatar-based conversational AI systems. What would you like to know?';
+      default:
+        return 'Hello! How can I help you today?';
+    }
+  }, [blueprint]);
+
   useEffect(() => {
     if (blueprint && messages.length === 0) {
       setMessages([{ role: 'assistant', content: getWelcomeMessage(), timestamp: new Date() }]);
     }
-  }, [blueprint]);
+  }, [blueprint, getWelcomeMessage, messages.length]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -597,31 +621,6 @@ main();`
     return `Based on the OPEA Framework Technical Specifications, here's what I found about "${query}":\n\n${context}\n\nThis information comes from our internal technical documentation. Is there anything specific about these details you'd like me to clarify?`;
   };
 
-  const getWelcomeMessage = () => {
-    if (!blueprint) return '';
-    
-    switch (blueprint.id) {
-      case 'chatqna':
-        return 'Welcome to ChatQnA! I\'m a RAG-powered chatbot that can answer questions using knowledge retrieval. How can I help you today?';
-      case 'agentqna':
-        return 'Welcome to AgentQnA! I\'m a multi-agent system that can coordinate specialized agents to answer your questions. What would you like to know?';
-      case 'codegen':
-        return 'Welcome to CodeGen! I can help you generate code in various programming languages. What would you like me to create?';
-      case 'codetrans':
-        return 'Welcome to CodeTrans! I can translate code between different programming languages. What code would you like me to translate?';
-      case 'searchqna':
-        return 'Welcome to SearchQnA! I can search the web and provide you with up-to-date information. What would you like me to search for?';
-      case 'docsum':
-        return 'Welcome to DocSum! I can create summaries of different types of text. What would you like me to summarize?';
-      case 'translation':
-        return 'Welcome to Translation! I can translate text between different languages. What would you like me to translate?';
-      case 'avatarchatbot':
-        return 'Welcome to Avatar Chatbot! I\'m a conversational AI with a virtual avatar. How can I assist you today?';
-      default:
-        return 'Welcome! How can I help you today?';
-    }
-  };
-
   const getFunctionalLogoByName = (name: string) => {
     // Map functional service names to their logo images
     const logoMap: Record<string, string> = {
@@ -850,7 +849,7 @@ main();`
           <label className="block text-xs text-gray-400 mb-1">Knowledge Base Type</label>
           <select
             value={knowledgeBaseConfig.type}
-            onChange={(e) => setKnowledgeBaseConfig(prev => ({ ...prev, type: e.target.value as any }))}
+            onChange={(e) => setKnowledgeBaseConfig(prev => ({ ...prev, type: e.target.value as 'vector' | 'document' | 'database' }))}
             className="w-full bg-neutral-700 text-white rounded px-3 py-2 text-sm border border-neutral-600 focus:border-blue-500 focus:outline-none"
           >
             <option value="vector">Vector Database</option>

@@ -19,13 +19,26 @@ import ToolTestPanel from '../components/ToolTestPanel';
 import DeploymentGuide from '../components/DeploymentGuide';
 import './fonts.css';
 
+// Define a type for model card content
+export type ModelCardContent = {
+  overview: string;
+  intended_use: readonly string[] | string[];
+  limitations: readonly string[] | string[];
+  training_data: string;
+  evaluation: readonly string[] | string[];
+  known_issues: readonly string[] | string[];
+  references: readonly string[] | string[];
+  [key: string]: string | readonly string[] | string[];
+};
+
 // Helper component for viewing model card content
-const ModelCardViewContent: React.FC<{ modelCard: any }> = ({ modelCard }) => {
+const ModelCardViewContent: React.FC<{ modelCard: ModelCardContent }> = ({ modelCard }) => {
   if (!modelCard) {
     return <div className="text-center py-12 text-gray-400">No model card information available.</div>;
   }
 
-  const renderSection = (sectionKey: string, sectionData: any) => {
+  const renderSection = (sectionKey: string, sectionData: string | readonly string[] | string[]) => {
+    if (typeof sectionData === 'undefined') return null;
     const sectionName = sectionKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     
     if (Array.isArray(sectionData) && sectionData.length > 0) {
@@ -74,13 +87,13 @@ const ModelCardViewContent: React.FC<{ modelCard: any }> = ({ modelCard }) => {
 
 // Helper component for editing model card content
 const ModelCardEditingContent: React.FC<{ 
-  content: any; 
-  onSave: (content: any) => void; 
+  content: ModelCardContent; 
+  onSave: (content: ModelCardContent) => void; 
   onCancel: () => void; 
 }> = ({ content, onSave, onCancel }) => {
-  const [editingContent, setEditingContent] = useState<any>(() => {
+  const [editingContent, setEditingContent] = useState<ModelCardContent>(() => {
     // Initialize with all existing content, including custom sections
-    const initialContent: any = {
+    const initialContent: ModelCardContent = {
       overview: content?.overview || '',
       intended_use: [...(content?.intended_use || [])],
       limitations: [...(content?.limitations || [])],
@@ -145,7 +158,7 @@ const ModelCardEditingContent: React.FC<{
     const sectionKeys = Object.keys(editingContent);
     const currentIndex = sectionKeys.indexOf(sectionKey);
     if (currentIndex > 0) {
-      const newContent: any = {};
+      const newContent: ModelCardContent = {} as ModelCardContent;
       sectionKeys.forEach((key, index) => {
         if (index === currentIndex - 1) {
           newContent[sectionKey] = editingContent[sectionKey];
@@ -163,7 +176,7 @@ const ModelCardEditingContent: React.FC<{
     const sectionKeys = Object.keys(editingContent);
     const currentIndex = sectionKeys.indexOf(sectionKey);
     if (currentIndex < sectionKeys.length - 1) {
-      const newContent: any = {};
+      const newContent: ModelCardContent = {} as ModelCardContent;
       sectionKeys.forEach((key, index) => {
         if (index === currentIndex) {
           newContent[sectionKeys[currentIndex + 1]] = editingContent[sectionKeys[currentIndex + 1]];
@@ -214,7 +227,8 @@ const ModelCardEditingContent: React.FC<{
     }
   };
 
-  const renderSection = (sectionKey: string, sectionData: any) => {
+  const renderSection = (sectionKey: string, sectionData: string | readonly string[] | string[]) => {
+    if (typeof sectionData === 'undefined') return null;
     const sectionName = sectionKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     const sectionKeys = Object.keys(editingContent);
     const currentIndex = sectionKeys.indexOf(sectionKey);
@@ -480,7 +494,7 @@ const ModelDetail: React.FC = () => {
   const [sendError, setSendError] = useState<string | null>(null);
   const [showDeploymentGuide, setShowDeploymentGuide] = useState(false);
   const [isModelCardEditing, setIsModelCardEditing] = useState(false);
-  const [modelCardContent, setModelCardContent] = useState<any>(null);
+  const [modelCardContent, setModelCardContent] = useState<ModelCardContent | null>(null);
   const [showCursor, setShowCursor] = useState(true);
   const [isTextareaFocused, setIsTextareaFocused] = useState(true);
   
@@ -639,13 +653,15 @@ const ModelDetail: React.FC = () => {
   const [enabledToolNames, setEnabledToolNames] = useState<string[]>([]);
   const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
 
-  // Initialize enabled tools after tools array is defined (only once)
+  // Only initialize enabled tools once on mount
+  const didInitEnabledTools = React.useRef(false);
   useEffect(() => {
-    if (tools.length > 0 && enabledToolNames.length === 0) {
+    if (!didInitEnabledTools.current && tools.length > 0) {
       const allToolNames = tools.map(t => t.function.name);
       setEnabledToolNames(allToolNames);
+      didInitEnabledTools.current = true;
     }
-  }, [tools]); // Removed enabledToolNames.length dependency
+  }, [tools]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -842,7 +858,7 @@ const ModelDetail: React.FC = () => {
     }, 100);
   };
 
-  const handleModelCardSave = (content: any) => {
+  const handleModelCardSave = (content: ModelCardContent) => {
     // Update the model's model_card with the new content
     if (model) {
       setModel({
@@ -1504,7 +1520,7 @@ const ModelDetail: React.FC = () => {
                   className="mt-2 px-4 py-1 rounded-full bg-blue-600/80 text-white font-semibold hover:bg-blue-700 transition-all self-end"
                   onClick={() => {
                     // Remove trailing /v1 or /v1/ if present
-                    let cleanEndpoint = endpoint.trim().replace(/\/?v1\/?$/, '');
+                    const cleanEndpoint = endpoint.trim().replace(/\/?v1\/?$/, '');
                     setEndpoint(cleanEndpoint);
                     setEndpointSaved(true);
                     setShowSettings(false);

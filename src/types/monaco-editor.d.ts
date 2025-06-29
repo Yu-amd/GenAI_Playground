@@ -7,7 +7,7 @@ declare module '@monaco-editor/react' {
     defaultLanguage?: string;
     defaultValue?: string;
     theme?: string;
-    options?: Record<string, any>;
+    options?: Record<string, unknown>;
   }
 
   const Editor: ComponentType<EditorProps>;

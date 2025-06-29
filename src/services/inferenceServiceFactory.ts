@@ -125,15 +125,17 @@ class InferenceServiceFactory implements InferenceService {
 
   isAvailable(provider: InferenceProvider): boolean {
     switch (provider) {
-      case 'lm-studio':
+      case 'lm-studio': {
         // Check if LM Studio config is available
         return !!(this.config.lmStudioConfig?.endpoint);
+      }
       
-      case 'cloud':
+      case 'cloud': {
         // Check if cloud providers are configured and enabled
         if (!this.config.cloudConfig?.enabled) return false;
         const cloudConfig = cloudConfigService.getConfig();
         return cloudConfig.providers.length > 0;
+      }
       
       default:
         return false;
@@ -166,15 +168,16 @@ class InferenceServiceFactory implements InferenceService {
     details?: string;
   } {
     switch (provider) {
-      case 'lm-studio':
+      case 'lm-studio': {
         return {
           name: 'LM Studio',
           description: 'Local inference server',
           status: this.isAvailable(provider) ? 'available' : 'unavailable',
           details: this.config.lmStudioConfig?.endpoint
         };
+      }
       
-      case 'cloud':
+      case 'cloud': {
         const cloudConfig = cloudConfigService.getConfig();
         const healthyProviders = cloudConfig.providers.filter(p => p.enabled);
         return {
@@ -183,6 +186,7 @@ class InferenceServiceFactory implements InferenceService {
           status: this.isAvailable(provider) ? 'available' : 'unavailable',
           details: `${healthyProviders.length} providers configured`
         };
+      }
       
       default:
         return {
@@ -213,7 +217,11 @@ class InferenceServiceFactory implements InferenceService {
     responseTime?: number;
     error?: string;
   }>> {
-    const status: Record<InferenceProvider, any> = {
+    const status: Record<InferenceProvider, {
+      isHealthy: boolean;
+      responseTime?: number;
+      error?: string;
+    }> = {
       'lm-studio': { isHealthy: false },
       'cloud': { isHealthy: false }
     };

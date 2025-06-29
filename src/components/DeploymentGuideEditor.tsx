@@ -15,12 +15,12 @@ import {
   ChevronDownIcon
 } from '@heroicons/react/24/outline';
 import { deploymentGuideService, DeploymentGuideService } from '../services/deploymentGuideService';
-import type { DeploymentSection, DeploymentTab } from '../services/deploymentGuideService';
+import type { DeploymentSection, DeploymentTab, DeploymentGuideContent, DeploymentCategory } from '../services/deploymentGuideService';
 
 interface DeploymentGuideEditorProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (content: any) => void;
+  onSave?: (content: DeploymentGuideContent) => void;
 }
 
 const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({ 
@@ -32,7 +32,7 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedTab, setSelectedTab] = useState<string>('');
   const [selectedSection, setSelectedSection] = useState<number>(-1);
-  const [content, setContent] = useState<any>(null);
+  const [content, setContent] = useState<DeploymentGuideContent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showAddSection, setShowAddSection] = useState(false);
@@ -87,6 +87,9 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      if (!content) {
+        throw new Error('No content to save');
+      }
       // Save content using the service
       await DeploymentGuideService.saveContent(content);
       
@@ -112,8 +115,8 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
     if (!selectedCategory || !selectedTab || !content) return undefined;
     
     // Use local content state instead of service
-    const category = content.categories.find((cat: any) => cat.id === selectedCategory);
-    const tab = category?.tabs.find((tab: any) => tab.id === selectedTab);
+    const category = content.categories.find((cat: DeploymentCategory) => cat.id === selectedCategory);
+    const tab = category?.tabs.find((tab: DeploymentTab) => tab.id === selectedTab);
     
     return tab;
   };
@@ -129,8 +132,8 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
     if (!content || selectedCategory === '' || selectedTab === '') return;
 
     const newContent = { ...content };
-    const categoryIndex = newContent.categories.findIndex((cat: any) => cat.id === selectedCategory);
-    const tabIndex = newContent.categories[categoryIndex].tabs.findIndex((tab: any) => tab.id === selectedTab);
+    const categoryIndex = newContent.categories.findIndex((cat: DeploymentCategory) => cat.id === selectedCategory);
+    const tabIndex = newContent.categories[categoryIndex].tabs.findIndex((tab: DeploymentTab) => tab.id === selectedTab);
     
     newContent.categories[categoryIndex].tabs[tabIndex].sections[index] = updatedSection;
     setContent(newContent);
@@ -140,7 +143,7 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
     if (!content || selectedCategory === '' || selectedTab === '') return;
 
     const newSection: DeploymentSection = {
-      type: newSectionType as any,
+      type: newSectionType as 'overview' | 'requirements' | 'code-block' | 'providers' | 'links',
       title: 'New Section',
       description: '',
       features: [],
@@ -153,8 +156,8 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
     };
 
     const newContent = { ...content };
-    const categoryIndex = newContent.categories.findIndex((cat: any) => cat.id === selectedCategory);
-    const tabIndex = newContent.categories[categoryIndex].tabs.findIndex((tab: any) => tab.id === selectedTab);
+    const categoryIndex = newContent.categories.findIndex((cat: DeploymentCategory) => cat.id === selectedCategory);
+    const tabIndex = newContent.categories[categoryIndex].tabs.findIndex((tab: DeploymentTab) => tab.id === selectedTab);
     
     newContent.categories[categoryIndex].tabs[tabIndex].sections.push(newSection);
     setContent(newContent);
@@ -166,15 +169,15 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
     if (!content || selectedCategory === '' || selectedTab === '') return;
 
     const newContent = { ...content };
-    const categoryIndex = newContent.categories.findIndex((cat: any) => cat.id === selectedCategory);
-    const tabIndex = newContent.categories[categoryIndex].tabs.findIndex((tab: any) => tab.id === selectedTab);
+    const categoryIndex = newContent.categories.findIndex((cat: DeploymentCategory) => cat.id === selectedCategory);
+    const tabIndex = newContent.categories[categoryIndex].tabs.findIndex((tab: DeploymentTab) => tab.id === selectedTab);
     
     newContent.categories[categoryIndex].tabs[tabIndex].sections.splice(index, 1);
     setContent(newContent);
     setSelectedSection(-1);
   };
 
-  const renderSectionEditor = (section: any, index: number) => {
+  const renderSectionEditor = (section: DeploymentSection, index: number) => {
     const isExpanded = selectedSection === index;
     
     console.log(`Rendering section ${index}:`, section);
@@ -211,7 +214,7 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
               </label>
               <select
                 value={section.type}
-                onChange={(e) => updateSection(index, { ...section, type: e.target.value as any })}
+                onChange={(e) => updateSection(index, { ...section, type: e.target.value as 'overview' | 'requirements' | 'code-block' | 'providers' | 'links' })}
                 className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="overview" className="bg-gray-800 text-white">Overview</option>
@@ -313,31 +316,19 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
                     placeholder="Enter code content..."
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Language
-                  </label>
-                  <input
-                    type="text"
-                    value={section.language || ''}
-                    onChange={(e) => updateSection(index, { ...section, language: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g., bash, python, javascript"
-                  />
-                </div>
                 {section.subsections && section.subsections.length > 0 && (
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       Code Subsections
                     </label>
-                    {section.subsections.map((subsection: any, subIndex: number) => (
+                    {section.subsections.map((subsection, subIndex: number) => (
                       <div key={subIndex} className="mb-3 p-3 bg-gray-700/30 border border-gray-600/30 rounded">
                         <div className="flex items-center gap-2 mb-2">
                           <input
                             type="text"
                             value={subsection.title}
                             onChange={(e) => {
-                              const newSubsections = [...section.subsections];
+                              const newSubsections = [...(section.subsections || [])];
                               newSubsections[subIndex] = { ...subsection, title: e.target.value };
                               updateSection(index, { ...section, subsections: newSubsections });
                             }}
@@ -346,7 +337,7 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
                           />
                           <button
                             onClick={() => {
-                              const newSubsections = section.subsections.filter((_: any, i: number) => i !== subIndex);
+                              const newSubsections = (section.subsections || []).filter((_, i: number) => i !== subIndex);
                               updateSection(index, { ...section, subsections: newSubsections });
                             }}
                             className="p-1 text-red-400 hover:text-red-300"
@@ -357,7 +348,7 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
                         <textarea
                           value={subsection.code || ''}
                           onChange={(e) => {
-                            const newSubsections = [...section.subsections];
+                            const newSubsections = [...(section.subsections || [])];
                             newSubsections[subIndex] = { ...subsection, code: e.target.value };
                             updateSection(index, { ...section, subsections: newSubsections });
                           }}
@@ -388,7 +379,7 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
                     Major Providers
                   </label>
                   <textarea
-                    value={section.major?.map((provider: any) => `${provider.name} - ${provider.models}`).join('\n') || ''}
+                    value={section.major?.map((provider) => `${provider.name} - ${provider.models}`).join('\n') || ''}
                     onChange={(e) => {
                       const newMajor = e.target.value.split('\n').map(line => {
                         const [name, models] = line.split(' - ');
@@ -406,7 +397,7 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
                     Custom Providers
                   </label>
                   <textarea
-                    value={section.custom?.map((provider: any) => `${provider.name} - ${provider.description}`).join('\n') || ''}
+                    value={section.custom?.map((provider) => `${provider.name} - ${provider.description}`).join('\n') || ''}
                     onChange={(e) => {
                       const newCustom = e.target.value.split('\n').map(line => {
                         const [name, description] = line.split(' - ');
@@ -428,7 +419,7 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
                   Links
                 </label>
                 <textarea
-                  value={section.resources?.map((resource: any) => `${resource.name} - ${resource.url} - ${resource.description}`).join('\n') || ''}
+                  value={section.resources?.map((resource) => `${resource.name} - ${resource.url} - ${resource.description}`).join('\n') || ''}
                   onChange={(e) => {
                     const newResources = e.target.value.split('\n').map(line => {
                       const [name, url, description] = line.split(' - ');
@@ -623,14 +614,15 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
                   value={selectedCategory}
                   onChange={(e) => {
                     setSelectedCategory(e.target.value);
-                    const category = content.categories.find((cat: any) => cat.id === e.target.value);
+                    if (!content) return;
+                    const category = content.categories.find((cat: DeploymentCategory) => cat.id === e.target.value);
                     if (category && category.tabs.length > 0) {
                       setSelectedTab(category.tabs[0].id);
                     }
                   }}
                   className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {content?.categories.map((category: any) => (
+                  {content?.categories.map((category: DeploymentCategory) => (
                     <option key={category.id} value={category.id} className="bg-gray-800 text-white">
                       {category.name}
                     </option>
@@ -649,8 +641,8 @@ const DeploymentGuideEditor: React.FC<DeploymentGuideEditorProps> = ({
                   className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {content?.categories
-                    .find((cat: any) => cat.id === selectedCategory)
-                    ?.tabs.map((tab: any) => (
+                    .find((cat: DeploymentCategory) => cat.id === selectedCategory)
+                    ?.tabs.map((tab: DeploymentTab) => (
                       <option key={tab.id} value={tab.id} className="bg-gray-800 text-white">
                         {tab.name}
                       </option>

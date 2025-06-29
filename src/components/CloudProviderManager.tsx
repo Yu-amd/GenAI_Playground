@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   CloudArrowUpIcon, 
   TrashIcon, 
@@ -31,19 +31,19 @@ export const CloudProviderManager: React.FC<CloudProviderManagerProps> = ({
   const [testingProvider, setTestingProvider] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
+  const loadConfig = useCallback(async () => {
+    await cloudConfigService.loadConfigFromStorage();
+    const newConfig = cloudConfigService.getConfig();
+    setConfig(newConfig);
+    onConfigChange?.(newConfig);
+  }, [onConfigChange]);
+
   useEffect(() => {
     loadConfig();
     updateHealthStatus();
     const interval = setInterval(updateHealthStatus, 30000); // Update every 30 seconds
     return () => clearInterval(interval);
-  }, []);
-
-  const loadConfig = async () => {
-    await cloudConfigService.loadConfigFromStorage();
-    const newConfig = cloudConfigService.getConfig();
-    setConfig(newConfig);
-    onConfigChange?.(newConfig);
-  };
+  }, [loadConfig]);
 
   const updateHealthStatus = () => {
     const health = cloudInferenceService.getHealthStatus();
@@ -151,7 +151,7 @@ export const CloudProviderManager: React.FC<CloudProviderManagerProps> = ({
               <select
                 value={config.loadBalancing}
                 onChange={(e) => {
-                  const newConfig = { ...config, loadBalancing: e.target.value as any };
+                  const newConfig = { ...config, loadBalancing: e.target.value as 'priority' | 'round-robin' | 'health-based' };
                   setConfig(newConfig);
                   cloudInferenceService.updateConfig(newConfig);
                 }}

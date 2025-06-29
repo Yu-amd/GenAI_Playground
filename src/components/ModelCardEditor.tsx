@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   PencilIcon, 
   EyeIcon, 
@@ -46,16 +46,10 @@ const ModelCardEditor: React.FC<ModelCardEditorProps> = ({
     known_issues: [] as string[],
     references: [] as string[]
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      loadContent();
-    }
-  }, [isOpen, initialContent]);
-
-  const loadContent = () => {
+  const loadContent = useCallback(() => {
     setIsLoading(true);
     try {
       if (initialContent) {
@@ -84,7 +78,13 @@ const ModelCardEditor: React.FC<ModelCardEditorProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [initialContent]);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadContent();
+    }
+  }, [isOpen, loadContent]);
 
   const handleSave = async () => {
     setIsSaving(true);

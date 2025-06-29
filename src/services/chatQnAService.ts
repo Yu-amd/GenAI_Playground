@@ -1,11 +1,28 @@
 import { lmStudioService } from './lmStudioService';
 
+// Define types for conversation messages
+export interface ConversationMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp?: Date;
+}
+
+// Define types for metadata
+export interface DocumentMetadata {
+  category?: string;
+  tags?: string[];
+  author?: string;
+  created?: Date;
+  updated?: Date;
+  [key: string]: string | string[] | Date | undefined;
+}
+
 export interface KnowledgeBaseDocument {
   id: string;
   title: string;
   content: string;
   url?: string;
-  metadata?: Record<string, any>;
+  metadata?: DocumentMetadata;
   embedding?: number[];
 }
 
@@ -33,7 +50,7 @@ export interface ChatQnAConfig {
 export class ChatQnAService {
   private config: ChatQnAConfig;
   private knowledgeBase: KnowledgeBaseDocument[] = [];
-  private sessionContexts: Map<string, any[]> = new Map();
+  private sessionContexts: Map<string, ConversationMessage[]> = new Map();
 
   constructor(config: Partial<ChatQnAConfig> = {}) {
     this.config = {
@@ -133,7 +150,7 @@ export class ChatQnAService {
       .map(item => item.document);
   }
 
-  private buildContext(documents: KnowledgeBaseDocument[], conversationHistory: any[]): string {
+  private buildContext(documents: KnowledgeBaseDocument[], conversationHistory: ConversationMessage[]): string {
     const documentContext = documents
       .map(doc => `Document: ${doc.title}\nContent: ${doc.content}\n`)
       .join('\n');

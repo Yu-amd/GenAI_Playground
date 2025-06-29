@@ -42,7 +42,7 @@ vi.mock('@headlessui/react', () => ({
 
 // Mock the Highlight component
 vi.mock('prism-react-renderer', () => ({
-  Highlight: ({ children }: { children: (props: any) => React.ReactNode }) => 
+  Highlight: ({ children }: { children: (props: { tokens: unknown[]; getLineProps: () => Record<string, unknown>; getTokenProps: () => Record<string, unknown> }) => React.ReactNode }) => 
     children({ tokens: [], getLineProps: () => ({}), getTokenProps: () => ({}) }),
   themes: {
     oneDark: {}
@@ -147,10 +147,10 @@ describe('ModelDetail Component', () => {
     vi.clearAllMocks();
     
     // Mock loadModelData to return our test data
-    (loadModelData as any).mockResolvedValue(mockModelData);
+    (loadModelData as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockModelData);
     
     // Mock lmStudioService
-    (lmStudioService as any).chatCompletion = vi.fn().mockResolvedValue(mockChatResponse);
+    (lmStudioService as unknown as { chatCompletion: ReturnType<typeof vi.fn> }).chatCompletion = vi.fn().mockResolvedValue(mockChatResponse);
   });
 
   afterEach(() => {
@@ -326,7 +326,7 @@ describe('ModelDetail Component', () => {
 
     it('should display received messages in chat', async () => {
       // Ensure the mock returns the expected response
-      (lmStudioService as any).chatCompletion.mockResolvedValue({
+      (lmStudioService as unknown as { chatCompletion: ReturnType<typeof vi.fn> }).chatCompletion.mockResolvedValue({
         choices: [
           {
             message: { content: 'Test response' }
@@ -513,7 +513,7 @@ describe('ModelDetail Component', () => {
       
       await waitFor(() => {
         // Check that the tools array contains the expected tool
-        const call = (lmStudioService.chatCompletion as any).mock.calls[0][0];
+        const call = ((lmStudioService as unknown as { chatCompletion: { mock: { calls: unknown[][] } } }).chatCompletion.mock.calls[0][0]) as { tools: unknown[] };
         expect(call.tools).toEqual(
           expect.arrayContaining([
             expect.objectContaining({ 
@@ -569,7 +569,7 @@ describe('ModelDetail Component', () => {
   describe('Error Handling', () => {
     it('should handle API errors gracefully', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      (lmStudioService as any).chatCompletion.mockRejectedValue(new Error('API Error'));
+      (lmStudioService as unknown as { chatCompletion: ReturnType<typeof vi.fn> }).chatCompletion.mockRejectedValue(new Error('API Error'));
       
       await act(async () => {
         renderWithRouter(<ModelDetail />);

@@ -5,12 +5,22 @@ import { inferenceService } from '../services/inferenceServiceFactory';
 import { cloudConfigService } from '../services/cloudConfigService';
 import type { ChatCompletionRequest } from '../services/cloudInferenceService';
 
+interface HealthStatus {
+  isHealthy: boolean;
+  responseTime?: number;
+  error?: string;
+}
+
+interface ProviderHealthStatus {
+  [providerId: string]: HealthStatus;
+}
+
 export const CloudInferenceExample: React.FC = () => {
   const [input, setInput] = useState('');
   const [response, setResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentProvider, setCurrentProvider] = useState(inferenceService.getProvider());
-  const [healthStatus, setHealthStatus] = useState<any>({});
+  const [healthStatus, setHealthStatus] = useState<ProviderHealthStatus>({});
 
   useEffect(() => {
     updateHealthStatus();
@@ -53,7 +63,7 @@ export const CloudInferenceExample: React.FC = () => {
     }
   };
 
-  const handleProviderChange = (provider: any) => {
+  const handleProviderChange = (provider: 'lm-studio' | 'cloud') => {
     setCurrentProvider(provider);
   };
 
@@ -231,7 +241,7 @@ export const CloudInferenceExample: React.FC = () => {
         <div className="bg-gray-900 rounded-xl p-6">
           <h2 className="text-xl font-semibold mb-4">Health Status</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(healthStatus).map(([provider, status]: [string, any]) => (
+            {Object.entries(healthStatus).map(([provider, status]: [string, HealthStatus]) => (
               <div key={provider} className="p-4 bg-gray-800 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-medium capitalize">{provider.replace('-', ' ')}</h3>

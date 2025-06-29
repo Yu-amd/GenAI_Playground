@@ -7,9 +7,14 @@ interface KnowledgeBaseManagerProps {
   onClose: () => void;
 }
 
+interface KnowledgeBaseStats {
+  totalDocuments: number;
+  categories: Record<string, number>;
+}
+
 const KnowledgeBaseManager: React.FC<KnowledgeBaseManagerProps> = ({ isOpen, onClose }) => {
   const [documents, setDocuments] = useState<KnowledgeBaseDocument[]>([]);
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<KnowledgeBaseStats | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newDocument, setNewDocument] = useState({
     title: '',

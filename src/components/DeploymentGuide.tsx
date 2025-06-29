@@ -1656,7 +1656,7 @@ kubectl get services ai-playground-service`}
 python3 -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'ROCm available: {torch.backends.mps.is_available()}')"
 
 # Check GPU detection
-python3 -c "import torch; print(f'GPU count: {torch.cuda.device_count()}'); print(f'GPU name: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"No GPU\"}')"`}
+python3 -c "import torch; print(f'GPU count: {torch.cuda.device_count()}'); print(f'GPU name: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else "No GPU"}')"`}
             </pre>
           </div>
         </div>

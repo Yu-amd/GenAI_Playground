@@ -93,7 +93,7 @@ export class ToolService {
       const windSpeed = data.wind.speed;
       
       return `Weather in ${location}:\n• Temperature: ${temp}°${unit === 'fahrenheit' ? 'F' : 'C'}\n• Conditions: ${description}\n• Humidity: ${humidity}%\n• Wind Speed: ${windSpeed} ${unit === 'fahrenheit' ? 'mph' : 'm/s'}`;
-    } catch (error) {
+    } catch {
       // Fallback to mock data
       return this.getMockWeather(location, unit);
     }
@@ -125,7 +125,7 @@ export class ToolService {
       } else {
         return this.getMockSearchResults(query, num_results);
       }
-    } catch (error) {
+    } catch {
       return this.getMockSearchResults(query, num_results);
     }
   }
@@ -158,7 +158,7 @@ export class ToolService {
       } else {
         throw new Error('Invalid mathematical expression');
       }
-    } catch (error) {
+    } catch {
       return `Error calculating "${expression}": Invalid mathematical expression. Please use only numbers, operators (+, -, *, /), and parentheses.`;
     }
   }
@@ -188,7 +188,7 @@ export class ToolService {
       const detectedLanguage = data.detected?.language || source_language || 'auto';
       
       return `Translation:\n• Original (${detectedLanguage}): ${text}\n• Translated (${target_language}): ${data.translatedText}`;
-    } catch (error) {
+    } catch {
       return this.getMockTranslation(text, target_language, source_language);
     }
   }
@@ -256,8 +256,7 @@ export class ToolService {
       } else {
         return this.getMockStockPrice(symbol, include_currency);
       }
-    } catch (error) {
-      console.error('Error fetching stock price:', error);
+    } catch {
       return this.getMockStockPrice(symbol, include_currency);
     }
   }
@@ -386,7 +385,6 @@ export class ToolService {
       }
     } catch (error) {
       console.error('Error fetching historical stock price:', error);
-      
       // If it's a CORS error, provide a helpful message
       if (error instanceof TypeError && error.message.includes('NetworkError')) {
         return `Network error: Unable to fetch stock data due to CORS restrictions. This is a browser security feature. For now, please use the mock data or try a different approach.`;
@@ -444,7 +442,7 @@ export class ToolService {
             minute: '2-digit',
             second: '2-digit'
           });
-        } catch (error) {
+        } catch {
           // Fallback to local time with timezone info
           timeString = `${now.toLocaleString('en-US', {
             hour12: format === '12h',
