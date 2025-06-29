@@ -516,7 +516,12 @@ describe('ModelDetail Component', () => {
         const call = (lmStudioService.chatCompletion as any).mock.calls[0][0];
         expect(call.tools).toEqual(
           expect.arrayContaining([
-            expect.objectContaining({ name: 'get_weather' })
+            expect.objectContaining({ 
+              type: 'function',
+              function: expect.objectContaining({ 
+                name: 'get_weather' 
+              })
+            })
           ])
         );
       });
@@ -588,7 +593,7 @@ describe('ModelDetail Component', () => {
       fireEvent.click(sendButton);
       
       await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalledWith('Error in handleSendMessage:', expect.any(Error));
+        expect(consoleSpy).toHaveBeenCalledWith('Error in tool calling:', expect.any(Error));
       });
       
       consoleSpy.mockRestore();

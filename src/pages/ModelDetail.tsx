@@ -5,13 +5,17 @@ import PlaygroundLogo from '../components/PlaygroundLogo';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { PaperAirplaneIcon, CodeBracketIcon, Cog6ToothIcon, ClipboardIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PaperAirplaneIcon, CodeBracketIcon, Cog6ToothIcon, ClipboardIcon, CheckIcon, XMarkIcon, WrenchScrewdriverIcon, QuestionMarkCircleIcon, BeakerIcon } from '@heroicons/react/24/outline';
 import { lmStudioService } from '../services/lmStudioService';
+import { toolService } from '../services/toolService';
 import { Highlight, themes } from 'prism-react-renderer';
 import { getDefaultCode } from '../utils/apiCodeGenerator';
 import { Dialog } from '@headlessui/react';
 import { loadModelData, modelImageMap } from '../utils/modelLoader';
 import type { ModelData } from '../utils/modelLoader';
+import ToolSelector from '../components/ToolSelector';
+import ToolDocumentation from '../components/ToolDocumentation';
+import ToolTestPanel from '../components/ToolTestPanel';
 import './fonts.css';
 
 interface Message {
@@ -41,6 +45,10 @@ interface Parameter {
 const ModelDetail: React.FC = () => {
   const { modelId = '', '*': splat = '' } = useParams();
   const fullModelId = splat ? `${modelId}/${splat}` : modelId;
+  
+  // Helper function to check if we're in development mode
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  
   const [model, setModel] = useState<ModelData | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     { role: 'system', content: 'Hi, what can I do for you today?', timestamp: new Date() }
@@ -49,6 +57,9 @@ const ModelDetail: React.FC = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<'python' | 'typescript' | 'rust' | 'go' | 'shell'>('python');
   const [isToolCallingEnabled, setIsToolCallingEnabled] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showToolSelector, setShowToolSelector] = useState(false);
+  const [showToolDocumentation, setShowToolDocumentation] = useState(false);
+  const [showToolTestPanel, setShowToolTestPanel] = useState(false);
   const [streamingContent, setStreamingContent] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -60,6 +71,7 @@ const ModelDetail: React.FC = () => {
   const [showModelCard, setShowModelCard] = useState(false);
   const [endpoint, setEndpoint] = useState('http://localhost:1234/v1');
   const [endpointSaved, setEndpointSaved] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
   
   // Enhanced parameters with more comprehensive options
   const [parameters, setParameters] = useState<Parameter[]>([
@@ -72,127 +84,157 @@ const ModelDetail: React.FC = () => {
 
   const [tools] = useState([
     {
-      name: 'get_weather',
-      description: 'Get the current weather for a location',
-      parameters: {
-        type: 'object',
-        properties: {
-          location: {
-            type: 'string',
-            description: 'The city and state, e.g. San Francisco, CA'
+      type: "function" as const,
+      function: {
+        name: 'get_weather',
+        description: 'Get the current weather for a location',
+        parameters: {
+          type: 'object',
+          properties: {
+            location: {
+              type: 'string',
+              description: 'The city and state, e.g. San Francisco, CA'
+            },
+            unit: {
+              type: 'string',
+              enum: ['celsius', 'fahrenheit'],
+              description: 'The unit of temperature'
+            }
           },
-          unit: {
-            type: 'string',
-            enum: ['celsius', 'fahrenheit'],
-            description: 'The unit of temperature'
-          }
-        },
-        required: ['location']
+          required: ['location']
+        }
       }
     },
     {
-      name: 'search_web',
-      description: 'Search the web for real-time information',
-      parameters: {
-        type: 'object',
-        properties: {
-          query: {
-            type: 'string',
-            description: 'The search query'
+      type: "function" as const,
+      function: {
+        name: 'search_web',
+        description: 'Search the web for real-time information',
+        parameters: {
+          type: 'object',
+          properties: {
+            query: {
+              type: 'string',
+              description: 'The search query'
+            },
+            num_results: {
+              type: 'integer',
+              description: 'Number of results to return (1-10)',
+              minimum: 1,
+              maximum: 10
+            }
           },
-          num_results: {
-            type: 'integer',
-            description: 'Number of results to return (1-10)',
-            minimum: 1,
-            maximum: 10
-          }
-        },
-        required: ['query']
+          required: ['query']
+        }
       }
     },
     {
-      name: 'calculate',
-      description: 'Perform mathematical calculations',
-      parameters: {
-        type: 'object',
-        properties: {
-          expression: {
-            type: 'string',
-            description: 'The mathematical expression to evaluate'
+      type: "function" as const,
+      function: {
+        name: 'calculate',
+        description: 'Perform mathematical calculations',
+        parameters: {
+          type: 'object',
+          properties: {
+            expression: {
+              type: 'string',
+              description: 'The mathematical expression to evaluate'
+            },
+            precision: {
+              type: 'integer',
+              description: 'Number of decimal places in the result',
+              minimum: 0,
+              maximum: 10
+            }
           },
-          precision: {
-            type: 'integer',
-            description: 'Number of decimal places in the result',
-            minimum: 0,
-            maximum: 10
-          }
-        },
-        required: ['expression']
+          required: ['expression']
+        }
       }
     },
     {
-      name: 'translate',
-      description: 'Translate text between languages',
-      parameters: {
-        type: 'object',
-        properties: {
-          text: {
-            type: 'string',
-            description: 'The text to translate'
+      type: "function" as const,
+      function: {
+        name: 'translate',
+        description: 'Translate text between languages',
+        parameters: {
+          type: 'object',
+          properties: {
+            text: {
+              type: 'string',
+              description: 'The text to translate'
+            },
+            target_language: {
+              type: 'string',
+              description: 'The target language code (e.g., "es" for Spanish)'
+            },
+            source_language: {
+              type: 'string',
+              description: 'The source language code (optional, will auto-detect if not provided)'
+            }
           },
-          target_language: {
-            type: 'string',
-            description: 'The target language code (e.g., "es" for Spanish)'
-          },
-          source_language: {
-            type: 'string',
-            description: 'The source language code (optional, will auto-detect if not provided)'
-          }
-        },
-        required: ['text', 'target_language']
+          required: ['text', 'target_language']
+        }
       }
     },
     {
-      name: 'get_stock_price',
-      description: 'Get the current stock price for a ticker symbol',
-      parameters: {
-        type: 'object',
-        properties: {
-          symbol: {
-            type: 'string',
-            description: 'The stock ticker symbol (e.g., AAPL for Apple)'
+      type: "function" as const,
+      function: {
+        name: 'get_stock_price',
+        description: 'Get the current stock price for a ticker symbol or historical price for a specific date',
+        parameters: {
+          type: 'object',
+          properties: {
+            symbol: {
+              type: 'string',
+              description: 'The stock ticker symbol (e.g., AAPL for Apple)'
+            },
+            include_currency: {
+              type: 'boolean',
+              description: 'Whether to include the currency in the response'
+            },
+            date: {
+              type: 'string',
+              description: 'Optional date for historical price (e.g., "2025-06-20" or "June 20, 2025")'
+            }
           },
-          include_currency: {
-            type: 'boolean',
-            description: 'Whether to include the currency in the response'
-          }
-        },
-        required: ['symbol']
+          required: ['symbol']
+        }
       }
     },
     {
-      name: 'get_time',
-      description: 'Get the current time for a timezone',
-      parameters: {
-        type: 'object',
-        properties: {
-          timezone: {
-            type: 'string',
-            description: 'The timezone (e.g., "America/New_York", "UTC")'
+      type: "function" as const,
+      function: {
+        name: 'get_time',
+        description: 'Get the current time for a timezone',
+        parameters: {
+          type: 'object',
+          properties: {
+            timezone: {
+              type: 'string',
+              description: 'The timezone (e.g., "America/New_York", "UTC")'
+            },
+            format: {
+              type: 'string',
+              enum: ['12h', '24h'],
+              description: 'The time format to use'
+            }
           },
-          format: {
-            type: 'string',
-            enum: ['12h', '24h'],
-            description: 'The time format to use'
-          }
-        },
-        required: ['timezone']
+          required: ['timezone']
+        }
       }
     }
   ]);
 
-  const [enabledToolNames] = useState<string[]>(tools.map(t => t.name));
+  const [enabledToolNames, setEnabledToolNames] = useState<string[]>([]);
   const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
+
+  // Initialize enabled tools after tools array is defined (only once)
+  useEffect(() => {
+    if (tools.length > 0 && enabledToolNames.length === 0) {
+      const allToolNames = tools.map(t => t.function.name);
+      setEnabledToolNames(allToolNames);
+    }
+  }, [tools]); // Removed enabledToolNames.length dependency
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -237,6 +279,23 @@ const ModelDetail: React.FC = () => {
     })));
   };
 
+  const handleToolToggle = (toolName: string) => {
+    setEnabledToolNames(prev => 
+      prev.includes(toolName) 
+        ? prev.filter(name => name !== toolName)
+        : [...prev, toolName]
+    );
+  };
+
+  const handleEnableAllTools = () => {
+    const allToolNames = tools.map(t => t.function.name);
+    setEnabledToolNames(allToolNames);
+  };
+
+  const handleDisableAllTools = () => {
+    setEnabledToolNames([]);
+  };
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
@@ -244,6 +303,7 @@ const ModelDetail: React.FC = () => {
     setInputMessage('');
     setIsLoading(true);
     setIsStreaming(true);
+    setSendError(null);
 
     const newMessage: Message = {
       role: 'user',
@@ -253,27 +313,31 @@ const ModelDetail: React.FC = () => {
     setMessages(prev => [...prev, newMessage]);
 
     try {
-      console.log('Sending message to LM-studio...');
-      const enabledTools = tools.filter(t => enabledToolNames.includes(t.name));
+      const enabledTools = tools.filter(t => enabledToolNames.includes(t.function.name));
+      
+      // Check if we should send tools
+      const shouldSendTools = isToolCallingEnabled && enabledTools.length > 0;
+      
+      const requestBody = {
+        messages: [
+          { role: 'system' as const, content: 'You have access to various tools. When a user asks for information that requires real-time data, calculations, translations, or other external services, use the appropriate tools to help them. Always use tools when they would be helpful.' },
+          ...messages.map(m => ({ role: m.role, content: m.content } as const)),
+          { role: 'user' as const, content: messageToSend }
+        ],
+        temperature: parameters.find(p => p.name === 'temperature')?.value as number,
+        max_tokens: parameters.find(p => p.name === 'max_tokens')?.value as number,
+        top_p: parameters.find(p => p.name === 'top_p')?.value as number,
+        ...(shouldSendTools && { tools: enabledTools })
+      };
+      
       const response = await lmStudioService.chatCompletion(
-        {
-          messages: [
-            ...messages.map(m => ({ role: m.role, content: m.content })),
-            { role: 'user', content: messageToSend }
-          ],
-          temperature: parameters.find(p => p.name === 'temperature')?.value as number,
-          max_tokens: parameters.find(p => p.name === 'max_tokens')?.value as number,
-          top_p: parameters.find(p => p.name === 'top_p')?.value as number,
-          ...(isToolCallingEnabled && { tools: enabledTools })
-        },
-        (chunk) => {
+        requestBody,
+        shouldSendTools ? undefined : (chunk) => {
           if (chunk.choices[0]?.delta?.content) {
             setStreamingContent(prev => prev + chunk.choices[0].delta.content);
           }
         }
       );
-
-      console.log('Received response:', response);
 
       if (!response.choices || response.choices.length === 0) {
         throw new Error('No response received from the model');
@@ -288,22 +352,25 @@ const ModelDetail: React.FC = () => {
       setMessages(prev => [...prev, assistantMessage]);
 
       // Handle tool calls if present
-      if (assistantMessage.tool_calls) {
+      if (assistantMessage.tool_calls && assistantMessage.tool_calls.length > 0) {
         for (const toolCall of assistantMessage.tool_calls) {
-          // Here you would implement the actual tool execution
-          // For now, we'll just add a mock response
+          // Execute the actual tool
+          const toolResult = await toolService.executeTool(toolCall);
+          
+          // Add tool result to messages
           const toolResponse: Message = {
             role: 'tool',
-            content: `Tool ${toolCall.function.name} executed with arguments: ${toolCall.function.arguments}`,
+            content: toolResult.content,
             timestamp: new Date()
           };
           setMessages(prev => [...prev, toolResponse]);
         }
       }
-      // Automatically close the tool calling section after response
-      setIsToolCallingEnabled(false);
+      
+      // Note: Tool calling remains enabled for continued use
     } catch (err) {
-      console.error('Error in handleSendMessage:', err);
+      console.error('Error in tool calling:', err);
+      setSendError('Failed to send message. Please try again.');
     } finally {
       setIsLoading(false);
       setIsStreaming(false);
@@ -337,8 +404,13 @@ const ModelDetail: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Debug log for settings modal
-  console.log('showSettings:', showSettings);
+  const handleTestMessage = (message: string) => {
+    setInputMessage(message);
+    // Trigger the send message after a brief delay to ensure state is updated
+    setTimeout(() => {
+      handleSendMessage();
+    }, 100);
+  };
 
   if (!model) {
     return (
@@ -388,13 +460,15 @@ const ModelDetail: React.FC = () => {
               <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-black rounded-3xl p-4 shadow-lg mb-8 md:mb-0 flex flex-col font-sans" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => { console.log('Settings clicked'); setShowSettings(!showSettings); }}
-                      className="text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-all"
-                      title="Settings"
-                    >
-                      <Cog6ToothIcon className="h-5 w-5" />
-                    </button>
+                    {isDevelopment && (
+                      <button
+                        onClick={() => { console.log('Settings clicked'); setShowSettings(!showSettings); }}
+                        className="text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-all"
+                        title="Settings"
+                      >
+                        <Cog6ToothIcon className="h-5 w-5" />
+                      </button>
+                    )}
                     <button
                       onClick={() => setShowParameters(true)}
                       className="flex items-center px-3 py-1.5 bg-blue-600/10 text-blue-400 rounded-full border border-blue-500/10 hover:bg-blue-600/20 transition-all text-xs font-medium"
@@ -402,16 +476,35 @@ const ModelDetail: React.FC = () => {
                     >
                       Parameters
                     </button>
+                    <button
+                      onClick={() => setShowToolSelector(true)}
+                      className="flex items-center px-3 py-1.5 bg-green-600/10 text-green-400 rounded-full border border-green-500/10 hover:bg-green-600/20 transition-all text-xs font-medium"
+                      title="Tool Selection"
+                    >
+                      <WrenchScrewdriverIcon className="h-4 w-4 mr-1" />
+                      Tools ({enabledToolNames.length}/{tools.length})
+                    </button>
+                    <button
+                      onClick={() => setShowToolDocumentation(true)}
+                      className="text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-all"
+                      title="Tool Documentation"
+                    >
+                      <QuestionMarkCircleIcon className="h-5 w-5" />
+                    </button>
                   </div>
                   <div className="flex items-center gap-2">
-                    <label className="flex items-center gap-2 text-xs text-gray-300">
+                    <label className={`flex items-center gap-2 text-xs transition-colors ${
+                      isToolCallingEnabled ? 'text-green-300' : 'text-gray-300'
+                    }`}>
                       <input
                         type="checkbox"
                         checked={isToolCallingEnabled}
                         onChange={(e) => setIsToolCallingEnabled(e.target.checked)}
                         className="rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500"
                       />
-                      Enable Tool Calling
+                      <span className={isToolCallingEnabled ? 'font-medium' : ''}>
+                        {isToolCallingEnabled ? 'Tool Calling Active' : 'Enable Tool Calling'}
+                      </span>
                     </label>
                   </div>
                 </div>
@@ -578,13 +671,15 @@ const ModelDetail: React.FC = () => {
             <div className="w-full md:w-[40%] flex-1 h-full min-h-0 bg-black rounded-3xl p-4 shadow-lg mb-8 md:mb-0 flex flex-col font-sans" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => { console.log('Settings clicked'); setShowSettings(!showSettings); }}
-                    className="text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-all"
-                    title="Settings"
-                  >
-                    <Cog6ToothIcon className="h-5 w-5" />
-                  </button>
+                  {isDevelopment && (
+                    <button
+                      onClick={() => { console.log('Settings clicked'); setShowSettings(!showSettings); }}
+                      className="text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-all"
+                      title="Settings"
+                    >
+                      <Cog6ToothIcon className="h-5 w-5" />
+                    </button>
+                  )}
                   <button
                     onClick={() => setShowParameters(true)}
                     className="flex items-center px-3 py-1.5 bg-blue-600/10 text-blue-400 rounded-full border border-blue-500/10 hover:bg-blue-600/20 transition-all text-xs font-medium"
@@ -592,16 +687,45 @@ const ModelDetail: React.FC = () => {
                   >
                     Parameters
                   </button>
+                  <button
+                    onClick={() => setShowToolSelector(true)}
+                    className="flex items-center px-3 py-1.5 bg-green-600/10 text-green-400 rounded-full border border-green-500/10 hover:bg-green-600/20 transition-all text-xs font-medium"
+                    title="Tool Selection"
+                  >
+                    <WrenchScrewdriverIcon className="h-4 w-4 mr-1" />
+                    Tools ({enabledToolNames.length}/{tools.length})
+                  </button>
+                  <button
+                    onClick={() => setShowToolDocumentation(true)}
+                    className="text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-all"
+                    title="Tool Documentation"
+                  >
+                    <QuestionMarkCircleIcon className="h-5 w-5" />
+                  </button>
+                  {isDevelopment && (
+                    <button
+                      onClick={() => setShowToolTestPanel(true)}
+                      className="flex items-center px-3 py-1.5 bg-purple-600/10 text-purple-400 rounded-full border border-purple-500/10 hover:bg-purple-600/20 transition-all text-xs font-medium"
+                      title="Test Tools"
+                    >
+                      <BeakerIcon className="h-4 w-4 mr-1" />
+                      Test
+                    </button>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="flex items-center gap-2 text-xs text-gray-300">
+                  <label className={`flex items-center gap-2 text-xs transition-colors ${
+                    isToolCallingEnabled ? 'text-green-300' : 'text-gray-300'
+                  }`}>
                     <input
                       type="checkbox"
                       checked={isToolCallingEnabled}
                       onChange={(e) => setIsToolCallingEnabled(e.target.checked)}
                       className="rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500"
                     />
-                    Enable Tool Calling
+                    <span className={isToolCallingEnabled ? 'font-medium' : ''}>
+                      {isToolCallingEnabled ? 'Tool Calling Active' : 'Enable Tool Calling'}
+                    </span>
                   </label>
                 </div>
               </div>
@@ -692,6 +816,9 @@ const ModelDetail: React.FC = () => {
                       <PaperAirplaneIcon className="h-4 w-4" />
                     </button>
                   </div>
+                  {sendError && (
+                    <div className="mt-2 text-red-400 text-xs">{sendError}</div>
+                  )}
                 </div>
               </div>
               {/* Parameters Side Panel */}
@@ -926,7 +1053,7 @@ const ModelDetail: React.FC = () => {
         </div>
       )}
       {/* Minimal Settings Modal (moved to root) */}
-      {showSettings && (
+      {showSettings && isDevelopment && (
         <div data-testid="dialog" className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowSettings(false)}>
           <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl w-full max-w-md p-8 flex flex-col items-center" onClick={e => e.stopPropagation()}>
             <button
@@ -977,6 +1104,32 @@ const ModelDetail: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+      {/* Tool Selector Modal */}
+      {showToolSelector && (
+        <ToolSelector
+          enabledTools={enabledToolNames}
+          onToolToggle={handleToolToggle}
+          onEnableAll={handleEnableAllTools}
+          onDisableAll={handleDisableAllTools}
+          onClose={() => setShowToolSelector(false)}
+        />
+      )}
+      {/* Tool Documentation Modal */}
+      {showToolDocumentation && (
+        <ToolDocumentation
+          onClose={() => setShowToolDocumentation(false)}
+        />
+      )}
+      {/* Tool Test Panel Modal */}
+      {showToolTestPanel && (
+        <ToolTestPanel
+          isVisible={showToolTestPanel}
+          onClose={() => setShowToolTestPanel(false)}
+          onTestMessage={handleTestMessage}
+          enabledTools={enabledToolNames}
+          isToolCallingEnabled={isToolCallingEnabled}
+        />
       )}
     </div>
   );

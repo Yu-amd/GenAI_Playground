@@ -25,12 +25,15 @@ interface ChatCompletionRequest {
   top_p?: number;
   stream?: boolean;
   tools?: Array<{
-    name: string;
-    description: string;
-    parameters: {
-      type: string;
-      properties: Record<string, any>;
-      required: string[];
+    type: 'function';
+    function: {
+      name: string;
+      description: string;
+      parameters: {
+        type: string;
+        properties: Record<string, any>;
+        required: string[];
+      };
     };
   }>;
 }
