@@ -514,8 +514,12 @@ try {
 
 ### GitHub Actions Workflow
 
+The CI/CD pipeline is implemented using GitHub Actions with the workflow file located at `.github/workflows/ci-cd.yml`. The pipeline includes comprehensive quality checks, testing, security scanning, and deployment automation.
+
+#### Workflow Structure
+
 ```yaml
-name: CI/CD Pipeline
+name: Model Catalog CI/CD Pipeline
 
 on:
   push:
@@ -524,77 +528,150 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run linting
-      run: npm run lint
-    
-    - name: Run tests
-      run: npm test -- --coverage
-    
-    - name: Upload coverage
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage/lcov.info
-
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Build application
-      run: npm run build
-    
-    - name: Deploy to staging
-      run: |
-        # Deployment logic
+  quality-check:      # TypeScript, ESLint, Prettier
+  test:              # Unit tests with coverage
+  security-scan:     # npm audit, Snyk scanning
+  build:             # Production build
+  performance-test:  # Lighthouse CI, bundle analysis
+  validate-model-data: # Model data validation
+  bundle-analysis:   # Bundle size checks
+  deploy-staging:    # Staging deployment (develop branch)
+  deploy-production: # Production deployment (main branch)
 ```
 
-### Quality Gates
+#### Quality Gates
 
-1. **Linting**: ESLint must pass with no errors
-2. **Testing**: All tests must pass with >80% coverage
-3. **Type Checking**: TypeScript compilation must succeed
-4. **Build**: Production build must complete successfully
-5. **Performance**: Lighthouse scores must meet thresholds
+1. **TypeScript Compilation**: `npm run type-check`
+2. **ESLint**: `npm run lint` (no errors)
+3. **Prettier**: `npm run format:check` (consistent formatting)
+4. **Test Coverage**: >80% coverage required
+5. **Security**: No high/critical vulnerabilities
+6. **Performance**: Lighthouse score >80
+7. **Bundle Size**: <2MB total bundle size
+8. **Model Data**: Valid structure and assets
+
+#### Available Scripts
+
+```bash
+# Quality Assurance
+npm run type-check          # TypeScript compilation check
+npm run lint               # ESLint code linting
+npm run lint:fix           # Auto-fix linting issues
+npm run format             # Prettier code formatting
+npm run format:check       # Check code formatting
+
+# Testing
+npm run test               # Run all tests
+npm run test:coverage      # Run tests with coverage
+npm run test:watch         # Run tests in watch mode
+npm run test:ui            # Run tests with UI
+
+# Building
+npm run build              # Production build
+npm run build:analyze      # Build with bundle analysis
+npm run preview            # Preview production build
+
+# Validation
+npm run validate-model-data # Validate model data structure
+npm run validate-markdown   # Validate markdown files
+npm run check-bundle-size   # Check bundle size limits
+
+# CI/CD Commands
+npm run ci:quality         # Run all quality checks
+npm run ci:test           # Run tests for CI
+npm run ci:build          # Build for CI
+npm run ci:security       # Security checks
+npm run ci:validate       # Data validation
+npm run pre-commit        # Pre-commit hook (all checks)
+```
+
+### Validation Scripts
+
+#### Model Data Validation (`scripts/validateModelData.ts`)
+- Validates model data structure and types
+- Checks for required fields and valid values
+- Verifies model card files exist
+- Validates image assets exist
+- Ensures model loader functionality
+
+#### Bundle Size Check (`scripts/checkBundleSize.ts`)
+- Analyzes production bundle size
+- Enforces size limits (500KB main, 1MB vendor, 2MB total)
+- Provides optimization suggestions
+- Generates size reports
+
+### Configuration Files
+
+#### Prettier Configuration (`.prettierrc`)
+```json
+{
+  "semi": true,
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": false,
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "arrowParens": "avoid",
+  "endOfLine": "lf"
+}
+```
+
+#### Markdown Lint Configuration (`.markdownlint.json`)
+```json
+{
+  "default": true,
+  "MD013": {
+    "line_length": 120,
+    "code_blocks": false,
+    "tables": false
+  },
+  "MD024": false,
+  "MD033": false,
+  "MD041": false
+}
+```
 
 ### Deployment Strategy
 
 #### Staging Environment
-- Automatic deployment on main branch commits
-- Integration testing with real services
-- Performance monitoring and alerting
+- **Trigger**: Automatic on `develop` branch
+- **Purpose**: Integration testing and validation
+- **Features**: Full CI/CD pipeline, smoke tests
+- **Approval**: None required
 
 #### Production Environment
-- Manual approval required for production deployment
-- Blue-green deployment strategy
-- Rollback capabilities
-- Health checks and monitoring
+- **Trigger**: Manual approval on `main` branch
+- **Purpose**: Live production deployment
+- **Features**: Health checks, monitoring, notifications
+- **Approval**: Required (environment protection)
+
+### Security Scanning
+
+#### npm Audit
+- Scans for known vulnerabilities in dependencies
+- Fails on moderate or higher severity issues
+- Automatic fix suggestions
+
+#### Snyk Security
+- Advanced security vulnerability scanning
+- Custom security policies
+- Integration with GitHub security alerts
+
+### Performance Testing
+
+#### Lighthouse CI
+- Automated performance audits
+- Accessibility, SEO, and best practices checks
+- Performance budget enforcement
+- Historical performance tracking
+
+#### Bundle Analysis
+- Real-time bundle size monitoring
+- Dependency analysis
+- Code splitting optimization
+- Tree shaking verification
 
 ## Performance Considerations
 
@@ -736,6 +813,20 @@ npm run build -- --analyze
 # Monitor memory usage
 ```
 
+#### 5. CI/CD Pipeline Issues
+```bash
+# Run CI checks locally
+npm run pre-commit
+
+# Check specific validations
+npm run validate-model-data
+npm run check-bundle-size
+
+# Fix formatting issues
+npm run format
+npm run lint:fix
+```
+
 ### Debug Tools
 
 #### Development Tools
@@ -777,6 +868,7 @@ const logger = {
 - Content Editor Guide: `CONTENT_EDITOR_GUIDE.md`
 - Tool Calling Documentation: `TOOL_CALLING_README.md`
 - Test Documentation: `src/tests/README.md`
+- CI/CD Setup Guide: `CI_CD_SETUP_GUIDE.md`
 
 ---
 
@@ -813,6 +905,20 @@ src/
     ├── ModelDetail.toolCalling.test.tsx  # Tool calling tests
     ├── apiIntegration.test.ts     # API integration tests
     └── README.md                  # Test documentation
+
+scripts/
+├── validateModelData.ts           # Model data validation
+├── checkBundleSize.ts             # Bundle size analysis
+└── generateModelData.ts           # Model data generation
+
+.github/workflows/
+└── ci-cd.yml                     # CI/CD pipeline configuration
+
+Configuration Files:
+├── .prettierrc                   # Code formatting rules
+├── .markdownlint.json            # Markdown linting rules
+├── package.json                  # Dependencies and scripts
+└── CI_CD_SETUP_GUIDE.md          # CI/CD setup instructions
 ```
 
 ### Dependencies Summary
@@ -832,6 +938,8 @@ src/
 - Vitest 3.2.4
 - React Testing Library 16.3.0
 - ESLint 9.25.0
+- Prettier 3.3.3
+- Markdownlint CLI 0.38.0
 
 ### Performance Benchmarks
 

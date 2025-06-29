@@ -1,0 +1,310 @@
+name: Model Catalog CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+  CACHE_DEPENDENCIES: true
+
+jobs:
+  # Quality Assurance Job
+  quality-check:
+    name: Quality Assurance
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run TypeScript type checking
+      run: npx tsc --noEmit
+      
+    - name: Run ESLint
+      run: npm run lint
+      
+    - name: Run Prettier check
+      run: npx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css,md}"
+
+  # Testing Job
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: quality-check
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run unit tests
+      run: npm test -- --coverage --reporter=verbose
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage/lcov.info
+        flags: model-catalog
+        name: model-catalog-coverage
+        fail_ci_if_error: false
+        
+    - name: Check test coverage threshold
+      run: |
+        COVERAGE=$(npx coverage-badges-cli --input=./coverage/lcov.info --output=./coverage/badges --type=cobertura)
+        echo "Coverage: $COVERAGE"
+        if [ "$COVERAGE" -lt 80 ]; then
+          echo "❌ Test coverage is below 80%"
+          exit 1
+        fi
+        echo "✅ Test coverage meets threshold"
+
+  # Security Scan Job
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run npm audit
+      run: npm audit --audit-level=moderate
+      
+    - name: Run Snyk security scan
+      uses: snyk/actions/node@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=high
+
+  # Build Job
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: [quality-check, test, security-scan]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-files
+        path: dist/
+        retention-days: 30
+
+  # Performance Testing Job
+  performance-test:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-files
+        path: dist/
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Start preview server
+      run: npm run preview &
+      
+    - name: Wait for server
+      run: sleep 10
+      
+    - name: Run Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v10
+      with:
+        urls: |
+          http://localhost:4173/
+          http://localhost:4173/models
+          http://localhost:4173/models/meta-llama/Llama-3-8B
+        uploadArtifacts: true
+        temporaryPublicStorage: true
+
+  # Staging Deployment Job
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build, performance-test]
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-files
+        path: dist/
+        
+    - name: Deploy to staging
+      run: |
+        # Add your staging deployment logic here
+        echo "Deploying to staging environment..."
+        # Example: rsync -avz dist/ user@staging-server:/var/www/html/
+        # Example: aws s3 sync dist/ s3://staging-bucket/
+        
+    - name: Run smoke tests
+      run: |
+        # Add smoke tests for staging environment
+        echo "Running smoke tests on staging..."
+        # Example: curl -f http://staging.example.com/health
+        
+    - name: Notify staging deployment
+      run: |
+        echo "✅ Staging deployment completed successfully"
+        # Add notification logic (Slack, email, etc.)
+
+  # Production Deployment Job
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build, performance-test]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-files
+        path: dist/
+        
+    - name: Deploy to production
+      run: |
+        # Add your production deployment logic here
+        echo "Deploying to production environment..."
+        # Example: rsync -avz dist/ user@prod-server:/var/www/html/
+        # Example: aws s3 sync dist/ s3://prod-bucket/
+        
+    - name: Run health checks
+      run: |
+        # Add health checks for production environment
+        echo "Running health checks on production..."
+        # Example: curl -f http://prod.example.com/health
+        
+    - name: Notify production deployment
+      run: |
+        echo "✅ Production deployment completed successfully"
+        # Add notification logic (Slack, email, etc.)
+
+  # Model Data Validation Job
+  validate-model-data:
+    name: Validate Model Data
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Validate model data structure
+      run: |
+        # Add validation script for model data
+        echo "Validating model data structure..."
+        # Example: npm run validate-model-data
+        
+    - name: Check model card markdown
+      run: |
+        # Validate markdown files
+        echo "Validating model card markdown files..."
+        # Example: npx markdownlint src/modelcards/*.md
+
+  # Bundle Analysis Job
+  bundle-analysis:
+    name: Bundle Analysis
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Analyze bundle size
+      run: |
+        # Add bundle analysis
+        echo "Analyzing bundle size..."
+        # Example: npm run build -- --analyze
+        
+    - name: Check bundle size thresholds
+      run: |
+        # Check if bundle size is within acceptable limits
+        echo "Checking bundle size thresholds..."
+        # Example: npm run check-bundle-size 

@@ -65,6 +65,27 @@ src/tests/
 └── README.md                  # Test documentation (650 lines)
 ```
 
+### CI/CD & Validation Scripts
+```
+scripts/
+├── validateModelData.ts       # Model data validation (156 lines)
+├── checkBundleSize.ts         # Bundle size analysis (134 lines)
+└── generateModelData.ts       # Model data generation
+
+.github/workflows/
+└── ci-cd.yml                 # CI/CD pipeline configuration (290 lines)
+```
+
+### Configuration Files
+```
+├── .prettierrc               # Code formatting rules
+├── .markdownlint.json        # Markdown linting rules
+├── package.json              # Dependencies and scripts (updated)
+├── CI_CD_SETUP_GUIDE.md      # CI/CD setup instructions (400+ lines)
+├── MODEL_DEVELOPMENT_DOCS.md # Comprehensive development guide
+└── MODEL_ASSETS_SUMMARY.md   # This file
+```
+
 ## 🧩 Key Components Breakdown
 
 ### Model Catalog Page (`ModelsCatalog.tsx`)
@@ -263,6 +284,8 @@ npm test apiIntegration.test.ts
 - Debug mode protection for editing features
 - API request validation
 - Secure communication protocols
+- Automated security scanning with Snyk
+- npm audit integration
 
 ### Performance Optimizations
 - Lazy loading for model cards
@@ -270,6 +293,7 @@ npm test apiIntegration.test.ts
 - Code splitting by routes
 - React.memo for expensive components
 - Proper cleanup in useEffect hooks
+- Bundle size monitoring and limits
 
 ### Memory Management
 - AbortController for API requests
@@ -298,6 +322,8 @@ npm test apiIntegration.test.ts
 - React Testing Library 16.3.0
 - ESLint 9.25.0
 - TypeScript ESLint 8.30.1
+- Prettier 3.3.3
+- Markdownlint CLI 0.38.0
 
 ## 🚀 Deployment & CI/CD
 
@@ -313,12 +339,56 @@ npm run build
 npm run preview
 ```
 
+### CI/CD Pipeline
+- **Workflow**: `.github/workflows/ci-cd.yml` (290 lines)
+- **Quality Gates**: TypeScript, ESLint, Prettier, Tests, Security, Performance
+- **Automated Testing**: Unit tests, coverage, security scanning
+- **Performance Testing**: Lighthouse CI, bundle analysis
+- **Deployment**: Staging (automatic), Production (manual approval)
+
+### Available Scripts
+```bash
+# Quality Assurance
+npm run type-check          # TypeScript compilation check
+npm run lint               # ESLint code linting
+npm run lint:fix           # Auto-fix linting issues
+npm run format             # Prettier code formatting
+npm run format:check       # Check code formatting
+
+# Testing
+npm run test               # Run all tests
+npm run test:coverage      # Run tests with coverage
+npm run test:watch         # Run tests in watch mode
+npm run test:ui            # Run tests with UI
+
+# Building
+npm run build              # Production build
+npm run build:analyze      # Build with bundle analysis
+npm run preview            # Preview production build
+
+# Validation
+npm run validate-model-data # Validate model data structure
+npm run validate-markdown   # Validate markdown files
+npm run check-bundle-size   # Check bundle size limits
+
+# CI/CD Commands
+npm run ci:quality         # Run all quality checks
+npm run ci:test           # Run tests for CI
+npm run ci:build          # Build for CI
+npm run ci:security       # Security checks
+npm run ci:validate       # Data validation
+npm run pre-commit        # Pre-commit hook (all checks)
+```
+
 ### Quality Gates
 1. ESLint passes with no errors
 2. All tests pass with >80% coverage
 3. TypeScript compilation succeeds
 4. Production build completes successfully
 5. Performance benchmarks met
+6. Security vulnerabilities resolved
+7. Bundle size within limits (<2MB total)
+8. Model data validation passes
 
 ### Environment Variables
 - `NODE_ENV`: Environment mode (development/production)
@@ -333,6 +403,7 @@ npm run preview
 - `CONTENT_EDITOR_GUIDE.md` - Content editing instructions
 - `TOOL_CALLING_README.md` - Tool calling functionality
 - `src/tests/README.md` - Testing documentation
+- `CI_CD_SETUP_GUIDE.md` - CI/CD setup instructions
 
 ### Key Resources
 - React Documentation: https://react.dev/
@@ -340,4 +411,27 @@ npm run preview
 - Vite Documentation: https://vitejs.dev/
 - Tailwind CSS Documentation: https://tailwindcss.com/docs
 
-This summary provides a quick reference for all the key components, assets, and considerations needed for the Model Catalog and Model Details pages development. 
+## 🔧 Validation & Quality Assurance
+
+### Model Data Validation (`scripts/validateModelData.ts`)
+**Features**:
+- Validates model data structure and types
+- Checks for required fields and valid values
+- Verifies model card files exist
+- Validates image assets exist
+- Ensures model loader functionality
+
+### Bundle Size Analysis (`scripts/checkBundleSize.ts`)
+**Features**:
+- Analyzes production bundle size
+- Enforces size limits (500KB main, 1MB vendor, 2MB total)
+- Provides optimization suggestions
+- Generates size reports
+
+### Code Quality Tools
+- **Prettier**: Consistent code formatting
+- **ESLint**: Code linting and best practices
+- **TypeScript**: Type safety and compilation
+- **Markdownlint**: Markdown file validation
+
+This summary provides a quick reference for all the key components, assets, and considerations needed for the Model Catalog and Model Details pages development, including the comprehensive CI/CD pipeline and quality assurance tools. 
