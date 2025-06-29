@@ -3,6 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "maintainers": [
+    {
+      "name": "Yu Wang",
+      "email": "yu.wang6@amd.com"
+    }
+  ],
   "scripts": {
     "dev": "vite",
     "dev:remote": "vite --host 0.0.0.0 --port 5173",

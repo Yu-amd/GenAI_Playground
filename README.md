@@ -14,6 +14,7 @@ A modern web application for exploring and interacting with AI models and bluepr
 - [Project Structure](#project-structure)
 - [Technologies Used](#technologies-used)
 - [Contributing](#contributing)
+- [Maintainer](#maintainer)
 - [License](#license)
 
 ## Features
@@ -223,6 +224,12 @@ src/
 2. Create a feature branch
 3. Make your changes
 4. Submit a pull request
+
+## Maintainer
+
+**Yu Wang** - [yu.wang6@amd.com](mailto:yu.wang6@amd.com)
+
+For questions, issues, or contributions related to this project, please contact the maintainer.
 
 ## License
 
