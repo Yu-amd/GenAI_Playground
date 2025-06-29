@@ -5,8 +5,13 @@ import {
   ServerIcon, 
   CubeIcon,
   InformationCircleIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  GlobeAltIcon,
+  HomeIcon,
+  BuildingOfficeIcon,
+  PencilIcon
 } from '@heroicons/react/24/outline';
+import DeploymentGuideEditor from './DeploymentGuideEditor';
 
 interface DeploymentGuideProps {
   isOpen: boolean;
@@ -28,18 +33,64 @@ const DeploymentGuide: React.FC<DeploymentGuideProps> = ({
   }
 }) => {
   const [activeTab, setActiveTab] = useState('manual');
+  const [activeCategory, setActiveCategory] = useState('on-premises');
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   if (!isOpen) return null;
 
-  const tabs = [
-    { id: 'manual', name: 'Manual Install', icon: ComputerDesktopIcon },
-    { id: 'container', name: 'Container Deploy', icon: CubeIcon },
-    { id: 'aws', name: 'AWS EC2', icon: CloudIcon },
-    { id: 'azure', name: 'Azure VM', icon: CloudIcon },
-    { id: 'amd-cloud', name: 'AMD Developer Cloud', icon: CloudIcon },
-    { id: 'kubernetes', name: 'Kubernetes', icon: CubeIcon },
-    { id: 'docs', name: 'Documentation', icon: DocumentTextIcon }
+  const categories = [
+    {
+      id: 'on-premises',
+      name: 'On-Premises',
+      icon: HomeIcon,
+      description: 'Deploy on your own hardware'
+    },
+    {
+      id: 'containerized',
+      name: 'Containerized',
+      icon: CubeIcon,
+      description: 'Docker and Kubernetes deployments'
+    },
+    {
+      id: 'cloud-vms',
+      name: 'Cloud VMs',
+      icon: BuildingOfficeIcon,
+      description: 'Virtual machines in the cloud'
+    },
+    {
+      id: 'cloud-apis',
+      name: 'Cloud APIs',
+      icon: GlobeAltIcon,
+      description: 'API-based inference services'
+    },
+    {
+      id: 'reference',
+      name: 'Reference',
+      icon: DocumentTextIcon,
+      description: 'Documentation and resources'
+    }
   ];
+
+  const tabs = {
+    'on-premises': [
+      { id: 'manual', name: 'Manual Install', icon: ComputerDesktopIcon, description: 'Traditional installation with full control' }
+    ],
+    'containerized': [
+      { id: 'container', name: 'Container Deploy', icon: CubeIcon, description: 'Docker container deployment' },
+      { id: 'kubernetes', name: 'Kubernetes', icon: CubeIcon, description: 'Orchestrated container deployment' }
+    ],
+    'cloud-vms': [
+      { id: 'aws', name: 'AWS EC2', icon: CloudIcon, description: 'Amazon Web Services virtual machines' },
+      { id: 'azure', name: 'Azure VM', icon: CloudIcon, description: 'Microsoft Azure virtual machines' },
+      { id: 'amd-cloud', name: 'AMD Developer Cloud', icon: CloudIcon, description: 'AMD\'s specialized cloud platform' }
+    ],
+    'cloud-apis': [
+      { id: 'cloud-inference', name: 'Cloud Inference', icon: GlobeAltIcon, description: 'API-based inference endpoints' }
+    ],
+    'reference': [
+      { id: 'docs', name: 'Documentation', icon: DocumentTextIcon, description: 'Complete documentation and resources' }
+    ]
+  };
 
   const renderManualInstall = () => (
     <div className="space-y-6">
@@ -965,13 +1016,17 @@ curl -X POST http://localhost:1234/v1/chat/completions \\
             <h4 className="font-medium text-gray-300 mb-2">Monitor Performance</h4>
             <pre className="bg-gray-900 p-3 rounded text-sm overflow-x-auto">
 {`# Monitor GPU usage
-rocm-smi
+watch -n 1 rocm-smi
 
 # Monitor system resources
 htop
 
-# Monitor in real-time
-watch -n 1 rocm-smi`}
+# Monitor PyTorch GPU memory
+python3 -c "
+import torch
+print(f'GPU Memory: {torch.cuda.memory_allocated()/1024**3:.2f} GB')
+print(f'GPU Memory Cached: {torch.cuda.memory_reserved()/1024**3:.2f} GB')
+"`}
             </pre>
           </div>
         </div>
@@ -1005,6 +1060,476 @@ watch -n 1 rocm-smi`}
               <li>• Spot instances for cost savings</li>
               <li>• Reserved instances for long-term use</li>
               <li>• AMD partner discounts</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderCloudInference = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-600/10 border border-blue-500/20 rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-blue-300 mb-2">Cloud Inference Endpoints</h3>
+        <p className="text-sm text-gray-300 mb-3">
+          Deploy your models to cloud inference endpoints for production use. This approach provides scalability, 
+          reliability, and cost-effectiveness compared to local deployments.
+        </p>
+        <ul className="text-sm text-gray-300 space-y-1">
+          <li>• Scalable cloud infrastructure</li>
+          <li>• Load balancing and auto-scaling</li>
+          <li>• High availability and reliability</li>
+          <li>• Cost-effective resource utilization</li>
+          <li>• Global deployment options</li>
+        </ul>
+      </div>
+
+      <div className="bg-green-600/10 border border-green-500/20 rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-green-300 mb-2">Supported Cloud Providers</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <h4 className="font-medium text-gray-300">Major Providers</h4>
+            <ul className="text-sm text-gray-300 space-y-1">
+              <li>• <span className="text-blue-400">OpenAI</span> - GPT-4, GPT-3.5-turbo</li>
+              <li>• <span className="text-blue-400">Azure OpenAI</span> - Enterprise OpenAI</li>
+              <li>• <span className="text-blue-400">AWS Bedrock</span> - Claude, Llama, Titan</li>
+              <li>• <span className="text-blue-400">Google AI</span> - Gemini Pro, PaLM</li>
+            </ul>
+          </div>
+          <div className="space-y-2">
+            <h4 className="font-medium text-gray-300">Custom Endpoints</h4>
+            <ul className="text-sm text-gray-300 space-y-1">
+              <li>• <span className="text-blue-400">Self-hosted</span> - Your own infrastructure</li>
+              <li>• <span className="text-blue-400">VPS</span> - DigitalOcean, Linode, Vultr</li>
+              <li>• <span className="text-blue-400">Edge</span> - Cloudflare Workers, Vercel</li>
+              <li>• <span className="text-blue-400">Hybrid</span> - Multi-provider setup</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-yellow-600/10 border border-yellow-500/20 rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-yellow-300 mb-2">Environment Configuration</h3>
+        <p className="text-sm text-gray-300 mb-3">
+          Configure your environment variables for cloud inference endpoints:
+        </p>
+        <pre className="bg-gray-900 p-4 rounded-lg text-sm overflow-x-auto">
+{`# Cloud Inference Configuration
+# .env file
+
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4
+
+# Azure OpenAI Configuration
+AZURE_OPENAI_API_KEY=your_azure_api_key
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+AZURE_OPENAI_DEPLOYMENT=your-deployment-name
+
+# AWS Bedrock Configuration
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_REGION=us-east-1
+AWS_BEDROCK_MODEL=anthropic.claude-3-sonnet-20240229-v1:0
+
+# Google AI Configuration
+GOOGLE_AI_API_KEY=your_google_api_key
+GOOGLE_AI_MODEL=gemini-pro
+
+# Custom Endpoint Configuration
+CUSTOM_ENDPOINT_URL=https://your-endpoint.com/v1
+CUSTOM_API_KEY=your_custom_api_key
+
+# Load Balancing Configuration
+LOAD_BALANCING_STRATEGY=priority # priority, round-robin, health-based
+HEALTH_CHECK_INTERVAL=30000 # milliseconds
+RETRY_ATTEMPTS=3
+RETRY_DELAY=1000 # milliseconds
+
+# Monitoring Configuration
+ENABLE_HEALTH_MONITORING=true
+ENABLE_PERFORMANCE_MONITORING=true
+ENABLE_ERROR_TRACKING=true`}
+        </pre>
+      </div>
+
+      <div className="bg-blue-600/10 border border-blue-500/20 rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-blue-300 mb-2">Custom Cloud Provider Implementation</h3>
+        <p className="text-sm text-gray-300 mb-3">
+          Create a custom cloud inference provider for your own endpoints:
+        </p>
+        <pre className="bg-gray-900 p-4 rounded-lg text-sm overflow-x-auto">
+{`// src/services/providers/CustomCloudProvider.ts
+import { BaseInferenceProvider } from './BaseInferenceProvider';
+
+export interface CustomCloudConfig {
+  endpointUrl: string;
+  apiKey: string;
+  model: string;
+  timeout?: number;
+  retries?: number;
+}
+
+export class CustomCloudProvider extends BaseInferenceProvider {
+  private config: CustomCloudConfig;
+
+  constructor(config: CustomCloudConfig) {
+    super('custom-cloud');
+    this.config = config;
+  }
+
+  async healthCheck(): Promise<boolean> {
+    try {
+      const response = await fetch(\`\${this.config.endpointUrl}/health\`, {
+        method: 'GET',
+        headers: {
+          'Authorization': \`Bearer \${this.config.apiKey}\`,
+          'Content-Type': 'application/json'
+        },
+        signal: AbortSignal.timeout(this.config.timeout || 5000)
+      });
+      return response.ok;
+    } catch (error) {
+      console.error('Custom cloud health check failed:', error);
+      return false;
+    }
+  }
+
+  async generateResponse(messages: any[], options: any = {}): Promise<any> {
+    const requestBody = {
+      model: this.config.model,
+      messages,
+      max_tokens: options.maxTokens || 1000,
+      temperature: options.temperature || 0.7,
+      stream: options.stream || false
+    };
+
+    try {
+      const response = await fetch(\`\${this.config.endpointUrl}/chat/completions\`, {
+        method: 'POST',
+        headers: {
+          'Authorization': \`Bearer \${this.config.apiKey}\`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody),
+        signal: AbortSignal.timeout(this.config.timeout || 30000)
+      });
+
+      if (!response.ok) {
+        throw new Error(\`HTTP \${response.status}: \${response.statusText}\`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Custom cloud inference failed:', error);
+      throw error;
+    }
+  }
+
+  getProviderInfo() {
+    return {
+      name: 'Custom Cloud',
+      endpoint: this.config.endpointUrl,
+      model: this.config.model,
+      status: 'configured'
+    };
+  }
+}`}
+        </pre>
+      </div>
+
+      <div className="bg-green-600/10 border border-green-500/20 rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-green-300 mb-2">Service Factory Integration</h3>
+        <p className="text-sm text-gray-300 mb-3">
+          Integrate custom providers into the service factory:
+        </p>
+        <pre className="bg-gray-900 p-4 rounded-lg text-sm overflow-x-auto">
+{`// src/services/InferenceServiceFactory.ts
+import { CustomCloudProvider } from './providers/CustomCloudProvider';
+
+export class InferenceServiceFactory {
+  static createProvider(type: string, config: any): BaseInferenceProvider {
+    switch (type) {
+      case 'openai':
+        return new OpenAIProvider(config);
+      case 'azure':
+        return new AzureOpenAIProvider(config);
+      case 'aws':
+        return new AWSBedrockProvider(config);
+      case 'google':
+        return new GoogleAIProvider(config);
+      case 'custom-cloud':
+        return new CustomCloudProvider(config);
+      default:
+        throw new Error(\`Unknown provider type: \${type}\`);
+    }
+  }
+
+  static createLoadBalancer(providers: BaseInferenceProvider[], strategy: string) {
+    return new LoadBalancer(providers, strategy);
+  }
+}
+
+// Usage example
+const customProvider = InferenceServiceFactory.createProvider('custom-cloud', {
+  endpointUrl: 'https://your-endpoint.com/v1',
+  apiKey: 'your-api-key',
+  model: 'your-model-name'
+});
+
+const loadBalancer = InferenceServiceFactory.createLoadBalancer(
+  [customProvider, openaiProvider],
+  'priority'
+);`}
+        </pre>
+      </div>
+
+      <div className="bg-yellow-600/10 border border-yellow-500/20 rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-yellow-300 mb-2">Load Balancing Implementation</h3>
+        <p className="text-sm text-gray-300 mb-3">
+          Implement intelligent load balancing across multiple providers:
+        </p>
+        <pre className="bg-gray-900 p-4 rounded-lg text-sm overflow-x-auto">
+{`// src/services/LoadBalancer.ts
+export class LoadBalancer {
+  private providers: BaseInferenceProvider[];
+  private strategy: string;
+  private currentIndex = 0;
+  private healthStatus: Map<string, boolean> = new Map();
+
+  constructor(providers: BaseInferenceProvider[], strategy: string) {
+    this.providers = providers;
+    this.strategy = strategy;
+    this.initializeHealthMonitoring();
+  }
+
+  private async initializeHealthMonitoring() {
+    // Initial health check
+    await this.updateHealthStatus();
+    
+    // Periodic health monitoring
+    setInterval(() => this.updateHealthStatus(), 30000);
+  }
+
+  private async updateHealthStatus() {
+    const healthPromises = this.providers.map(async (provider) => {
+      const isHealthy = await provider.healthCheck();
+      this.healthStatus.set(provider.getName(), isHealthy);
+      return { provider, isHealthy };
+    });
+
+    await Promise.all(healthPromises);
+  }
+
+  async getProvider(): Promise<BaseInferenceProvider> {
+    const healthyProviders = this.providers.filter(
+      provider => this.healthStatus.get(provider.getName())
+    );
+
+    if (healthyProviders.length === 0) {
+      throw new Error('No healthy providers available');
+    }
+
+    switch (this.strategy) {
+      case 'priority':
+        return healthyProviders[0]; // Use first healthy provider
+      
+      case 'round-robin':
+        this.currentIndex = (this.currentIndex + 1) % healthyProviders.length;
+        return healthyProviders[this.currentIndex];
+      
+      case 'health-based':
+        // Return fastest responding provider
+        const responseTimes = await Promise.all(
+          healthyProviders.map(async (provider) => {
+            const start = Date.now();
+            try {
+              await provider.healthCheck();
+              return { provider, responseTime: Date.now() - start };
+            } catch {
+              return { provider, responseTime: Infinity };
+            }
+          })
+        );
+        return responseTimes.reduce((a, b) => 
+          a.responseTime < b.responseTime ? a : b
+        ).provider;
+      
+      default:
+        return healthyProviders[0];
+    }
+  }
+
+  async generateResponse(messages: any[], options: any = {}): Promise<any> {
+    const provider = await this.getProvider();
+    return await provider.generateResponse(messages, options);
+  }
+}`}
+        </pre>
+      </div>
+
+      <div className="bg-blue-600/10 border border-blue-500/20 rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-blue-300 mb-2">Migration Strategy</h3>
+        <div className="space-y-3">
+          <div>
+            <h4 className="font-medium text-gray-300 mb-2">Phase 1: Setup</h4>
+            <ul className="text-sm text-gray-300 space-y-1">
+              <li>• Configure environment variables</li>
+              <li>• Set up cloud inference endpoints</li>
+              <li>• Implement custom providers</li>
+              <li>• Test connectivity and health checks</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-medium text-gray-300 mb-2">Phase 2: Integration</h4>
+            <ul className="text-sm text-gray-300 space-y-1">
+              <li>• Integrate with service factory</li>
+              <li>• Implement load balancing</li>
+              <li>• Add monitoring and logging</li>
+              <li>• Test with production workloads</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-medium text-gray-300 mb-2">Phase 3: Optimization</h4>
+            <ul className="text-sm text-gray-300 space-y-1">
+              <li>• Fine-tune load balancing strategies</li>
+              <li>• Optimize performance and costs</li>
+              <li>• Implement advanced monitoring</li>
+              <li>• Scale based on usage patterns</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-green-600/10 border border-green-500/20 rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-green-300 mb-2">Testing and Validation</h3>
+        <pre className="bg-gray-900 p-4 rounded-lg text-sm overflow-x-auto">
+{`// Test cloud inference endpoints
+const testCloudInference = async () => {
+  // Test custom provider
+  const customProvider = new CustomCloudProvider({
+    endpointUrl: 'https://your-endpoint.com/v1',
+    apiKey: 'your-api-key',
+    model: 'your-model'
+  });
+
+  // Health check
+  const isHealthy = await customProvider.healthCheck();
+  console.log('Provider health:', isHealthy);
+
+  // Test inference
+  const response = await customProvider.generateResponse([
+    { role: 'user', content: 'Hello, how are you?' }
+  ]);
+  console.log('Inference response:', response);
+
+  // Test load balancer
+  const loadBalancer = new LoadBalancer([customProvider], 'priority');
+  const lbResponse = await loadBalancer.generateResponse([
+    { role: 'user', content: 'Test message' }
+  ]);
+  console.log('Load balancer response:', lbResponse);
+};
+
+// Run tests
+testCloudInference().catch(console.error);`}
+        </pre>
+      </div>
+
+      <div className="bg-yellow-600/10 border border-yellow-500/20 rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-yellow-300 mb-2">Deployment Configuration</h3>
+        <p className="text-sm text-gray-300 mb-3">
+          Example deployment configurations for different environments:
+        </p>
+        <pre className="bg-gray-900 p-4 rounded-lg text-sm overflow-x-auto">
+{`# docker-compose.yml for cloud inference
+version: '3.8'
+services:
+  ai-playground:
+    image: your-registry/ai-playground:latest
+    environment:
+      - NODE_ENV=production
+      - OPENAI_API_KEY=\${OPENAI_API_KEY}
+      - AZURE_OPENAI_API_KEY=\${AZURE_OPENAI_API_KEY}
+      - CUSTOM_ENDPOINT_URL=\${CUSTOM_ENDPOINT_URL}
+      - LOAD_BALANCING_STRATEGY=priority
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# Kubernetes deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-playground
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ai-playground
+  template:
+    metadata:
+      labels:
+        app: ai-playground
+    spec:
+      containers:
+      - name: ai-playground
+        image: your-registry/ai-playground:latest
+        env:
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ai-secrets
+              key: openai-api-key
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"`}
+        </pre>
+      </div>
+
+      <div className="bg-blue-600/10 border border-blue-500/20 rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-blue-300 mb-2">Best Practices</h3>
+        <div className="space-y-3">
+          <div>
+            <h4 className="font-medium text-gray-300 mb-2">Security</h4>
+            <ul className="text-sm text-gray-300 space-y-1">
+              <li>• Use environment variables for API keys</li>
+              <li>• Implement proper authentication</li>
+              <li>• Use HTTPS for all endpoints</li>
+              <li>• Regular key rotation</li>
+              <li>• Monitor for suspicious activity</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-medium text-gray-300 mb-2">Performance</h4>
+            <ul className="text-sm text-gray-300 space-y-1">
+              <li>• Implement connection pooling</li>
+              <li>• Use appropriate timeouts</li>
+              <li>• Cache responses when possible</li>
+              <li>• Monitor response times</li>
+              <li>• Optimize request batching</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-medium text-gray-300 mb-2">Monitoring</h4>
+            <ul className="text-sm text-gray-300 space-y-1">
+              <li>• Track API usage and costs</li>
+              <li>• Monitor error rates</li>
+              <li>• Set up alerts for failures</li>
+              <li>• Log all requests and responses</li>
+              <li>• Monitor provider health</li>
             </ul>
           </div>
         </div>
@@ -1260,6 +1785,8 @@ print(f'GPU Memory Cached: {torch.cuda.memory_reserved()/1024**3:.2f} GB')
         return renderAzure();
       case 'amd-cloud':
         return renderAMDCloud();
+      case 'cloud-inference':
+        return renderCloudInference();
       case 'kubernetes':
         return renderKubernetes();
       case 'docs':
@@ -1280,13 +1807,25 @@ print(f'GPU Memory Cached: {torch.cuda.memory_reserved()/1024**3:.2f} GB')
           &times;
         </button>
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
-            <ServerIcon className="w-7 h-7 text-blue-400" />
-            Model Deployment Guide
-          </h2>
-          <p className="text-gray-400">
-            Deploy {modelInfo.name} ({modelInfo.size}) on AMD Instinct GPUs
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
+                <ServerIcon className="w-7 h-7 text-blue-400" />
+                Model Deployment Guide
+              </h2>
+              <p className="text-gray-400">
+                Deploy {modelInfo.name} ({modelInfo.size}) on AMD Instinct GPUs
+              </p>
+            </div>
+            <button
+              onClick={() => setIsEditorOpen(true)}
+              className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all text-sm"
+              title="Edit Content"
+            >
+              <PencilIcon className="w-4 h-4" />
+              Edit Content
+            </button>
+          </div>
         </div>
         {/* Model Info */}
         <div className="mb-6 p-4 bg-blue-600/10 rounded-lg border border-blue-500/20">
@@ -1306,26 +1845,69 @@ print(f'GPU Memory Cached: {torch.cuda.memory_reserved()/1024**3:.2f} GB')
             </div>
           </div>
         </div>
-        {/* Tabs */}
+        {/* Categories and Tabs */}
         <div className="mb-6">
-          <div className="flex flex-wrap gap-2 border-b border-gray-700">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-t-lg transition-all ${
-                    activeTab === tab.id
-                      ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500'
-                      : 'text-gray-400 hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {tab.name}
-                </button>
-              );
-            })}
+          {/* Category Selection */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-white mb-3">Choose Deployment Type</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {categories.map((category) => {
+                const Icon = category.icon;
+                const categoryTabs = tabs[category.id as keyof typeof tabs];
+                const hasActiveTab = categoryTabs.some(tab => tab.id === activeTab);
+                
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => {
+                      setActiveCategory(category.id);
+                      // Set the first tab of this category as active if current tab is not in this category
+                      if (!hasActiveTab) {
+                        setActiveTab(categoryTabs[0].id);
+                      }
+                    }}
+                    className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-all border-2 ${
+                      activeCategory === category.id
+                        ? 'bg-blue-600/20 text-blue-400 border-blue-500/50 shadow-lg'
+                        : 'bg-white/5 text-gray-300 border-white/10 hover:bg-white/10 hover:border-white/20 hover:text-white'
+                    }`}
+                  >
+                    <Icon className="w-8 h-8" />
+                    <div className="text-center">
+                      <div className="font-semibold text-sm">{category.name}</div>
+                      <div className="text-xs opacity-70 mt-1">{category.description}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Tab Selection */}
+          <div className="mb-4">
+            <h4 className="text-md font-medium text-gray-300 mb-3">
+              {categories.find(c => c.id === activeCategory)?.name} Options
+            </h4>
+            <div className="flex flex-wrap gap-1 bg-gray-800/50 rounded-lg p-1">
+              {tabs[activeCategory as keyof typeof tabs].map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all text-sm font-medium ${
+                      activeTab === tab.id
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'text-gray-400 hover:text-white hover:bg-white/10'
+                    }`}
+                    title={tab.description}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {tab.name}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
         {/* Content */}
@@ -1343,6 +1925,12 @@ print(f'GPU Memory Cached: {torch.cuda.memory_reserved()/1024**3:.2f} GB')
             </div>
             <div className="flex items-center gap-2">
               <button
+                onClick={() => setIsEditorOpen(true)}
+                className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all text-sm"
+              >
+                Edit Content
+              </button>
+              <button
                 onClick={onClose}
                 className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all"
               >
@@ -1352,6 +1940,16 @@ print(f'GPU Memory Cached: {torch.cuda.memory_reserved()/1024**3:.2f} GB')
           </div>
         </div>
       </div>
+      
+      {/* Content Editor */}
+      <DeploymentGuideEditor
+        isOpen={isEditorOpen}
+        onClose={() => setIsEditorOpen(false)}
+        onSave={(content) => {
+          console.log('Content saved:', content);
+          // In a real implementation, this would trigger a reload of the deployment guide
+        }}
+      />
     </div>
   );
 };

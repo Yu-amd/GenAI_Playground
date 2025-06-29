@@ -5,7 +5,7 @@ import PlaygroundLogo from '../components/PlaygroundLogo';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { PaperAirplaneIcon, CodeBracketIcon, Cog6ToothIcon, ClipboardIcon, CheckIcon, XMarkIcon, WrenchScrewdriverIcon, QuestionMarkCircleIcon, BeakerIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
+import { PaperAirplaneIcon, CodeBracketIcon, Cog6ToothIcon, ClipboardIcon, CheckIcon, XMarkIcon, WrenchScrewdriverIcon, QuestionMarkCircleIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 import { lmStudioService } from '../services/lmStudioService';
 import { toolService } from '../services/toolService';
 import { Highlight, themes } from 'prism-react-renderer';
@@ -704,16 +704,6 @@ const ModelDetail: React.FC = () => {
                   >
                     <QuestionMarkCircleIcon className="h-5 w-5" />
                   </button>
-                  {isDevelopment && (
-                    <button
-                      onClick={() => setShowToolTestPanel(true)}
-                      className="flex items-center px-3 py-1.5 bg-purple-600/10 text-purple-400 rounded-full border border-purple-500/10 hover:bg-purple-600/20 transition-all text-xs font-medium"
-                      title="Test Tools"
-                    >
-                      <BeakerIcon className="h-4 w-4 mr-1" />
-                      Test
-                    </button>
-                  )}
                   <button
                     onClick={() => setShowDeploymentGuide(true)}
                     className="flex items-center px-3 py-1.5 bg-orange-600/10 text-orange-400 rounded-full border border-orange-500/10 hover:bg-orange-600/20 transition-all text-xs font-medium"
@@ -1123,6 +1113,8 @@ const ModelDetail: React.FC = () => {
           onEnableAll={handleEnableAllTools}
           onDisableAll={handleDisableAllTools}
           onClose={() => setShowToolSelector(false)}
+          onTestTools={() => setShowToolTestPanel(true)}
+          isDevelopment={isDevelopment}
         />
       )}
       {/* Tool Documentation Modal */}

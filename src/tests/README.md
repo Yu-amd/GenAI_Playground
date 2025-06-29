@@ -80,7 +80,7 @@ Comprehensive test suite for the tool calling functionality that enables AI mode
 - ✅ Modal interaction handling
 
 #### Tool Test Panel
-- ✅ Test panel modal functionality
+- ✅ Test panel modal functionality (accessed via Tools button)
 - ✅ Tool calling status display
 - ✅ Enabled tools listing
 - ✅ Test message triggering
@@ -415,51 +415,25 @@ describe('Feature Name', () => {
 Follow this pattern for new tool calling tests:
 
 ```typescript
-describe('Tool Calling Feature', () => {
-  beforeEach(() => {
-    // Setup mocks
-    jest.clearAllMocks();
-    (loadModelData as any).mockResolvedValue(mockModelData);
-    (lmStudioService as any).chatCompletion = vi.fn().mockResolvedValue(mockChatResponse);
-  });
-
-  it('should handle tool calling correctly', async () => {
+describe('Tool Test Panel', () => {
+  it('should access test panel through tools button', async () => {
     const user = userEvent.setup();
     
-    // Arrange
     await act(async () => {
       renderWithRouter(<ModelDetail />);
     });
     
     await waitForComponentToLoad();
     
-    // Enable tool calling
-    const toolCallingCheckbox = screen.getByRole('checkbox');
-    await user.click(toolCallingCheckbox);
+    // Open tool selector first
+    const toolSelectorButton = screen.getByTitle('Tool Selection');
+    await user.click(toolSelectorButton);
     
-    // Act
-    const textarea = screen.getByRole('textbox');
-    await user.type(textarea, 'What is the weather in New York?');
+    // Click test tools button inside tool selector
+    const testPanelButton = screen.getByText('Test Tools');
+    await user.click(testPanelButton);
     
-    const sendButton = screen.getByLabelText('Send');
-    await user.click(sendButton);
-    
-    // Assert
-    await waitFor(() => {
-      expect(lmStudioService.chatCompletion).toHaveBeenCalledWith(
-        expect.objectContaining({
-          tools: expect.arrayContaining([
-            expect.objectContaining({
-              type: 'function',
-              function: expect.objectContaining({
-                name: 'get_weather'
-              })
-            })
-          ])
-        }),
-        undefined
-      );
-    });
+    expect(screen.getByTestId('tool-test-panel')).toBeInTheDocument();
   });
 });
 ```
@@ -566,9 +540,11 @@ describe('Utility Function', () => {
    - Check mock timing
 
 5. **Tool Calling Test Failures**
-   - Ensure `NODE_ENV = 'development'` is set in test setup
    - Check that tool calling is enabled before testing
-   - Verify tool structure matches OpenAPI format
+   - Verify tool selection in the tool selector
+   - Ensure test panel is accessed via Tools button (not standalone)
+   - Check that NODE_ENV is set to 'development' for test features
+   - Verify tool service mocks are properly configured
    - Test button state expectations match actual behavior
 
 ### Debug Commands

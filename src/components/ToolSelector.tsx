@@ -5,7 +5,8 @@ import {
   CalculatorIcon, 
   LanguageIcon, 
   ChartBarIcon, 
-  ClockIcon 
+  ClockIcon,
+  BeakerIcon
 } from '@heroicons/react/24/outline';
 
 interface Tool {
@@ -21,6 +22,8 @@ interface ToolSelectorProps {
   onEnableAll: () => void;
   onDisableAll: () => void;
   onClose: () => void;
+  onTestTools?: () => void;
+  isDevelopment?: boolean;
 }
 
 const availableTools: Tool[] = [
@@ -67,7 +70,9 @@ const ToolSelector: React.FC<ToolSelectorProps> = ({
   onToolToggle, 
   onEnableAll, 
   onDisableAll, 
-  onClose 
+  onClose,
+  onTestTools,
+  isDevelopment
 }) => {
   const toolsByCategory = availableTools.reduce((acc, tool) => {
     if (!acc[tool.category]) {
@@ -159,6 +164,15 @@ const ToolSelector: React.FC<ToolSelectorProps> = ({
             {enabledTools.length} of {availableTools.length} tools enabled
           </div>
           <div className="flex gap-3">
+            {isDevelopment && onTestTools && (
+              <button
+                onClick={onTestTools}
+                className="px-4 py-2 text-sm rounded-lg bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600/30 hover:text-white transition-all flex items-center gap-2"
+              >
+                <BeakerIcon className="w-4 h-4" />
+                Test Tools
+              </button>
+            )}
             <button
               onClick={onEnableAll}
               className="px-4 py-2 text-sm rounded-lg bg-blue-600/20 text-blue-300 border border-blue-500/30 hover:bg-blue-600/30 hover:text-white transition-all"

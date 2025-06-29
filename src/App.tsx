@@ -6,6 +6,7 @@ import GPUCloud from './pages/GPUCloud';
 import ModelDetail from './pages/ModelDetail';
 import BlueprintDetail from './pages/BlueprintDetail';
 import FunctionalServiceDetail from './pages/FunctionalServiceDetail';
+import ContentEditorDemo from './pages/ContentEditorDemo';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
            <Route path="/blueprints/:blueprintId" element={<BlueprintDetail />} />
            <Route path="/services/:serviceId" element={<FunctionalServiceDetail />} />
            <Route path="/gpu-cloud" element={<GPUCloud />} />
+           <Route path="/content-editor" element={<ContentEditorDemo />} />
       </Routes>
     </Router>
   );

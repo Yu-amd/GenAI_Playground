@@ -58,13 +58,16 @@ vi.mock('../utils/apiCodeGenerator', () => ({
 
 // Mock the tool components
 vi.mock('../components/ToolSelector', () => ({
-  default: ({ onClose, enabledTools, onToolToggle, onEnableAll, onDisableAll }: any) => (
+  default: ({ onClose, enabledTools, onToolToggle, onEnableAll, onDisableAll, onTestTools, isDevelopment }: any) => (
     <div data-testid="tool-selector">
       <button onClick={onClose}>Close Tool Selector</button>
       <div data-testid="enabled-tools-count">{enabledTools.length}</div>
       <button onClick={() => onToolToggle('get_weather')}>Toggle Weather</button>
       <button onClick={onEnableAll}>Enable All</button>
       <button onClick={onDisableAll}>Disable All</button>
+      {isDevelopment && onTestTools && (
+        <button onClick={onTestTools}>Test Tools</button>
+      )}
     </div>
   )
 }));
@@ -433,7 +436,7 @@ describe('ModelDetail Tool Calling', () => {
   });
 
   describe('Tool Test Panel', () => {
-    it('should open tool test panel modal when clicked', async () => {
+    it('should show tool test panel when test button is clicked', async () => {
       const user = userEvent.setup();
       
       await act(async () => {
@@ -442,7 +445,12 @@ describe('ModelDetail Tool Calling', () => {
       
       await waitForComponentToLoad();
       
-      const testPanelButton = screen.getByTitle('Test Tools');
+      // Open tool selector first
+      const toolSelectorButton = screen.getByTitle('Tool Selection');
+      await user.click(toolSelectorButton);
+      
+      // Click test tools button inside tool selector
+      const testPanelButton = screen.getByText('Test Tools');
       await user.click(testPanelButton);
       
       expect(screen.getByTestId('tool-test-panel')).toBeInTheDocument();
@@ -461,8 +469,12 @@ describe('ModelDetail Tool Calling', () => {
       const toolCallingCheckbox = screen.getByRole('checkbox');
       await user.click(toolCallingCheckbox);
       
-      // Open test panel
-      const testPanelButton = screen.getByTitle('Test Tools');
+      // Open tool selector
+      const toolSelectorButton = screen.getByTitle('Tool Selection');
+      await user.click(toolSelectorButton);
+      
+      // Click test tools button inside tool selector
+      const testPanelButton = screen.getByText('Test Tools');
       await user.click(testPanelButton);
       
       expect(screen.getByTestId('tool-calling-enabled')).toHaveTextContent('true');
@@ -477,8 +489,12 @@ describe('ModelDetail Tool Calling', () => {
       
       await waitForComponentToLoad();
       
-      // Open test panel
-      const testPanelButton = screen.getByTitle('Test Tools');
+      // Open tool selector
+      const toolSelectorButton = screen.getByTitle('Tool Selection');
+      await user.click(toolSelectorButton);
+      
+      // Click test tools button inside tool selector
+      const testPanelButton = screen.getByText('Test Tools');
       await user.click(testPanelButton);
       
       // Should show all enabled tools
@@ -494,8 +510,12 @@ describe('ModelDetail Tool Calling', () => {
       
       await waitForComponentToLoad();
       
-      // Open test panel
-      const testPanelButton = screen.getByTitle('Test Tools');
+      // Open tool selector
+      const toolSelectorButton = screen.getByTitle('Tool Selection');
+      await user.click(toolSelectorButton);
+      
+      // Click test tools button inside tool selector
+      const testPanelButton = screen.getByText('Test Tools');
       await user.click(testPanelButton);
       
       // Click test weather button

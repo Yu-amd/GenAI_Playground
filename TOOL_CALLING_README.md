@@ -140,6 +140,7 @@ Each tool includes comprehensive mock data that:
    - Click the "Tools" button to open tool selector
    - Choose which tools you want to enable
    - Use "Enable All" or "Disable All" for bulk operations
+   - **For Developers**: Click "Test Tools" in the tool selector to access testing functionality
 
 3. **Ask Questions**
    - Ask questions that would benefit from real-time data

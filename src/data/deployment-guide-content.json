@@ -1,0 +1,294 @@
+{
+  "categories": [
+    {
+      "id": "on-premises",
+      "name": "On-Premises",
+      "icon": "HomeIcon",
+      "description": "Deploy on your own hardware",
+      "tabs": [
+        {
+          "id": "manual",
+          "name": "Manual Install",
+          "icon": "ComputerDesktopIcon",
+          "description": "Traditional installation with full control",
+          "sections": [
+            {
+              "type": "overview",
+              "title": "Manual Installation (On-Premises)",
+              "description": "Traditional installation with manual ROCm setup, dependency installation, and model configuration. Use this if you prefer full control over the environment or need custom configurations.",
+              "features": [
+                "Manual ROCm installation and configuration",
+                "Step-by-step dependency installation",
+                "Full control over system environment",
+                "Custom model optimization options",
+                "Suitable for production environments with specific requirements"
+              ]
+            },
+            {
+              "type": "requirements",
+              "title": "AMD Instinct GPU Requirements",
+              "items": [
+                "AMD Instinct MI series GPU (MI50, MI60, MI100, MI200, MI300)",
+                "ROCm 5.x or later",
+                "Ubuntu 20.04/22.04 or RHEL 8/9",
+                "32GB+ system RAM",
+                "100GB+ free disk space"
+              ]
+            },
+            {
+              "type": "code-block",
+              "title": "System Preparation",
+              "subsections": [
+                {
+                  "title": "Check AMD GPU",
+                  "code": "# Check if AMD GPU is detected\nlspci | grep -i amd\n\n# Check GPU memory\nrocm-smi --showproductname\nrocm-smi --showmeminfo"
+                },
+                {
+                  "title": "Install ROCm",
+                  "code": "# Add ROCm repository\nwget https://repo.radeon.com/amdgpu-install/5.7.3/ubuntu/jammy/amdgpu-install_5.7.3.50703-1_all.deb\nsudo apt install ./amdgpu-install_5.7.3.50703-1_all.deb\n\n# Install ROCm\nsudo amdgpu-install --usecase=hiplibsdk,rocm\n\n# Add user to video group\nsudo usermod -a -G video $LOGNAME\n\n# Reboot system\nsudo reboot"
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "title": "Install Dependencies",
+              "code": "# Update system\nsudo apt update && sudo apt upgrade -y\n\n# Install Python and pip\nsudo apt install python3 python3-pip python3-venv -y\n\n# Install system dependencies\nsudo apt install git curl wget build-essential cmake -y\n\n# Install Docker (optional)\ncurl -fsSL https://get.docker.com -o get-docker.sh\nsudo sh get-docker.sh\nsudo usermod -aG docker $USER"
+            },
+            {
+              "type": "code-block",
+              "title": "Setup Model Environment",
+              "code": "# Create project directory\nmkdir -p ~/ai-playground\ncd ~/ai-playground\n\n# Create virtual environment\npython3 -m venv venv\nsource venv/bin/activate\n\n# Install PyTorch with ROCm support\npip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm5.6\n\n# Install other dependencies\npip install transformers accelerate bitsandbytes\npip install flask fastapi uvicorn\n\n# Verify ROCm installation\npython3 -c \"import torch; print(f'PyTorch: {torch.__version__}'); print(f'ROCm available: {torch.backends.mps.is_available()}')\""
+            },
+            {
+              "type": "code-block",
+              "title": "Download and Setup Model",
+              "code": "# Clone the playground repository\ngit clone https://github.com/your-repo/ai-playground.git\ncd ai-playground\n\n# Download model (example for {{modelName}})\npython3 -c \"\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\nmodel_name = '{{modelName}}'\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_name,\n    torch_dtype=torch.float16,\n    device_map='auto'\n)\nmodel.save_pretrained('./models/{{modelName}}')\ntokenizer.save_pretrained('./models/{{modelName}}')\n\""
+            },
+            {
+              "type": "code-block",
+              "title": "Start Inference Server",
+              "code": "# Create server script\ncat > server.py << 'EOF'\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\nimport torch\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\n\n# Load model\nmodel_name = './models/{{modelName}}'\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_name,\n    torch_dtype=torch.float16,\n    device_map='auto'\n)\n\n@app.route('/v1/chat/completions', methods=['POST'])\ndef chat_completion():\n    data = request.json\n    messages = data.get('messages', [])\n    \n    # Format messages for model\n    prompt = tokenizer.apply_chat_template(messages, tokenize=False)\n    inputs = tokenizer(prompt, return_tensors='pt').to(model.device)\n    \n    # Generate response\n    with torch.no_grad():\n        outputs = model.generate(\n            **inputs,\n            max_new_tokens=512,\n            temperature=0.7,\n            do_sample=True\n        )\n    \n    response = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)\n    \n    return jsonify({\n        'choices': [{\n            'message': {'content': response, 'role': 'assistant'},\n            'finish_reason': 'stop'\n        }]\n    })\n\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=1234)\nEOF\n\n# Start server\npython3 server.py"
+            },
+            {
+              "type": "code-block",
+              "title": "Quick Deploy Script",
+              "description": "Use our automated deployment script for quick setup:",
+              "code": "# Download and run deployment script\ncurl -fsSL https://raw.githubusercontent.com/your-repo/ai-playground/main/deployment-scripts/deploy-onprem.sh | bash"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "containerized",
+      "name": "Containerized",
+      "icon": "CubeIcon",
+      "description": "Docker and Kubernetes deployments",
+      "tabs": [
+        {
+          "id": "container",
+          "name": "Container Deploy",
+          "icon": "CubeIcon",
+          "description": "Docker container deployment",
+          "sections": [
+            {
+              "type": "overview",
+              "title": "Container Deployment",
+              "description": "Deploy using Docker containers for consistent environments and easy scaling.",
+              "features": [
+                "Consistent environment across platforms",
+                "Easy scaling and replication",
+                "Isolated dependencies",
+                "Simple deployment process",
+                "Version control for environments"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "kubernetes",
+          "name": "Kubernetes",
+          "icon": "CubeIcon",
+          "description": "Orchestrated container deployment",
+          "sections": [
+            {
+              "type": "overview",
+              "title": "Kubernetes with AMD Instinct",
+              "features": [
+                "AMD GPU Operator for Kubernetes",
+                "ROCm device plugin",
+                "Multi-node GPU clusters",
+                "Auto-scaling capabilities"
+              ]
+            },
+            {
+              "type": "code-block",
+              "title": "Install AMD GPU Operator",
+              "code": "# Add AMD Helm repository\nhelm repo add amd-gpu-operator https://rocm.github.io/amd-gpu-operator\nhelm repo update\n\n# Install AMD GPU Operator\nhelm install amd-gpu-operator amd-gpu-operator/amd-gpu-operator \\\n  --namespace gpu-operator \\\n  --create-namespace \\\n  --set rocm.enabled=true"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cloud-vms",
+      "name": "Cloud VMs",
+      "icon": "BuildingOfficeIcon",
+      "description": "Virtual machines in the cloud",
+      "tabs": [
+        {
+          "id": "aws",
+          "name": "AWS EC2",
+          "icon": "CloudIcon",
+          "description": "Amazon Web Services virtual machines",
+          "sections": [
+            {
+              "type": "overview",
+              "title": "AWS EC2 Deployment",
+              "description": "Deploy on Amazon Web Services EC2 instances with AMD GPU support.",
+              "features": [
+                "Scalable cloud infrastructure",
+                "Pay-as-you-go pricing",
+                "Global availability",
+                "Integrated monitoring",
+                "Easy backup and recovery"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "azure",
+          "name": "Azure VM",
+          "icon": "CloudIcon",
+          "description": "Microsoft Azure virtual machines",
+          "sections": [
+            {
+              "type": "overview",
+              "title": "Azure VM Deployment",
+              "description": "Deploy on Microsoft Azure virtual machines with enterprise features.",
+              "features": [
+                "Enterprise-grade security",
+                "Hybrid cloud support",
+                "Advanced networking",
+                "Integrated DevOps tools",
+                "Compliance certifications"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "amd-cloud",
+          "name": "AMD Developer Cloud",
+          "icon": "CloudIcon",
+          "description": "AMD's specialized cloud platform",
+          "sections": [
+            {
+              "type": "overview",
+              "title": "AMD Developer Cloud",
+              "description": "Specialized cloud platform optimized for AMD hardware and AI workloads.",
+              "features": [
+                "Optimized for AMD hardware",
+                "Pre-configured AI environments",
+                "Cost-effective GPU instances",
+                "Direct AMD support",
+                "Latest ROCm versions"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cloud-apis",
+      "name": "Cloud APIs",
+      "icon": "GlobeAltIcon",
+      "description": "API-based inference services",
+      "tabs": [
+        {
+          "id": "cloud-inference",
+          "name": "Cloud Inference",
+          "icon": "GlobeAltIcon",
+          "description": "API-based inference endpoints",
+          "sections": [
+            {
+              "type": "overview",
+              "title": "Cloud Inference Endpoints",
+              "description": "Deploy your models to cloud inference endpoints for production use. This approach provides scalability, reliability, and cost-effectiveness compared to local deployments.",
+              "features": [
+                "Scalable cloud infrastructure",
+                "Load balancing and auto-scaling",
+                "High availability and reliability",
+                "Cost-effective resource utilization",
+                "Global deployment options"
+              ]
+            },
+            {
+              "type": "providers",
+              "title": "Supported Cloud Providers",
+              "major": [
+                { "name": "OpenAI", "models": "GPT-4, GPT-3.5-turbo" },
+                { "name": "Azure OpenAI", "models": "Enterprise OpenAI" },
+                { "name": "AWS Bedrock", "models": "Claude, Llama, Titan" },
+                { "name": "Google AI", "models": "Gemini Pro, PaLM" }
+              ],
+              "custom": [
+                { "name": "Self-hosted", "description": "Your own infrastructure" },
+                { "name": "VPS", "description": "DigitalOcean, Linode, Vultr" },
+                { "name": "Edge", "description": "Cloudflare Workers, Vercel" },
+                { "name": "Hybrid", "description": "Multi-provider setup" }
+              ]
+            },
+            {
+              "type": "code-block",
+              "title": "Environment Configuration",
+              "description": "Configure your environment variables for cloud inference endpoints:",
+              "code": "# Cloud Inference Configuration\n# .env file\n\n# OpenAI Configuration\nOPENAI_API_KEY=your_openai_api_key\nOPENAI_BASE_URL=https://api.openai.com/v1\nOPENAI_MODEL=gpt-4\n\n# Azure OpenAI Configuration\nAZURE_OPENAI_API_KEY=your_azure_api_key\nAZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com\nAZURE_OPENAI_DEPLOYMENT=your-deployment-name\n\n# AWS Bedrock Configuration\nAWS_ACCESS_KEY_ID=your_aws_access_key\nAWS_SECRET_ACCESS_KEY=your_aws_secret_key\nAWS_REGION=us-east-1\nAWS_BEDROCK_MODEL=anthropic.claude-3-sonnet-20240229-v1:0\n\n# Google AI Configuration\nGOOGLE_AI_API_KEY=your_google_api_key\nGOOGLE_AI_MODEL=gemini-pro\n\n# Custom Endpoint Configuration\nCUSTOM_ENDPOINT_URL=https://your-endpoint.com/v1\nCUSTOM_API_KEY=your_custom_api_key\n\n# Load Balancing Configuration\nLOAD_BALANCING_STRATEGY=priority # priority, round-robin, health-based\nHEALTH_CHECK_INTERVAL=30000 # milliseconds\nRETRY_ATTEMPTS=3\nRETRY_DELAY=1000 # milliseconds\n\n# Monitoring Configuration\nENABLE_HEALTH_MONITORING=true\nENABLE_PERFORMANCE_MONITORING=true\nENABLE_ERROR_TRACKING=true"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reference",
+      "name": "Reference",
+      "icon": "DocumentTextIcon",
+      "description": "Documentation and resources",
+      "tabs": [
+        {
+          "id": "docs",
+          "name": "Documentation",
+          "icon": "DocumentTextIcon",
+          "description": "Complete documentation and resources",
+          "sections": [
+            {
+              "type": "links",
+              "title": "AMD ROCm Documentation",
+              "resources": [
+                {
+                  "name": "ROCm Documentation",
+                  "url": "https://rocmdocs.amd.com/",
+                  "description": "Complete AMD GPU computing platform docs"
+                },
+                {
+                  "name": "Installation Guide",
+                  "url": "https://rocmdocs.amd.com/en/latest/Installation_Guide/Installation-Guide.html",
+                  "description": "Step-by-step ROCm installation"
+                },
+                {
+                  "name": "System Requirements",
+                  "url": "https://rocmdocs.amd.com/en/latest/deploy/linux/prerequisites.html",
+                  "description": "Hardware and software prerequisites"
+                },
+                {
+                  "name": "Supported GPUs",
+                  "url": "https://rocmdocs.amd.com/en/latest/deploy/linux/prerequisites.html#supported-gpus",
+                  "description": "List of compatible AMD Instinct cards"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+} 
