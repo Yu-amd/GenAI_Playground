@@ -15,7 +15,7 @@ import {
   ChevronDownIcon
 } from '@heroicons/react/24/outline';
 import { deploymentGuideService, DeploymentGuideService } from '../services/deploymentGuideService';
-import type { DeploymentSection, DeploymentTab, DeploymentCategory } from '../services/deploymentGuideService';
+import type { DeploymentSection, DeploymentTab } from '../services/deploymentGuideService';
 
 interface DeploymentGuideEditorProps {
   isOpen: boolean;
