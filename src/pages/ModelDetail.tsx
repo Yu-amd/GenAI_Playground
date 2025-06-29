@@ -482,6 +482,7 @@ const ModelDetail: React.FC = () => {
   const [isModelCardEditing, setIsModelCardEditing] = useState(false);
   const [modelCardContent, setModelCardContent] = useState<any>(null);
   const [showCursor, setShowCursor] = useState(true);
+  const [isTextareaFocused, setIsTextareaFocused] = useState(true);
   
   // Enhanced parameters with more comprehensive options
   const [parameters, setParameters] = useState<Parameter[]>([
@@ -680,7 +681,7 @@ const ModelDetail: React.FC = () => {
 
   // Blinking cursor effect
   useEffect(() => {
-    if (!inputMessage.trim()) {
+    if (!inputMessage.trim() && isTextareaFocused) {
       const interval = setInterval(() => {
         setShowCursor(prev => !prev);
       }, 500);
@@ -688,7 +689,7 @@ const ModelDetail: React.FC = () => {
     } else {
       setShowCursor(true);
     }
-  }, [inputMessage]);
+  }, [inputMessage, isTextareaFocused]);
 
   const handleParameterChange = (paramName: string, value: number) => {
     setParameters(prev => prev.map(param => 
@@ -856,7 +857,13 @@ const ModelDetail: React.FC = () => {
 
   if (!model) {
     return (
-      <div className="min-h-screen bg-black text-white font-sans">
+      <div className="min-h-screen bg-black text-white font-sans" onClick={(e) => {
+        // If clicking outside the textarea, blur it
+        const target = e.target as HTMLElement;
+        if (!target.closest('textarea') && !target.closest('button')) {
+          textareaRef.current?.blur();
+        }
+      }}>
         <div className="relative w-full h-72 md:h-96 lg:h-[28rem] overflow-hidden font-sans flex items-center" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
           <img src={bannerWave} alt="Banner" className="w-full h-full object-cover absolute inset-0" />
           {/* Navigation overlay */}
@@ -920,7 +927,7 @@ const ModelDetail: React.FC = () => {
                     </button>
                     <button
                       onClick={() => setShowToolSelector(true)}
-                      className="flex items-center px-3 py-1.5 bg-green-600/10 text-green-400 rounded-full border border-green-500/10 hover:bg-green-600/20 transition-all text-xs font-medium"
+                      className="flex items-center px-3 py-1.5 bg-red-600/10 text-red-400 rounded-full border border-red-500/10 hover:bg-red-600/20 transition-all text-xs font-medium"
                       title="Tool Selection"
                     >
                       <WrenchScrewdriverIcon className="h-4 w-4 mr-1" />
@@ -967,6 +974,8 @@ const ModelDetail: React.FC = () => {
                           value={inputMessage}
                           onChange={(e) => setInputMessage(e.target.value)}
                           onKeyPress={handleKeyPress}
+                          onFocus={() => setIsTextareaFocused(true)}
+                          onBlur={() => setIsTextareaFocused(false)}
                           placeholder=""
                           role="textbox"
                           className="w-full bg-transparent text-white p-4 min-h-[80px] max-h-[300px] resize-none focus:outline-none focus:ring-0 border border-white/20 rounded-xl font-sans text-lg cursor-text"
@@ -978,7 +987,7 @@ const ModelDetail: React.FC = () => {
                             caretColor: inputMessage.trim() ? 'white' : 'transparent'
                           }}
                         />
-                        {!inputMessage.trim() && (
+                        {!inputMessage.trim() && isTextareaFocused && (
                           <div 
                             className="absolute left-4 top-4 pointer-events-none"
                             style={{ 
@@ -1027,7 +1036,13 @@ const ModelDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
+    <div className="min-h-screen bg-black text-white font-sans" onClick={(e) => {
+      // If clicking outside the textarea, blur it
+      const target = e.target as HTMLElement;
+      if (!target.closest('textarea') && !target.closest('button')) {
+        textareaRef.current?.blur();
+      }
+    }}>
       <div className="relative w-full h-72 md:h-96 lg:h-[28rem] overflow-hidden font-sans flex items-center" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
         <img src={bannerWave} alt="Banner" className="w-full h-full object-cover absolute inset-0" />
         {/* Navigation overlay */}
@@ -1159,7 +1174,7 @@ const ModelDetail: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setShowToolSelector(true)}
-                    className="flex items-center px-3 py-1.5 bg-green-600/10 text-green-400 rounded-full border border-green-500/10 hover:bg-green-600/20 transition-all text-xs font-medium"
+                    className="flex items-center px-3 py-1.5 bg-red-600/10 text-red-400 rounded-full border border-red-500/10 hover:bg-red-600/20 transition-all text-xs font-medium"
                     title="Tool Selection"
                   >
                     <WrenchScrewdriverIcon className="h-4 w-4 mr-1" />
@@ -1261,6 +1276,8 @@ const ModelDetail: React.FC = () => {
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
+                        onFocus={() => setIsTextareaFocused(true)}
+                        onBlur={() => setIsTextareaFocused(false)}
                         placeholder=""
                         role="textbox"
                         className="w-full bg-transparent text-white p-4 min-h-[80px] max-h-[300px] resize-none focus:outline-none focus:ring-0 border border-white/20 rounded-xl font-sans text-lg cursor-text"
@@ -1272,7 +1289,7 @@ const ModelDetail: React.FC = () => {
                           caretColor: inputMessage.trim() ? 'white' : 'transparent'
                         }}
                       />
-                      {!inputMessage.trim() && (
+                      {!inputMessage.trim() && isTextareaFocused && (
                         <div 
                           className="absolute left-4 top-4 pointer-events-none"
                           style={{ 
