@@ -22,6 +22,7 @@ A modern web application for exploring and interacting with AI models and bluepr
 - [Model Catalog Assets](#model-catalog-assets)
 - [Blueprint Catalog Assets](#blueprint-catalog-assets)
 - [AIM (AMD Inference Microservice) Assets](#aim-amd-inference-microservice-assets)
+- [Cloud Inference Endpoint Migration](#cloud-inference-endpoint-migration)
 - [Catalog Validation](#catalog-validation)
 
 ### 🤝 Contributing
@@ -561,6 +562,413 @@ The AIM (AMD Inference Microservice) system provides tools for managing AI model
 - **File Not Found:** Ensure scripts are run from the correct directory (`src/aim/`)
 - **Schema Updates:** Keep schemas updated when adding new fields or requirements
 
+---
+
+## Cloud Inference Endpoint Migration
+
+**🚀 Next Step: Migration from LM Studio to Cloud Inference Endpoints**
+
+The Cloud Inference system provides a comprehensive solution for migrating from local LM Studio endpoints to production-ready cloud-based inference services. This system supports multiple providers, load balancing, health monitoring, and seamless provider switching.
+
+### 🎯 Migration Overview
+
+The migration strategy follows a phased approach:
+
+1. **Phase 1: Preparation** - Set up cloud infrastructure and provider configurations
+2. **Phase 2: Gradual Migration** - Run dual mode with LM Studio and cloud endpoints
+3. **Phase 3: Full Migration** - Complete switch to cloud endpoints
+
+### 📋 What Has Been Implemented
+
+#### 1. Core Services
+
+**`CloudInferenceService`** (`src/services/cloudInferenceService.ts`)
+- **Multi-provider support**: OpenAI, Azure OpenAI, AWS Bedrock, Google AI, and custom endpoints
+- **Load balancing**: Priority-based, round-robin, and health-based strategies
+- **Health monitoring**: Automatic health checks with configurable intervals
+- **Retry logic**: Automatic retry with exponential backoff
+- **Provider management**: Add, remove, update, and test providers
+- **Streaming support**: Full streaming response handling
+
+**`CloudConfigService`** (`src/services/cloudConfigService.ts`)
+- **Environment variable management**: Automatic loading from environment variables
+- **Configuration persistence**: localStorage-based configuration storage
+- **Provider validation**: Comprehensive validation for all provider types
+- **Provider templates**: Pre-configured templates for each provider type
+- **Configuration helpers**: Provider-specific configuration getters
+
+**`InferenceServiceFactory`** (`src/services/inferenceServiceFactory.ts`)
+- **Unified interface**: Single API for both LM Studio and cloud inference
+- **Provider switching**: Seamless switching between inference providers
+- **Auto-fallback**: Automatic fallback between providers on failure
+- **Health monitoring**: Comprehensive health status tracking
+- **Utility functions**: Convenient helper functions for common operations
+
+#### 2. React Components
+
+**`CloudProviderManager`** (`src/components/CloudProviderManager.tsx`)
+- **Provider management UI**: Add, edit, remove, and test providers
+- **Advanced configuration**: Load balancing, retry, timeout, and health check settings
+- **Health status display**: Real-time health monitoring with visual indicators
+- **Modal interfaces**: User-friendly forms for provider configuration
+
+**`InferenceProviderSelector`** (`src/components/InferenceProviderSelector.tsx`)
+- **Provider switching**: Easy switching between LM Studio and cloud inference
+- **Health status**: Real-time health indicators for each provider
+- **Visual feedback**: Clear indication of current provider and status
+
+#### 3. Example Implementation
+
+**`CloudInferenceExample`** (`src/examples/CloudInferenceExample.tsx`)
+- **Complete demonstration**: Full example of cloud inference usage
+- **Chat interface**: Working chat interface with provider switching
+- **Provider management**: UI for managing cloud providers
+- **Health monitoring**: Real-time health status display
+- **Code examples**: Practical usage examples and code snippets
+
+### 🔧 Supported Providers
+
+#### 1. OpenAI
+Standard OpenAI API compatible endpoints.
+```typescript
+{
+  type: 'openai',
+  endpoint: 'https://api.openai.com',
+  apiKey: 'sk-...',
+  priority: 1,
+  enabled: true
+}
+```
+
+#### 2. Azure OpenAI
+Azure OpenAI Service endpoints.
+```typescript
+{
+  type: 'azure',
+  endpoint: 'https://your-resource.openai.azure.com',
+  apiKey: 'your_azure_key',
+  config: {
+    apiVersion: '2024-02-15-preview'
+  },
+  priority: 2,
+  enabled: true
+}
+```
+
+#### 3. AWS Bedrock
+AWS Bedrock service for model inference.
+```typescript
+{
+  type: 'aws',
+  endpoint: 'https://bedrock-runtime.us-east-1.amazonaws.com',
+  apiKey: 'your_access_key_id',
+  config: {
+    region: 'us-east-1',
+    secretKey: 'your_secret_access_key',
+    modelId: 'anthropic.claude-3-sonnet-20240229-v1:0'
+  },
+  priority: 3,
+  enabled: true
+}
+```
+
+#### 4. Google AI
+Google AI (Gemini) endpoints.
+```typescript
+{
+  type: 'gcp',
+  endpoint: 'https://generativelanguage.googleapis.com',
+  apiKey: 'your_gcp_api_key',
+  config: {
+    projectId: 'your_project_id'
+  },
+  priority: 4,
+  enabled: true
+}
+```
+
+#### 5. Custom Endpoints
+Custom inference endpoints with custom formatting.
+```typescript
+{
+  type: 'custom',
+  endpoint: 'https://your-custom-endpoint.com',
+  apiKey: 'your_api_key',
+  config: {
+    customFormat: {
+      // Custom request format
+    }
+  },
+  priority: 5,
+  enabled: true
+}
+```
+
+### ⚖️ Load Balancing Strategies
+
+#### 1. Priority-based
+Uses providers in order of priority (lowest number = highest priority).
+
+#### 2. Round-robin
+Distributes requests evenly across all healthy providers.
+
+#### 3. Health-based
+Routes requests to the fastest responding provider.
+
+### 🏥 Health Monitoring
+
+- **Automatic health checks**: Configurable intervals (default: 30 seconds)
+- **Real-time status**: Live health status updates with visual indicators
+- **Error tracking**: Detailed error information and failure reasons
+- **Response time monitoring**: Performance tracking and latency measurement
+
+### 🔄 Auto-Fallback
+
+- **Automatic switching**: Falls back to healthy providers on failure
+- **Configurable fallback**: Enable/disable auto-fallback behavior
+- **Error handling**: Graceful error handling and recovery mechanisms
+- **Circuit breaker**: Prevents cascading failures with circuit breaker pattern
+
+### 🚀 Quick Start
+
+#### 1. Basic Usage
+```typescript
+import { inferenceService } from './services/inferenceServiceFactory';
+
+// Switch to cloud inference
+inferenceService.switchProvider('cloud');
+
+// Make a request
+const response = await inferenceService.chatCompletion({
+  messages: [{ role: 'user', content: 'Hello!' }],
+  max_tokens: 100
+});
+```
+
+#### 2. Provider Management
+```typescript
+import { cloudConfigService } from './services/cloudConfigService';
+
+// Add a provider
+await cloudConfigService.addProvider({
+  id: 'my-openai',
+  name: 'My OpenAI',
+  type: 'openai',
+  endpoint: 'https://api.openai.com',
+  apiKey: 'sk-...',
+  priority: 1,
+  enabled: true
+});
+```
+
+#### 3. Health Monitoring
+```typescript
+// Get health status
+const health = await inferenceService.getHealthStatus();
+
+// Test specific provider
+const isHealthy = await inferenceService.testProvider('cloud');
+```
+
+### ⚙️ Configuration
+
+#### Environment Variables
+Set up your providers using environment variables:
+
+```bash
+# OpenAI
+REACT_APP_OPENAI_API_KEY=your_openai_api_key_here
+
+# Azure OpenAI
+REACT_APP_AZURE_API_KEY=your_azure_api_key_here
+REACT_APP_AZURE_ENDPOINT=https://your-resource.openai.azure.com
+
+# AWS Bedrock
+REACT_APP_AWS_ACCESS_KEY_ID=your_aws_access_key_id
+REACT_APP_AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+REACT_APP_AWS_REGION=us-east-1
+
+# Google AI
+REACT_APP_GCP_API_KEY=your_gcp_api_key_here
+REACT_APP_GCP_PROJECT_ID=your_gcp_project_id
+```
+
+#### Advanced Configuration
+```typescript
+// Configure load balancing
+inferenceService.setConfig({
+  cloudConfig: {
+    enabled: true,
+    autoFallback: true
+  }
+});
+
+// Update cloud service configuration
+cloudInferenceService.updateConfig({
+  loadBalancing: 'health-based',
+  retryAttempts: 5,
+  timeout: 60000,
+  healthCheckInterval: 15000
+});
+```
+
+### 📊 Migration Benefits
+
+#### 1. Scalability
+- **Multiple providers**: Distribute load across multiple services
+- **Auto-scaling**: Automatic provider selection based on health
+- **High availability**: Redundant providers ensure uptime
+
+#### 2. Cost Optimization
+- **Provider selection**: Choose cost-effective providers
+- **Load distribution**: Balance costs across providers
+- **Performance monitoring**: Optimize for cost vs performance
+
+#### 3. Reliability
+- **Health monitoring**: Proactive health checks
+- **Auto-fallback**: Automatic recovery from failures
+- **Error handling**: Comprehensive error management
+
+#### 4. Flexibility
+- **Provider agnostic**: Easy to add new providers
+- **Configuration management**: Dynamic configuration updates
+- **Custom endpoints**: Support for custom inference services
+
+### 📋 Migration Checklist
+
+#### Phase 1: Preparation (Week 1-2)
+- [ ] Set up cloud infrastructure
+- [ ] Configure environment variables
+- [ ] Implement health monitoring
+- [ ] Add cloud providers
+- [ ] Set up load balancing
+- [ ] Configure circuit breakers
+- [ ] Run unit and integration tests
+
+#### Phase 2: Gradual Migration (Week 3-4)
+- [ ] Enable dual mode (LM Studio + Cloud)
+- [ ] Add feature flag for provider switching
+- [ ] A/B test with small user group
+- [ ] Set up real-time monitoring
+- [ ] Configure alerting
+- [ ] Test rollback procedures
+
+#### Phase 3: Full Migration (Week 5-6)
+- [ ] Migrate all users to cloud endpoints
+- [ ] Remove LM Studio dependencies
+- [ ] Update documentation
+- [ ] Performance tuning
+- [ ] Cost optimization
+- [ ] Scaling adjustments
+
+### 🔧 Integration Steps
+
+#### 1. Add Provider Selector
+```tsx
+import { InferenceProviderSelector } from './components/InferenceProviderSelector';
+
+<InferenceProviderSelector
+  onProviderChange={(provider) => {
+    console.log('Switched to:', provider);
+  }}
+  showHealthStatus={true}
+/>
+```
+
+#### 2. Add Provider Manager
+```tsx
+import { CloudProviderManager } from './components/CloudProviderManager';
+
+<CloudProviderManager
+  onConfigChange={(config) => {
+    console.log('Config changed:', config);
+  }}
+/>
+```
+
+#### 3. Update Chat Interface
+```typescript
+// Replace direct LM Studio calls with unified service
+const response = await inferenceService.chatCompletion({
+  messages: conversation,
+  max_tokens: 1000
+});
+```
+
+### 📚 Documentation
+
+- **Implementation Guide**: `CLOUD_INFERENCE_IMPLEMENTATION.md`
+- **Migration Plan**: `CLOUD_INFERENCE_ENDPOINT_PLAN.md`
+- **Implementation Summary**: `IMPLEMENTATION_SUMMARY.md`
+
+### 🛠️ Testing
+
+#### Unit Tests
+```bash
+npm test
+# Tests for cloud inference services and components
+```
+
+#### Integration Tests
+```bash
+# Test provider connectivity
+npm run test:providers
+
+# Test load balancing
+npm run test:load-balancing
+```
+
+#### Load Testing
+```bash
+# Test performance under load
+npm run test:load
+```
+
+### 🔒 Security Considerations
+
+- **API Key Management**: Secure storage and rotation of API keys
+- **Rate Limiting**: Implement rate limiting to prevent abuse
+- **Audit Logging**: Track all inference requests for compliance
+- **Access Control**: Implement proper access controls for provider management
+
+### 🚨 Troubleshooting
+
+#### Common Issues
+1. **Provider Connection Failures**
+   - Check API keys and endpoints
+   - Verify network connectivity
+   - Review provider status
+
+2. **Health Check Failures**
+   - Verify health check URLs
+   - Check authentication
+   - Review timeout settings
+
+3. **Load Balancing Issues**
+   - Check provider priorities
+   - Verify health status
+   - Review load balancing strategy
+
+#### Debug Mode
+Enable debug mode for detailed logging:
+```bash
+REACT_APP_DEBUG=true npm start
+```
+
+### 📞 Support
+
+For implementation questions or issues:
+
+1. **Check documentation**: Review implementation guides
+2. **Run examples**: Use `CloudInferenceExample` component
+3. **Enable debugging**: Set `REACT_APP_DEBUG=true`
+4. **Check health status**: Monitor provider health
+5. **Review configuration**: Verify environment variables and settings
+
+The cloud inference system is production-ready and provides a smooth migration path from LM Studio to scalable cloud-based inference endpoints.
+
+---
+
 ## Catalog Validation
 
 ### Model Catalog Validation (Python)
@@ -591,6 +999,8 @@ The AIM (AMD Inference Microservice) system provides tools for managing AI model
   #   --output <file>     # Output catalog file (default: src/aim/blueprint-catalog.yaml)
   #   --validate          # Validate after conversion
   ```
+
+---
 
 ## Contributing
 
