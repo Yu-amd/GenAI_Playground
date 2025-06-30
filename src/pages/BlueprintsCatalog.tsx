@@ -16,8 +16,13 @@ interface Blueprint {
   id: string;
   name: string;
   description: string;
+  shortDescription: string;
   image: string;
   tags: string[];
+  category: string;
+  complexity: string;
+  status: string;
+  badge?: string;
 }
 
 const blueprints: Blueprint[] = [
@@ -25,57 +30,92 @@ const blueprints: Blueprint[] = [
     id: 'chatqna',
     name: 'ChatQnA',
     description: 'Chatbot application based on Retrieval Augmented Generation architecture.',
+    shortDescription: 'RAG-based chatbot for knowledge base interactions with advanced retrieval capabilities.',
     image: bp_chatqna,
-    tags: ['RAG', 'Chatbot', 'Knowledge Base']
+    tags: ['RAG', 'Chatbot', 'Knowledge Base'],
+    category: 'Conversational AI',
+    complexity: 'Intermediate',
+    status: 'Production Ready',
+    badge: 'Featured'
   },
   {
     id: 'agentqna',
     name: 'AgentQnA',
     description: 'A hierarchical multi-agent system for question-answering applications.',
+    shortDescription: 'Multi-agent orchestration system for complex question-answering workflows.',
     image: bp_agentqna,
-    tags: ['Multi-Agent', 'Hierarchical', 'Orchestration']
+    tags: ['Multi-Agent', 'Hierarchical', 'Orchestration'],
+    category: 'Multi-Agent Systems',
+    complexity: 'Advanced',
+    status: 'Tech Preview',
+    badge: 'New'
   },
   {
     id: 'codegen',
     name: 'CodeGen',
     description: 'A code copilot application for executing code generation.',
+    shortDescription: 'AI-powered code generation and completion with multiple language support.',
     image: bp_codegen,
-    tags: ['Code Generation', 'Copilot', 'Development']
+    tags: ['Code Generation', 'Copilot', 'Development'],
+    category: 'Development Tools',
+    complexity: 'Intermediate',
+    status: 'Production Ready'
   },
   {
     id: 'codetrans',
     name: 'CodeTrans',
     description: 'A code translation example which converts code from one programming language to another programming language.',
+    shortDescription: 'Cross-language code translation and transpilation with syntax preservation.',
     image: bp_codeTrans,
-    tags: ['Code Translation', 'Language Conversion', 'Transpilation']
+    tags: ['Code Translation', 'Language Conversion', 'Transpilation'],
+    category: 'Development Tools',
+    complexity: 'Advanced',
+    status: 'Production Ready'
   },
   {
     id: 'searchqna',
     name: 'SearchQnA',
     description: 'An example of improving QnA application quality by expanding the pipeline with the Google search engine.',
+    shortDescription: 'Enhanced QnA system with real-time web search integration for up-to-date answers.',
     image: bp_searchQna,
-    tags: ['Search Integration', 'Enhanced QnA', 'External APIs']
+    tags: ['Search Integration', 'Enhanced QnA', 'External APIs'],
+    category: 'Enhanced AI',
+    complexity: 'Intermediate',
+    status: 'Production Ready'
   },
   {
     id: 'docsum',
     name: 'DocSum',
     description: 'A sample app which creates summaries of different types of text.',
+    shortDescription: 'Intelligent document summarization for various text formats and lengths.',
     image: bp_docsum,
-    tags: ['Document Summarization', 'Text Processing', 'NLP']
+    tags: ['Document Summarization', 'Text Processing', 'NLP'],
+    category: 'Content Processing',
+    complexity: 'Beginner',
+    status: 'Production Ready'
   },
   {
     id: 'translation',
     name: 'Translation',
     description: 'An application which demonstrates language translation inference.',
+    shortDescription: 'Multi-language translation system with context-aware language detection.',
     image: bp_translation,
-    tags: ['Language Translation', 'Multilingual', 'Inference']
+    tags: ['Language Translation', 'Multilingual', 'Inference'],
+    category: 'Language Processing',
+    complexity: 'Beginner',
+    status: 'Production Ready'
   },
   {
     id: 'avatarchatbot',
     name: 'Avatar Chatbot',
     description: 'Integrates a conversational chatbot with a virtual avatar.',
+    shortDescription: 'Visual AI chatbot with animated avatar for immersive conversational experiences.',
     image: bp_avatarchatbot,
-    tags: ['Avatar Integration', 'Visual AI', 'Conversational']
+    tags: ['Avatar Integration', 'Visual AI', 'Conversational'],
+    category: 'Visual AI',
+    complexity: 'Advanced',
+    status: 'Tech Preview',
+    badge: 'New'
   },
 ];
 
@@ -102,30 +142,60 @@ const BlueprintsCatalog: React.FC = () => {
             <Link
               key={bp.id}
               to={`/blueprints/${bp.id}`}
-              className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-10 flex flex-row items-center hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full"
+              className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-0 flex flex-row items-stretch hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full relative"
+              title="open in playground"
             >
-              <img
-                src={bp.image}
-                alt={bp.name}
-                className="w-36 h-36 object-contain rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0 bg-white/5"
-              />
-              <div className="flex-1 min-w-0 flex flex-col justify-center">
-                <h2 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition truncate">{bp.name}</h2>
-                <div className="flex space-x-2 mb-3">
-                  {bp.tags.map((tag, index) => (
-                    <span 
-                      key={index}
-                      className={`px-2 py-1 rounded text-xs ${
-                        index === 0 ? 'bg-blue-900/50 text-blue-200' :
-                        index === 1 ? 'bg-green-900/50 text-green-200' :
-                        'bg-purple-900/50 text-purple-200'
-                      }`}
-                    >
-                      {tag}
-                    </span>
+              {/* Corner Ribbon Badge */}
+              {bp.badge && (
+                <div className={`absolute top-0 right-0 z-20 px-4 py-1 text-xs font-bold rounded-bl-2xl ${
+                  bp.badge === 'New' ? 'bg-green-600 text-white' :
+                  bp.badge === 'Tech Preview' ? 'bg-yellow-500 text-black' :
+                  bp.badge === 'Featured' ? 'bg-blue-600 text-white' :
+                  'bg-neutral-700 text-white'
+                } shadow-lg`}>{bp.badge}</div>
+              )}
+              
+              {/* Logo */}
+              <div className="flex items-center justify-center w-40 h-full bg-white/5 rounded-l-2xl border-r border-white/10">
+                <img
+                  src={bp.image}
+                  alt={bp.name}
+                  className="w-32 h-32 object-cover rounded-xl border-2 border-neutral-700 shadow-md bg-white/10"
+                />
+              </div>
+              
+              {/* Info */}
+              <div className="flex-1 min-w-0 flex flex-col justify-center px-8 py-6">
+                {/* Category */}
+                <div className="text-xs text-blue-300 font-semibold mb-1 truncate">{bp.category}</div>
+                {/* Complexity */}
+                <div className="text-xs text-neutral-400 mb-1 truncate">{bp.complexity}</div>
+                {/* Blueprint Name */}
+                <div className="flex items-baseline gap-2 mb-1">
+                  <h2 className="text-2xl font-bold group-hover:text-blue-400 transition truncate">{bp.name}</h2>
+                </div>
+                {/* Short Description */}
+                <div className="text-sm text-neutral-200 mb-3 line-clamp-2">{bp.shortDescription}</div>
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-2">
+                  <span className={`px-2 py-1 rounded text-xs ${
+                    bp.tags[0] === 'RAG' ? 'bg-blue-900/50 text-blue-200' :
+                    bp.tags[0] === 'Multi-Agent' ? 'bg-green-900/50 text-green-200' :
+                    bp.tags[0] === 'Code Generation' ? 'bg-purple-900/50 text-purple-200' :
+                    bp.tags[0] === 'Search Integration' ? 'bg-orange-900/50 text-orange-200' :
+                    bp.tags[0] === 'Document Summarization' ? 'bg-indigo-900/50 text-indigo-200' :
+                    bp.tags[0] === 'Language Translation' ? 'bg-teal-900/50 text-teal-200' :
+                    bp.tags[0] === 'Avatar Integration' ? 'bg-pink-900/50 text-pink-200' :
+                    'bg-blue-900/50 text-blue-200'
+                  }`}>{bp.tags[0]}</span>
+                  <span className="px-2 py-1 rounded text-xs bg-green-900/50 text-green-200">{bp.status}</span>
+                  <div className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-neutral-700/40 text-neutral-300">
+                    <span>{bp.complexity}</span>
+                  </div>
+                  {bp.tags.slice(1).map((tag, i) => (
+                    <span key={i} className="px-2 py-1 rounded text-xs bg-neutral-700/40 text-neutral-300">{tag}</span>
                   ))}
                 </div>
-                <div className="text-sm text-neutral-300 line-clamp-3">{bp.description}</div>
               </div>
             </Link>
           ))}

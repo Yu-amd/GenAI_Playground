@@ -921,7 +921,35 @@ main();`
 
   if (!blueprint) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex flex-col">
+      <div className="min-h-screen bg-black text-white font-sans flex flex-col">
+        <div className="relative w-full h-72 md:h-96 lg:h-[28rem] overflow-hidden font-sans flex items-center" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+          <img src={bannerWave} alt="Banner" className="w-full h-full object-cover absolute inset-0" />
+          {/* Navigation overlay */}
+          <nav className="absolute top-0 left-0 w-full flex justify-between items-center pt-8 px-8 z-20 bg-black/30 backdrop-blur-md shadow-lg rounded-b-xl pointer-events-auto">
+            <PlaygroundLogo />
+            <div className="flex gap-16">
+              <Link to="/models" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Models</Link>
+              <Link to="/blueprints" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Blueprints</Link>
+              <Link to="/gpu-cloud" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
+            </div>
+          </nav>
+          {/* Loading banner content */}
+          <div className="relative z-10 flex flex-row items-center justify-center w-full h-full px-8 gap-12 pt-20">
+            <div className="flex flex-col items-center min-w-[220px]">
+              <div className="relative w-full flex flex-col items-center">
+                <div className="w-48 h-48 md:w-56 md:h-56 rounded-2xl border-4 border-white shadow-xl bg-white/10 animate-pulse flex items-center justify-center">
+                  <div className="text-gray-400 text-lg">Loading...</div>
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 flex flex-col justify-center items-start max-w-2xl">
+              <div className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg mb-4 animate-pulse bg-white/10 h-16 rounded"></div>
+              <div className="text-lg md:text-xl text-white/90 leading-relaxed font-medium drop-shadow max-w-2xl mb-4">
+                Loading blueprint details...
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-white mb-4">Blueprint Not Found</h1>
@@ -936,12 +964,12 @@ main();`
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex flex-col">
+    <div className="min-h-screen bg-black text-white font-sans flex flex-col">
       {/* Banner */}
-      <div className="relative w-full h-56 md:h-72 lg:h-80 overflow-hidden">
-        <img src={bannerWave} alt="Banner" className="w-full h-full object-cover" />
+      <div className="relative w-full h-72 md:h-96 lg:h-[28rem] overflow-hidden font-sans flex items-center" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+        <img src={bannerWave} alt="Banner" className="w-full h-full object-cover absolute inset-0" />
         {/* Navigation overlay */}
-        <nav className="absolute top-0 left-0 w-full flex justify-between items-center pt-8 px-8 z-10">
+        <nav className="absolute top-0 left-0 w-full flex justify-between items-center pt-8 px-8 z-20 bg-black/30 backdrop-blur-md shadow-lg rounded-b-xl pointer-events-auto">
           <PlaygroundLogo />
           <div className="flex gap-16">
             <Link to="/models" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Models</Link>
@@ -950,19 +978,41 @@ main();`
           </div>
         </nav>
         {/* Left-aligned glassy blueprint card overlay */}
-        <div className="absolute left-8 top-32 z-10 bg-white/10 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg p-3 flex flex-col items-center w-40">
-          {blueprint.image && (
-            <img
-              src={blueprint.image}
-              alt={blueprint.name + ' Logo'}
-              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-xl mb-2 border border-neutral-800"
-            />
-          )}
-          <div className="text-xs font-bold text-white text-center drop-shadow-lg">AI Blueprint</div>
-          <div className="text-base font-extrabold text-center text-white drop-shadow-lg">{blueprint.name}</div>
-          {blueprint.description && (
-            <div className="text-xs text-white/80 text-center mt-1 max-w-[140px] truncate">{blueprint.description}</div>
-          )}
+        <div className="relative z-10 flex flex-row items-center justify-center w-full h-full px-8 gap-12 pt-20">
+          <div className="flex flex-col items-center min-w-[220px]">
+            <div className="relative w-full flex flex-col items-center">
+              <div className="w-48 h-48 md:w-56 md:h-56 rounded-2xl border-4 border-white shadow-xl bg-white/10 backdrop-blur-md flex items-center justify-center">
+                {blueprint.image && (
+                  <img
+                    src={blueprint.image}
+                    alt={blueprint.name + ' Logo'}
+                    className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-xl border border-neutral-800"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col justify-center items-start max-w-2xl">
+            <div className="text-xs text-blue-300 font-semibold mb-2">AI Blueprint</div>
+            <div className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg mb-4">{blueprint.name}</div>
+            <div className="text-lg md:text-xl text-white/90 leading-relaxed font-medium drop-shadow max-w-2xl mb-4">
+              {blueprint.description}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {blueprint.tags.map((tag, index) => (
+                <span 
+                  key={index}
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    index === 0 ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' :
+                    index === 1 ? 'bg-green-600/20 text-green-300 border border-green-500/30' :
+                    'bg-purple-600/20 text-purple-300 border border-purple-500/30'
+                  }`}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1031,16 +1081,26 @@ main();`
                         <Link
                           key={index}
                           to={`/models/${model.name === 'Qwen2 7B' ? 'Qwen/Qwen2-7B-Instruct' : model.name.toLowerCase().replace(/\s+/g, '-')}`}
-                          className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-10 flex flex-row items-center hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full"
+                          className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-0 flex flex-row items-stretch hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full relative"
+                          title="open in playground"
                         >
-                          <img
-                            src={model.logo}
-                            alt={model.name}
-                            className="w-36 h-36 rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0 object-cover"
-                          />
-                          <div className="flex-1 min-w-0 flex flex-col justify-center">
-                            <h4 className="font-medium text-white text-xl mb-2">{model.name}</h4>
-                            <div className="flex space-x-2 mb-3">
+                          {/* Logo */}
+                          <div className="flex items-center justify-center w-40 h-full bg-white/5 rounded-l-2xl border-r border-white/10">
+                            <img
+                              src={model.logo}
+                              alt={model.name}
+                              className="w-32 h-32 object-cover rounded-xl border-2 border-neutral-700 shadow-md bg-white/10"
+                            />
+                          </div>
+                          {/* Info */}
+                          <div className="flex-1 min-w-0 flex flex-col justify-center px-8 py-6">
+                            <div className="text-xs text-blue-300 font-semibold mb-1 truncate">AI Model</div>
+                            <div className="text-xs text-neutral-400 mb-1 truncate">Inference</div>
+                            <div className="flex items-baseline gap-2 mb-1">
+                              <h4 className="text-2xl font-bold group-hover:text-blue-400 transition truncate">{model.name}</h4>
+                            </div>
+                            <div className="text-sm text-neutral-200 mb-3 line-clamp-2">AI model for inference and generation</div>
+                            <div className="flex flex-wrap gap-2 mb-2">
                               {model.tags?.map((tag, tagIdx) => (
                                 <span
                                   key={tagIdx}
@@ -1054,7 +1114,6 @@ main();`
                                 </span>
                               ))}
                             </div>
-                            <p className="text-sm text-neutral-300 line-clamp-3">AI model for inference and generation</p>
                           </div>
                         </Link>
                       ))}
@@ -1067,12 +1126,25 @@ main();`
                       {getMicroservicesForBlueprint().functional.map((service, index) => (
                         <div
                           key={index}
-                          className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-10 flex flex-row items-center h-[280px] w-full"
+                          className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-0 flex flex-row items-stretch h-[280px] w-full relative"
                         >
-                          <img src={getFunctionalLogoByName(service.name)} alt={service.name} className="w-36 h-36 rounded-2xl border-2 border-neutral-700 shadow-md transition mr-10 flex-shrink-0 object-cover" />
-                          <div className="flex-1 min-w-0 flex flex-col justify-center">
-                            <h4 className="font-medium text-white text-xl mb-2">{service.name}</h4>
-                            <div className="flex space-x-2 mb-3">
+                          {/* Logo */}
+                          <div className="flex items-center justify-center w-40 h-full bg-white/5 rounded-l-2xl border-r border-white/10">
+                            <img 
+                              src={getFunctionalLogoByName(service.name)} 
+                              alt={service.name} 
+                              className="w-32 h-32 object-cover rounded-xl border-2 border-neutral-700 shadow-md bg-white/10" 
+                            />
+                          </div>
+                          {/* Info */}
+                          <div className="flex-1 min-w-0 flex flex-col justify-center px-8 py-6">
+                            <div className="text-xs text-blue-300 font-semibold mb-1 truncate">Microservice</div>
+                            <div className="text-xs text-neutral-400 mb-1 truncate">Functional</div>
+                            <div className="flex items-baseline gap-2 mb-1">
+                              <h4 className="text-2xl font-bold text-white truncate">{service.name}</h4>
+                            </div>
+                            <div className="text-sm text-neutral-200 mb-3 line-clamp-2">{service.description}</div>
+                            <div className="flex flex-wrap gap-2 mb-2">
                               {service.tags?.map((tag, tagIdx) => (
                                 <span
                                   key={tagIdx}
@@ -1086,7 +1158,6 @@ main();`
                                 </span>
                               ))}
                             </div>
-                            <p className="text-sm text-neutral-300 line-clamp-3">{service.description}</p>
                           </div>
                         </div>
                       ))}

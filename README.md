@@ -16,6 +16,7 @@ A modern web application for exploring and interacting with AI models and bluepr
 - [Contributing](#contributing)
 - [Maintainer](#maintainer)
 - [License](#license)
+- [Blueprint Catalog Assets](#blueprint-catalog-assets)
 
 ## Features
 
@@ -234,3 +235,116 @@ For questions, issues, or contributions related to this project, please contact 
 ## License
 
 [Your License Here]
+
+## Blueprint Catalog Assets
+
+The Blueprint Catalog mirrors the Model Catalog structure and provides a robust, extensible way to manage AI application blueprints. Below are the key assets and how to use them:
+
+### 1. Blueprint Schema
+- **Location:** `src/aim/blueprint_catalog_schema.json`
+- **Purpose:** Defines the JSON/YAML schema for blueprint catalog entries. Use this for validation, IDE autocompletion, and documentation.
+
+### 2. Blueprint Loader
+- **Location:** `src/utils/blueprintLoader.ts`
+- **Purpose:** Loads blueprint data from generated TypeScript or YAML files, similar to `modelLoader.ts`.
+- **Usage:**
+  - `loadBlueprintData(blueprintId: string): Promise<BlueprintData | null>`
+  - `loadAllBlueprints(): Promise<BlueprintCatalogItem[]>`
+
+### 3. Generated Blueprint Data
+- **Location:** `src/utils/generatedBlueprintData.ts`
+- **Purpose:** Auto-generated TypeScript file containing all blueprint data, built from YAML files. Do not edit manually.
+- **Regenerate:** Run `npm run generate-blueprint-data` (see below).
+
+### 4. Blueprint Data Generator Script
+- **Location:** `scripts/generateBlueprintData.ts`
+- **Purpose:** Reads all YAML files in `src/aim/blueprints/` and generates `generatedBlueprintData.ts`.
+- **Usage:**
+  - `npm run generate-blueprint-data` (add this to your package.json scripts if not present)
+
+### 5. Blueprint Data Validator
+- **Location:** `scripts/validateBlueprintData.ts`
+- **Purpose:** Validates blueprint data structure, required fields, asset existence, and YAML compliance.
+- **Usage:**
+  - `npx tsx scripts/validateBlueprintData.ts`
+
+### 6. Blueprint Unit Tests
+- **Location:**
+  - `src/tests/BlueprintDetail.test.tsx` (detail page)
+  - `src/tests/BlueprintsCatalog.test.tsx` (catalog page)
+- **Purpose:** Ensures UI and logic for blueprints are robust and match the Model Catalog experience.
+- **Usage:**
+  - `npm test` or `npx vitest`
+
+### 7. Blueprint YAML Files
+- **Location:** `src/aim/blueprints/`
+- **Purpose:** Source of truth for blueprint metadata. Each YAML file must conform to the schema.
+- **Example:** See `src/aim/blueprints/chatqna.yaml` for a complete example.
+
+### 8. Adding/Editing Blueprints
+- Add a new YAML file to `src/aim/blueprints/` following the schema.
+- Run `npm run generate-blueprint-data` to update the generated data.
+- Run the validator and tests to ensure correctness.
+
+### 9. Regeneration & Validation Workflow
+1. **Edit or add YAMLs:** `src/aim/blueprints/*.yaml`
+2. **Regenerate TS data:** `npm run generate-blueprint-data`
+3. **Validate:** `npx tsx scripts/validateBlueprintData.ts`
+4. **Test:** `npm test` or `npx vitest`
+
+### 10. Blueprint Catalog Conversion & Schema Validation
+- **Location:**
+  - Conversion: `scripts/convertToBlueprintCatalog.ts`
+  - Schema Validation: `scripts/validateBlueprintCatalog.ts`
+- **Purpose:**
+  - Conversion: Aggregates all blueprint YAML files into a single catalog YAML file.
+  - Schema Validation: Validates the catalog YAML/JSON file against the JSON schema for structure and content.
+- **Usage:**
+  - **Convert individual YAMLs to catalog:**
+    ```bash
+    npm run convert-blueprints
+    # Options:
+    #   --input-dir <dir>   # Directory of blueprint YAMLs (default: src/aim/blueprints)
+    #   --output <file>     # Output catalog file (default: src/aim/blueprint-catalog.yaml)
+    #   --validate          # Validate after conversion
+    ```
+  - **Validate catalog against schema:**
+    ```bash
+    npm run validate-blueprint-catalog
+    # Options:
+    #   --catalog <file>    # Path to catalog YAML/JSON (default: src/aim/blueprint-catalog.yaml)
+    #   --schema <file>     # Path to schema (default: src/aim/schemas/blueprint_catalog.schema.json)
+    ```
+
+---
+
+## Model Catalog Validation
+
+- **Validate a Single Model YAML**
+  ```bash
+  python3 validate_model_yaml.py models/<model-filename>.yaml
+  ```
+- **Validate All Model YAMLs**
+  ```bash
+  python3 validate_model_yaml.py --all
+  ```
+
+## Blueprint Catalog Validation (Node/TypeScript)
+
+- **Validate the full blueprint catalog YAML/JSON against the schema**
+  ```bash
+  npm run validate-blueprint-catalog
+  # Options:
+  #   --catalog <file>    # Path to catalog YAML/JSON (default: src/aim/blueprint-catalog.yaml)
+  #   --schema <file>     # Path to schema (default: src/aim/schemas/blueprint_catalog.schema.json)
+  ```
+- **Convert all blueprint YAMLs to a single catalog file**
+  ```bash
+  npm run convert-blueprints
+  # Options:
+  #   --input-dir <dir>   # Directory of blueprint YAMLs (default: src/aim/blueprints)
+  #   --output <file>     # Output catalog file (default: src/aim/blueprint-catalog.yaml)
+  #   --validate          # Validate after conversion
+  ```
+
+For more details, see the comments in each script and the schema file. The Blueprint Catalog is designed to be extensible and maintainable, just like the Model Catalog.
