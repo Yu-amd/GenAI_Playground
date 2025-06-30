@@ -151,38 +151,6 @@
       },
       "minItems": 1
     },
-    "api_examples": {
-      "type": "object",
-      "description": "API usage examples in different languages",
-      "properties": {
-        "python": {
-          "type": "string",
-          "description": "Python API example",
-          "minLength": 10
-        },
-        "typescript": {
-          "type": "string",
-          "description": "TypeScript API example",
-          "minLength": 10
-        },
-        "shell": {
-          "type": "string",
-          "description": "Shell/curl API example",
-          "minLength": 10
-        },
-        "rust": {
-          "type": "string",
-          "description": "Rust API example",
-          "minLength": 10
-        },
-        "go": {
-          "type": "string",
-          "description": "Go API example",
-          "minLength": 10
-        }
-      },
-      "required": ["python", "typescript", "shell", "rust", "go"]
-    },
     "blueprint_card": {
       "type": "object",
       "description": "Blueprint card information",
@@ -350,7 +318,6 @@
     "endpoint",
     "demo_assets",
     "aim_recipes",
-    "api_examples",
     "blueprint_card",
     "microservices"
   ],

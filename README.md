@@ -4,19 +4,30 @@ A modern web application for exploring and interacting with AI models and bluepr
 
 ## Table of Contents
 
+### 🚀 Getting Started
 - [Features](#features)
 - [Screenshots](#screenshots)
 - [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
+- [Installation](#installation)
   - [Standard Installation](#standard-installation)
   - [WSL2 Installation (Windows)](#wsl2-installation-windows)
+
+### 🛠️ Development
 - [Available Scripts](#available-scripts)
 - [Project Structure](#project-structure)
 - [Technologies Used](#technologies-used)
-- [Contributing](#contributing)
+- [Testing & Validation](#testing--validation)
+
+### 📚 Catalog Management
+- [Model Catalog Assets](#model-catalog-assets)
+- [Blueprint Catalog Assets](#blueprint-catalog-assets)
+- [AIM (AMD Inference Microservice) Assets](#aim-amd-inference-microservice-assets)
+- [Catalog Validation](#catalog-validation)
+
+### 🤝 Contributing
+- [Contributing Guidelines](#contributing)
 - [Maintainer](#maintainer)
 - [License](#license)
-- [Blueprint Catalog Assets](#blueprint-catalog-assets)
 
 ## Features
 
@@ -71,7 +82,7 @@ A modern web application for exploring and interacting with AI models and bluepr
 - npm (comes with Node.js)
 - Git
 
-## Getting Started
+## Installation
 
 ### Standard Installation
 
@@ -193,24 +204,60 @@ wsl
 
 ## Available Scripts
 
+### Development Scripts
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix ESLint issues
+- `npm run type-check` - Run TypeScript type checking
+- `npm run format` - Format code with Prettier
+- `npm run format:check` - Check code formatting
+
+### Testing Scripts
+- `npm test` - Run all tests
+- `npm run test:ui` - Run tests with UI
+- `npm run test:coverage` - Run tests with coverage
+- `npm run test:watch` - Run tests in watch mode
+
+### Data Management Scripts
+- `npm run generate-model-data` - Generate model data from YAML files
+- `npm run validate-model-data` - Validate model data
+- `npm run generate-blueprint-data` - Generate blueprint data from YAML files
+- `npm run validate-blueprint-data` - Validate blueprint data
+- `npm run convert-blueprints` - Convert individual blueprint YAMLs to catalog
+- `npm run validate-blueprint-catalog` - Validate blueprint catalog against schema
+
+### Quality Assurance Scripts
+- `npm run ci:quality` - Run quality checks (type-check, lint, format)
+- `npm run ci:test` - Run tests with coverage
+- `npm run ci:build` - Build for production
+- `npm run ci:security` - Run security audit
+- `npm run ci:validate` - Validate model data and markdown
+- `npm run pre-commit` - Run all quality checks
 
 ## Project Structure
 
 ```
 src/
-├── components/     # Reusable React components
-├── pages/         # Page components
-├── assets/        # Static assets (images, etc.)
-├── data/          # Data files
-└── App.tsx        # Main application component
+├── components/          # Reusable React components
+├── pages/              # Page components
+├── assets/             # Static assets (images, etc.)
+├── data/               # Data files
+├── utils/              # Utility functions and loaders
+├── tests/              # Unit tests
+├── modelcards/         # Model documentation markdown files
+├── aim/                # AIM (AI Model Integration) files
+│   ├── models/         # Model YAML definitions
+│   ├── blueprints/     # Blueprint YAML definitions
+│   ├── schemas/        # JSON schemas for validation
+│   └── templates/      # Templates for new entries
+└── App.tsx             # Main application component
 ```
 
 ## Technologies Used
 
+### Frontend
 - React 18
 - TypeScript
 - Vite
@@ -219,22 +266,111 @@ src/
 - Heroicons
 - React Icons
 
-## Contributing
+### Development Tools
+- ESLint
+- Prettier
+- Vitest
+- TypeScript
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+### Data Management
+- YAML/JSON schemas
+- js-yaml
+- Ajv (JSON Schema validation)
 
-## Maintainer
+## Testing & Validation
 
-**Yu Wang** - [yu.wang6@amd.com](mailto:yu.wang6@amd.com)
+### Unit Tests
+- **Location:** `src/tests/`
+- **Framework:** Vitest
+- **Coverage:** Includes model and blueprint components
+- **Run:** `npm test`
 
-For questions, issues, or contributions related to this project, please contact the maintainer.
+### Data Validation
+- **Model Data:** `npm run validate-model-data`
+- **Blueprint Data:** `npm run validate-blueprint-data`
+- **Blueprint Catalog:** `npm run validate-blueprint-catalog`
 
-## License
+### Quality Checks
+- **Type Checking:** `npm run type-check`
+- **Linting:** `npm run lint`
+- **Formatting:** `npm run format:check`
+- **Security:** `npm run ci:security`
 
-[Your License Here]
+## Model Catalog Assets
+
+The Model Catalog provides a robust, extensible way to manage AI models in the Inference Hub. Below are the key assets and how to use them:
+
+### 1. Model Schema
+- **Location:** `src/aim/model_catalog_schema.json`
+- **Purpose:** Defines the JSON/YAML schema for model catalog entries. Use this for validation, IDE autocompletion, and documentation.
+
+### 2. Model Loader
+- **Location:** `src/utils/modelLoader.ts`
+- **Purpose:** Loads model data from generated TypeScript or YAML files.
+- **Usage:**
+  - `loadModelData(modelId: string): Promise<ModelData | null>`
+  - `loadAllModels(): Promise<ModelCatalogItem[]>`
+
+### 3. Generated Model Data
+- **Location:** `src/utils/generatedModelData.ts`
+- **Purpose:** Auto-generated TypeScript file containing all model data, built from YAML files. Do not edit manually.
+- **Regenerate:** Run `npm run generate-model-data` (see below).
+
+### 4. Model Data Generator Script
+- **Location:** `scripts/generateModelData.ts`
+- **Purpose:** Reads all YAML files in `src/aim/models/` and generates `generatedModelData.ts`.
+- **Usage:**
+  - `npm run generate-model-data`
+
+### 5. Model Data Validator
+- **Location:** `scripts/validateModelData.ts`
+- **Purpose:** Validates model data structure, required fields, asset existence, and YAML compliance.
+- **Usage:**
+  - `npm run validate-model-data`
+
+### 6. Model Unit Tests
+- **Location:**
+  - `src/tests/ModelDetail.test.tsx` (detail page)
+  - `src/tests/ModelDetail.toolCalling.test.tsx` (tool calling functionality)
+  - `src/tests/apiIntegration.test.ts` (API integration tests)
+- **Purpose:** Ensures UI and logic for models are robust and functional.
+- **Usage:**
+  - `npm test` or `npx vitest`
+
+### 7. Model YAML Files
+- **Location:** `src/aim/models/`
+- **Purpose:** Source of truth for model metadata. Each YAML file must conform to the schema.
+- **Examples:** See `src/aim/models/llama-3-1-405b-instruct-fp8-kv.yaml`, `src/aim/models/qwen3-32b.yaml`, etc.
+
+### 8. Model Markdown Cards
+- **Location:** `src/modelcards/`
+- **Purpose:** Detailed markdown documentation for each model with specifications, capabilities, and usage examples.
+- **Examples:** See `src/modelcards/llama-3-8b.md`, `src/modelcards/qwen2-7b-instruct.md`, etc.
+
+### 9. Model Template
+- **Location:** `src/aim/templates/model_template.yaml`
+- **Purpose:** Template for creating new model YAML files with all required fields and examples.
+
+### 10. Adding/Editing Models
+- Add a new YAML file to `src/aim/models/` following the schema.
+- Create a corresponding markdown card in `src/modelcards/`.
+- Run `npm run generate-model-data` to update the generated data.
+- Run the validator and tests to ensure correctness.
+
+### 11. Regeneration & Validation Workflow
+1. **Edit or add YAMLs:** `src/aim/models/*.yaml`
+2. **Edit or add markdown cards:** `src/modelcards/*.md`
+3. **Regenerate TS data:** `npm run generate-model-data`
+4. **Validate:** `npm run validate-model-data`
+5. **Test:** `npm test` or `npx vitest`
+
+### 12. Model Card Fetching
+- **Location:** `src/aim/fetch_model_cards.py`
+- **Purpose:** Python script to fetch and update model cards from external sources.
+- **Usage:**
+  - `python3 src/aim/fetch_model_cards.py`
+
+---
 
 ## Blueprint Catalog Assets
 
@@ -318,7 +454,116 @@ The Blueprint Catalog mirrors the Model Catalog structure and provides a robust,
 
 ---
 
-## Model Catalog Validation
+## AIM (AMD Inference Microservice) Assets
+
+The AIM (AMD Inference Microservice) system provides tools for managing AI model serving recipes, validation workflows, and integration with external model repositories. Below are the key assets and how to use them:
+
+### 1. AIM Recipe Schema
+- **Location:** `src/aim/aim_recipe_schema.json`
+- **Purpose:** Defines the JSON/YAML schema for AIM recipe files that specify model serving configurations for different hardware and precision combinations.
+
+### 2. AIM Recipe Files
+- **Location:** `src/aim/recipes/`
+- **Purpose:** YAML files defining serving configurations for models on different hardware (MI300X, MI250) with various precision levels (FP16, FP8, BF16).
+- **Naming Convention:** `<model-name>-<hardware>-<precision>.yaml` (e.g., `deepseek-r1-0528-mi300x-fp16.yaml`)
+- **Examples:** See `src/aim/recipes/llama-3-1-405b-fp8-kv-mi300x-fp8.yaml`, `src/aim/recipes/qwen3-32b-mi250-bf16.yaml`, etc.
+
+### 3. AIM Recipe Validation Script
+- **Location:** `src/aim/validate_aim_recipe_yaml.py`
+- **Purpose:** Python script to validate AIM recipe YAML files against the schema.
+- **Usage:**
+  ```bash
+  # Validate a single recipe
+  python3 src/aim/validate_aim_recipe_yaml.py recipes/<recipe-filename>.yaml
+  
+  # Validate all recipes
+  python3 src/aim/validate_aim_recipe_yaml.py --all
+  
+  # Validate recipes in custom directory
+  python3 src/aim/validate_aim_recipe_yaml.py --recipes-dir /path/to/recipes
+  ```
+
+### 4. Model Card Fetching Script
+- **Location:** `src/aim/fetch_model_cards.py`
+- **Purpose:** Python script to automatically fetch comprehensive model card information from Hugging Face for all models in the catalog.
+- **Usage:**
+  ```bash
+  # Fetch for all models
+  python3 src/aim/fetch_model_cards.py --models-dir models
+  
+  # With Hugging Face API token for better rate limits
+  export HF_TOKEN=your_huggingface_token
+  python3 src/aim/fetch_model_cards.py --models-dir models
+  ```
+
+### 5. Model YAML Validation Script
+- **Location:** `src/aim/validate_model_yaml.py`
+- **Purpose:** Python script to validate model YAML files against the model catalog schema.
+- **Usage:**
+  ```bash
+  # Validate a single model
+  python3 src/aim/validate_model_yaml.py models/<model-filename>.yaml
+  
+  # Validate all models
+  python3 src/aim/validate_model_yaml.py --all
+  ```
+
+### 6. AIM Templates
+- **Location:** `src/aim/templates/`
+- **Purpose:** Templates for creating new model YAML files and other AIM-related configurations.
+- **Files:**
+  - `model_template.yaml` - Template for new model YAML files
+  - `blueprint_catalog_template.yaml` - Template for blueprint catalog structure
+
+### 7. AIM Schemas
+- **Location:** `src/aim/schemas/`
+- **Purpose:** JSON schemas for validating various AIM-related YAML files.
+- **Files:**
+  - `blueprint_catalog.schema.json` - Schema for blueprint catalog validation
+
+### 8. Python Dependencies
+- **Location:** `src/aim/requirements.txt`
+- **Purpose:** Python package dependencies for AIM validation and fetching scripts.
+- **Install:** `pip install -r src/aim/requirements.txt`
+
+### 9. Adding/Editing AIM Recipes
+- Create a new recipe YAML file in `src/aim/recipes/` following the naming convention
+- Ensure the recipe conforms to the `aim_recipe_schema.json`
+- Run validation: `python3 src/aim/validate_aim_recipe_yaml.py recipes/your-recipe.yaml`
+- Include serving configurations for different hardware and precision combinations
+
+### 10. Complete AIM Workflow
+1. **Create a new model YAML** using `src/aim/templates/model_template.yaml`
+2. **Fetch model card information** from Hugging Face:
+   ```bash
+   python3 src/aim/fetch_model_cards.py --models-dir models
+   ```
+3. **Validate the model YAML**:
+   ```bash
+   python3 src/aim/validate_model_yaml.py models/your-model.yaml
+   ```
+4. **Create AIM recipes** for different hardware/precision combinations
+5. **Validate the recipes**:
+   ```bash
+   python3 src/aim/validate_aim_recipe_yaml.py --all
+   ```
+
+### 11. Best Practices
+- **Recipe Naming:** Use consistent naming: `<model-name>-<hardware>-<precision>.yaml`
+- **Validation:** Always run validation scripts before submitting new recipes
+- **Model Cards:** Keep model card information up-to-date using the fetching script
+- **Schema Compliance:** Ensure all YAML files conform to their respective schemas
+- **Rate Limiting:** Use Hugging Face API tokens for better rate limits when fetching model cards
+
+### 12. Troubleshooting
+- **Validation Errors:** Check error messages and update YAML files to match schemas
+- **Fetching Failures:** Verify internet connection and consider using API tokens
+- **File Not Found:** Ensure scripts are run from the correct directory (`src/aim/`)
+- **Schema Updates:** Keep schemas updated when adding new fields or requirements
+
+## Catalog Validation
+
+### Model Catalog Validation (Python)
 
 - **Validate a Single Model YAML**
   ```bash
@@ -329,7 +574,7 @@ The Blueprint Catalog mirrors the Model Catalog structure and provides a robust,
   python3 validate_model_yaml.py --all
   ```
 
-## Blueprint Catalog Validation (Node/TypeScript)
+### Blueprint Catalog Validation (Node/TypeScript)
 
 - **Validate the full blueprint catalog YAML/JSON against the schema**
   ```bash
@@ -347,4 +592,20 @@ The Blueprint Catalog mirrors the Model Catalog structure and provides a robust,
   #   --validate          # Validate after conversion
   ```
 
-For more details, see the comments in each script and the schema file. The Blueprint Catalog is designed to be extensible and maintainable, just like the Model Catalog.
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run quality checks: `npm run pre-commit`
+5. Submit a pull request
+
+## Maintainer
+
+**Yu Wang** - [yu.wang6@amd.com](mailto:yu.wang6@amd.com)
+
+For questions, issues, or contributions related to this project, please contact the maintainer.
+
+## License
+
+[Your License Here]
