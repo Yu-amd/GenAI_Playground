@@ -23,7 +23,7 @@
       "items": {
         "type": "object",
         "required": [
-          "blueprint_id", "name", "category", "complexity", "description", "shortDescription", "logo", "readiness_level", "status_badges", "tags", "status", "endpoint", "demo_assets", "aim_recipes", "api_examples", "blueprint_card", "microservices"
+          "blueprint_id", "name", "category", "complexity", "description", "shortDescription", "logo", "readiness_level", "status_badges", "tags", "status", "endpoint", "demo_assets", "aim_recipes", "blueprint_card", "microservices"
         ],
         "properties": {
           "blueprint_id": { "type": "string" },
@@ -66,18 +66,6 @@
               },
               "additionalProperties": false
             }
-          },
-          "api_examples": {
-            "type": "object",
-            "required": ["python", "typescript", "shell", "rust", "go"],
-            "properties": {
-              "python": { "type": "string" },
-              "typescript": { "type": "string" },
-              "shell": { "type": "string" },
-              "rust": { "type": "string" },
-              "go": { "type": "string" }
-            },
-            "additionalProperties": false
           },
           "blueprint_card": {
             "type": "object",
