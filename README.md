@@ -6,7 +6,6 @@ A modern web application for exploring and interacting with AI models and bluepr
 
 ### 🚀 Getting Started
 - [Features](#features)
-- [Screenshots](#screenshots)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
   - [Standard Installation](#standard-installation)
@@ -36,46 +35,6 @@ A modern web application for exploring and interacting with AI models and bluepr
 - **Blueprints**: Interactive AI application templates including ChatQnA, CodeGen, and more
 - **GPU Cloud Integration**: Cloud computing resources for AI workloads
 - **Real-time Interaction**: Chat interfaces and code generation tools
-
-## Screenshots
-
-### Landing Page
-![GenAI Playground Landing Page](./screenshots/playground_landing.png)
-*Modern landing page with navigation to Models, Blueprints, and GPU Cloud sections*
-
-### Models Section
-![Models Catalog](./screenshots/modelcatalog.png)
-*Comprehensive catalog of AI models with filtering and search capabilities*
-
-![Model Detail Card](./screenshots/modelcard.png)
-*Detailed model information with specifications and capabilities*
-
-![Model Interaction Interface](./screenshots/model_interact.png)
-*Interactive chat interface for testing AI models with real-time responses*
-
-### Blueprints Section
-![Blueprints Catalog](./screenshots/blueprint_catalog.png)
-*Collection of AI application blueprints including ChatQnA, CodeGen, and more*
-
-![Blueprint Detail Card](./screenshots/blueprint_card.png)
-*Detailed blueprint information with architecture and use cases*
-
-![AIMs Tab](./screenshots/AIMs.png)
-*AI Model Integration and Management System (AIMs) showing models and functional microservices*
-
-### Functional Microservices
-![Functional Service Overview](./screenshots/func_microservice_overview.png)
-*Overview of functional microservices with detailed descriptions and capabilities*
-
-![Functional Service Interaction](./screenshots/func_microservice_interact.png)
-*Interactive interface for testing functional microservices*
-
-![Functional Service Code](./screenshots/func_microservice_code.png)
-*Code generation and API integration examples for functional microservices*
-
-### GPU Cloud
-![GPU Cloud Interface](./screenshots/gpucloud.png)
-*GPU Cloud management interface for AI workload deployment and monitoring*
 
 ## Prerequisites
 
