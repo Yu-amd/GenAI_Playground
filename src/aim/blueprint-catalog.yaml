@@ -65,17 +65,15 @@ blueprints:
         - https://github.com/inference-hub/blueprints/chatqna
     microservices:
       models:
-        - name: Qwen2 7B
+        - name: Qwen3 32B
           logo: /src/assets/models/model_Qwen2-7B.png
           tags:
             - Text Generation
             - RAG
             - Inference
-        - name: Embedding Model
-          logo: /src/assets/models/model_embedding.png
-          tags:
-            - Embeddings
-            - Vector Search
+            - Reasoning
+            - Code Generation
+            - Multilingual
       functional:
         - name: Retriever
           description: Vector-based document retrieval service

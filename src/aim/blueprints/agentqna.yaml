@@ -1,0 +1,77 @@
+blueprint_id: agentqna
+name: AgentQnA
+category: Conversational AI
+complexity: Advanced
+description: Multi-agent Q&A system with orchestration and coordination capabilities.
+shortDescription: Multi-agent system for complex Q&A tasks with agent orchestration.
+logo: bp_agentqna.png
+readiness_level: Production-Ready
+status_badges:
+  - Featured
+  - Multi-Agent
+  - Orchestration
+tags:
+  - Multi-Agent
+  - Orchestration
+  - Reasoning
+  - Coordination
+status: Production Ready
+endpoint: https://api.inference-hub.com/v1/blueprints/agentqna
+demo_assets:
+  notebook: https://github.com/inference-hub/blueprints/agentqna-demo.ipynb
+  demo_link: https://playground.inference-hub.com/blueprints/agentqna
+aim_recipes:
+  - name: MI300X FP16
+    hardware: MI300X
+    precision: fp16
+    recipe_file: configs/agentqna-mi300x-fp16.yaml
+  - name: MI250 FP16
+    hardware: MI250
+    precision: fp16
+    recipe_file: configs/agentqna-mi250-fp16.yaml
+blueprint_card:
+  overview: AgentQnA is a multi-agent Q&A system that coordinates multiple specialized agents to answer complex queries.
+  intended_use:
+    - Complex Q&A
+    - Multi-step reasoning
+    - Agent-based orchestration
+  limitations:
+    - Increased system complexity
+    - Requires robust agent communication
+  architecture: Multi-agent pipeline with orchestrator, specialized agents, and LLM for generation
+  evaluation:
+    - "Response accuracy: 90%"
+    - "Orchestration precision: 87%"
+    - "User satisfaction: 4.1/5"
+    - "Response time: <3 seconds"
+  known_issues:
+    - Coordination overhead
+    - Potential for agent deadlock
+  references:
+    - https://arxiv.org/abs/2309.03409
+    - https://github.com/inference-hub/blueprints/agentqna
+microservices:
+  models:
+    - name: LLaMA 4 Maverick 17B 128E Instruct FP8
+      logo: /src/assets/models/model_llama4_maverick.png
+      tags:
+        - FP8
+        - FlashAttention
+        - Featured
+        - Extended Context
+  functional:
+    - name: Agent Orchestrator
+      description: Coordinates multiple agents for complex Q&A
+      tags:
+        - Orchestration
+        - Coordination
+    - name: Specialized Agents
+      description: Domain-specific agents for sub-tasks
+      tags:
+        - Multi-Agent
+        - Specialization
+    - name: Communication Bus
+      description: Manages agent communication and message passing
+      tags:
+        - Communication
+        - Messaging 

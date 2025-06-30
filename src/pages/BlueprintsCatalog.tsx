@@ -51,17 +51,6 @@ const blueprints: Blueprint[] = [
     badge: 'New'
   },
   {
-    id: 'codegen',
-    name: 'CodeGen',
-    description: 'A code copilot application for executing code generation.',
-    shortDescription: 'AI-powered code generation and completion with multiple language support.',
-    image: bp_codegen,
-    tags: ['Code Generation', 'Copilot', 'Development'],
-    category: 'Development Tools',
-    complexity: 'Intermediate',
-    status: 'Production Ready'
-  },
-  {
     id: 'codetrans',
     name: 'CodeTrans',
     description: 'A code translation example which converts code from one programming language to another programming language.',
@@ -73,50 +62,16 @@ const blueprints: Blueprint[] = [
     status: 'Production Ready'
   },
   {
-    id: 'searchqna',
-    name: 'SearchQnA',
-    description: 'An example of improving QnA application quality by expanding the pipeline with the Google search engine.',
-    shortDescription: 'Enhanced QnA system with real-time web search integration for up-to-date answers.',
-    image: bp_searchQna,
-    tags: ['Search Integration', 'Enhanced QnA', 'External APIs'],
-    category: 'Enhanced AI',
-    complexity: 'Intermediate',
-    status: 'Production Ready'
-  },
-  {
     id: 'docsum',
     name: 'DocSum',
-    description: 'A sample app which creates summaries of different types of text.',
-    shortDescription: 'Intelligent document summarization for various text formats and lengths.',
+    description: 'Documentation summarization workflow system that processes technical documentation, API docs, and code comments to generate concise summaries and extract key insights.',
+    shortDescription: 'Summarize technical documentation and extract key insights from code comments and API docs.',
     image: bp_docsum,
-    tags: ['Document Summarization', 'Text Processing', 'NLP'],
-    category: 'Content Processing',
-    complexity: 'Beginner',
+    tags: ['Documentation', 'Technical Writing', 'API Docs'],
+    category: 'Document AI',
+    complexity: 'Intermediate',
     status: 'Production Ready'
-  },
-  {
-    id: 'translation',
-    name: 'Translation',
-    description: 'An application which demonstrates language translation inference.',
-    shortDescription: 'Multi-language translation system with context-aware language detection.',
-    image: bp_translation,
-    tags: ['Language Translation', 'Multilingual', 'Inference'],
-    category: 'Language Processing',
-    complexity: 'Beginner',
-    status: 'Production Ready'
-  },
-  {
-    id: 'avatarchatbot',
-    name: 'Avatar Chatbot',
-    description: 'Integrates a conversational chatbot with a virtual avatar.',
-    shortDescription: 'Visual AI chatbot with animated avatar for immersive conversational experiences.',
-    image: bp_avatarchatbot,
-    tags: ['Avatar Integration', 'Visual AI', 'Conversational'],
-    category: 'Visual AI',
-    complexity: 'Advanced',
-    status: 'Tech Preview',
-    badge: 'New'
-  },
+  }
 ];
 
 const BlueprintsCatalog: React.FC = () => {

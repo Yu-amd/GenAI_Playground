@@ -1,0 +1,82 @@
+blueprint_id: codetrans
+name: CodeTrans
+category: Developer Tools
+complexity: Advanced
+description: Code translation system for converting code between programming languages using LLMs.
+shortDescription: Translate code between programming languages with LLMs.
+logo: bp_codetrans.png
+readiness_level: Production-Ready
+status_badges:
+  - Featured
+  - Code Translation
+  - Developer Tools
+tags:
+  - Code Translation
+  - Transpilation
+  - Developer Tools
+  - LLM
+status: Production Ready
+endpoint: https://api.inference-hub.com/v1/blueprints/codetrans
+demo_assets:
+  notebook: https://github.com/inference-hub/blueprints/codetrans-demo.ipynb
+  demo_link: https://playground.inference-hub.com/blueprints/codetrans
+aim_recipes:
+  - name: MI300X FP8
+    hardware: MI300X
+    precision: fp8
+    recipe_file: configs/codetrans-mi300x-fp8.yaml
+  - name: MI250 FP8
+    hardware: MI250
+    precision: fp8
+    recipe_file: configs/codetrans-mi250-fp8.yaml
+blueprint_card:
+  overview: CodeTrans is a code translation system that leverages LLMs to convert code between programming languages while preserving functionality.
+  intended_use:
+    - Code translation
+    - Language migration
+    - Developer productivity
+  limitations:
+    - May not support all languages
+    - Potential for translation errors
+  architecture: Translation pipeline with language detector, code translator, optimizer, and validator
+  evaluation:
+    - "Translation accuracy: 86%"
+    - "Optimization quality: 83%"
+    - "User satisfaction: 4.1/5"
+    - "Response time: <2 seconds"
+  known_issues:
+    - Occasional translation bugs
+    - Limited support for rare languages
+  references:
+    - https://arxiv.org/abs/2107.00340
+    - https://github.com/inference-hub/blueprints/codetrans
+microservices:
+  models:
+    - name: Llama 3.1 405B Instruct FP8 KV
+      logo: /src/assets/models/model_llama3_1.png
+      tags:
+        - FP8
+        - Large Scale
+        - AMD
+        - Featured
+  functional:
+    - name: Language Detection Service
+      description: Automatically detects the programming language of input code.
+      tags:
+        - Language Detection
+        - Analysis
+    - name: Code Translation Service
+      description: Translates code between different programming languages while preserving functionality.
+      tags:
+        - Code Translation
+        - Transpilation
+    - name: Code Optimization Service
+      description: Optimizes translated code for performance and readability.
+      tags:
+        - Optimization
+        - Performance
+    - name: Translation Validation Service
+      description: Validates that translated code maintains the original functionality.
+      tags:
+        - Validation
+        - Testing 

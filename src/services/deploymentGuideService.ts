@@ -50,18 +50,18 @@ class DeploymentGuideService {
   private content: DeploymentGuideContent;
 
   constructor() {
-    console.log('Loading deployment guide content:', deploymentGuideContent);
+    // console.log('Loading deployment guide content:', deploymentGuideContent);
     this.content = deploymentGuideContent as DeploymentGuideContent;
-    console.log('Service content loaded:', this.content);
+    // console.log('Service content loaded:', this.content);
     
     // Debug code blocks in loaded content
     this.content.categories.forEach((category, catIndex) => {
       category.tabs.forEach((tab, tabIndex) => {
         tab.sections.forEach((section, sectionIndex) => {
           if (section.type === 'code-block') {
-            console.log(`Service: Code block at category ${catIndex}, tab ${tabIndex}, section ${sectionIndex}:`, section);
-            console.log('Service: Code content:', section.code);
-            console.log('Service: Subsections:', section.subsections);
+            // console.log(`Service: Code block at category ${catIndex}, tab ${tabIndex}, section ${sectionIndex}:`, section);
+            // console.log('Service: Code content:', section.code);
+            // console.log('Service: Subsections:', section.subsections);
           }
         });
       });
@@ -259,7 +259,7 @@ class DeploymentGuideService {
       const validatedContent = this.validateContent(content);
       
       // Simulate API call
-      console.log('Saving content to deployment guide:', validatedContent);
+      // console.log('Saving content to deployment guide:', validatedContent);
       
       // In a real implementation, you would:
       // 1. Make an API call to save the content

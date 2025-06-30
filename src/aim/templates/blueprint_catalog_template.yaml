@@ -82,22 +82,28 @@ blueprints:
     
     microservices:
       models:
-        - name: <Model Name>  # e.g., Qwen2 7B, Embedding Model
-          logo: <model-logo-path>  # e.g., /src/assets/models/model_Qwen2-7B.png
+        - name: Qwen3 32B
+          logo: /src/assets/models/model_Qwen2-7B.png
           tags:
-            - <Model Tag 1>  # e.g., Text Generation, RAG
-            - <Model Tag 2>  # e.g., Inference, Embeddings
-        - name: <Another Model Name>
-          logo: <another-model-logo-path>
-          tags:
-            - <Another Model Tag 1>
-            - <Another Model Tag 2>
+            - Text Generation
+            - RAG
+            - Inference
+            - Reasoning
+            - Code Generation
+            - Multilingual
       functional:
-        - name: <Service Name>  # e.g., Retriever, Reranking
-          description: <Service Description>  # e.g., Vector-based document retrieval service
+        - name: Retriever
+          description: Vector-based document retrieval service
           tags:
-            - <Service Tag 1>  # e.g., RAG, Vector Search
-            - <Service Tag 2>  # e.g., Document Processing, Ranking
+            - RAG
+            - Vector Search
+            - Document Processing
+        - name: Reranking
+          description: Re-ranks retrieved documents for better relevance
+          tags:
+            - RAG
+            - Document Ranking
+            - Relevance
 
   # Example blueprint entry (ChatQnA)
   - blueprint_id: chatqna
@@ -159,17 +165,15 @@ blueprints:
         - https://github.com/inference-hub/blueprints/chatqna
     microservices:
       models:
-        - name: Qwen2 7B
+        - name: Qwen3 32B
           logo: /src/assets/models/model_Qwen2-7B.png
           tags:
             - Text Generation
             - RAG
             - Inference
-        - name: Embedding Model
-          logo: /src/assets/models/model_embedding.png
-          tags:
-            - Embeddings
-            - Vector Search
+            - Reasoning
+            - Code Generation
+            - Multilingual
       functional:
         - name: Retriever
           description: Vector-based document retrieval service

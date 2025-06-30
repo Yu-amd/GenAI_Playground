@@ -1,0 +1,81 @@
+blueprint_id: docsum
+name: DocSum
+category: Document AI
+complexity: Intermediate
+description: Documentation summarization workflow system that processes technical documentation, API docs, and code comments to generate concise summaries and extract key insights.
+shortDescription: Summarize technical documentation and extract key insights from code comments and API docs.
+logo: bp_docsum.png
+readiness_level: Production-Ready
+status_badges:
+  - Featured
+  - Documentation
+  - Workflow
+tags:
+  - Documentation
+  - Technical Writing
+  - API Docs
+  - Code Comments
+  - Workflow
+status: Production Ready
+endpoint: https://api.inference-hub.com/v1/blueprints/docsum
+demo_assets:
+  notebook: https://github.com/inference-hub/blueprints/docsum-demo.ipynb
+  demo_link: https://playground.inference-hub.com/blueprints/docsum
+aim_recipes:
+  - name: MI300X FP16
+    hardware: MI300X
+    precision: fp16
+    recipe_file: configs/docsum-mi300x-fp16.yaml
+  - name: MI250 FP16
+    hardware: MI250
+    precision: fp16
+    recipe_file: configs/docsum-mi250-fp16.yaml
+blueprint_card:
+  overview: DocSum is a specialized documentation summarization workflow that processes technical documentation, API documentation, code comments, and README files to generate structured summaries and extract key technical insights.
+  intended_use:
+    - Technical documentation summarization
+    - API documentation processing
+    - Code comment analysis
+    - README file summarization
+    - Technical writing assistance
+  limitations:
+    - May miss nuanced technical details
+    - Dependent on documentation quality and structure
+    - Limited to text-based documentation
+  architecture: Documentation processing pipeline with technical content analyzer, key insight extractor, and structured summary generator
+  evaluation:
+    - "Technical accuracy: 91%"
+    - "Key insight extraction: 87%"
+    - "User satisfaction: 4.3/5"
+    - "Processing time: <3 seconds"
+  known_issues:
+    - May oversimplify complex technical concepts
+    - Performance varies by documentation format
+    - Limited support for diagrams and visual content
+  references:
+    - https://arxiv.org/abs/2106.01345
+    - https://github.com/inference-hub/blueprints/docsum
+microservices:
+  models:
+    - name: DeepSeek MoE 18B
+      logo: /src/assets/models/model_DeepSeek_MoE_18B.png
+      tags:
+        - Documentation
+        - Technical Analysis
+        - Large Context
+  functional:
+    - name: Documentation Processing Service
+      description: Processes and prepares technical documentation for summarization analysis.
+      tags:
+        - Documentation Processing
+        - Technical Content
+    - name: Technical Insight Extraction Service
+      description: Extracts key technical insights, API endpoints, and important concepts from documentation.
+      tags:
+        - Technical Analysis
+        - API Extraction
+    - name: Documentation Quality Service
+      description: Ensures generated summaries maintain technical accuracy and completeness.
+      tags:
+        - Quality Assurance
+        - Technical Validation 

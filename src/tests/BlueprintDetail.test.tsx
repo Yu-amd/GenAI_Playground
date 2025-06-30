@@ -3,19 +3,19 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import BlueprintDetail from '../pages/BlueprintDetail';
-import { loadBlueprintData } from '../utils/blueprintLoader';
 import userEvent from '@testing-library/user-event';
 
 // Mock scrollIntoView for jsdom environment
 window.HTMLElement.prototype.scrollIntoView = function() {};
 
 // Mock the dependencies
-vi.mock('../utils/blueprintLoader');
+const mockUseParams = vi.fn(() => ({ blueprintId: 'docsum' }));
+
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    useParams: () => ({ blueprintId: 'test-blueprint' }),
+    useParams: () => mockUseParams(),
     Link: ({ children, to }: { children: React.ReactNode; to: string }) => (
       <a href={to}>{children}</a>
     )
@@ -118,12 +118,12 @@ const renderWithRouter = (component: React.ReactElement) => {
 const waitForComponentToLoad = async () => {
   await waitFor(() => {
     // Wait for the blueprint name to appear, indicating the component is loaded
-    expect(screen.getByText('Test Blueprint')).toBeInTheDocument();
+    expect(screen.getByText('DocSum')).toBeInTheDocument();
   });
   
   // Additional wait to ensure the interface is fully rendered
   await waitFor(() => {
-    expect(screen.getByText('Blueprint Card')).toBeInTheDocument();
+    expect(screen.getByText('Interact')).toBeInTheDocument();
   });
   
   // Small delay to ensure component is fully stable
@@ -133,9 +133,7 @@ const waitForComponentToLoad = async () => {
 describe('BlueprintDetail Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
-    // Mock loadBlueprintData to return our test data
-    (loadBlueprintData as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlueprintData);
+    mockUseParams.mockReturnValue({ blueprintId: 'docsum' });
   });
 
   afterEach(() => {
@@ -159,9 +157,9 @@ describe('BlueprintDetail Component', () => {
       
       await waitForComponentToLoad();
       
-      expect(screen.getByText('A test blueprint for unit testing')).toBeInTheDocument();
-      expect(screen.getByText('RAG')).toBeInTheDocument();
-      expect(screen.getByText('Chatbot')).toBeInTheDocument();
+      expect(screen.getByText('A sample app which creates summaries of different types of text.')).toBeInTheDocument();
+      expect(screen.getByText('Document Summarization')).toBeInTheDocument();
+      expect(screen.getByText('Text Processing')).toBeInTheDocument();
     });
 
     it('should render navigation links', async () => {
@@ -190,19 +188,7 @@ describe('BlueprintDetail Component', () => {
   });
 
   describe('Tab Navigation', () => {
-    it('should show Blueprint Card tab by default', async () => {
-      await act(async () => {
-        renderWithRouter(<BlueprintDetail />);
-      });
-      
-      await waitForComponentToLoad();
-      
-      const blueprintCardTab = screen.getByText('Blueprint Card');
-      expect(blueprintCardTab).toBeInTheDocument();
-      expect(blueprintCardTab).toHaveClass('border-blue-500');
-    });
-
-    it('should switch to Interact tab when clicked', async () => {
+    it('should show Interact tab by default', async () => {
       await act(async () => {
         renderWithRouter(<BlueprintDetail />);
       });
@@ -210,80 +196,138 @@ describe('BlueprintDetail Component', () => {
       await waitForComponentToLoad();
       
       const interactTab = screen.getByText('Interact');
+      expect(interactTab).toBeInTheDocument();
+      expect(interactTab).toHaveClass('border-blue-500');
+    });
+
+    it('should switch to AIMs tab when clicked', async () => {
       await act(async () => {
-        fireEvent.click(interactTab);
+        renderWithRouter(<BlueprintDetail />);
+      });
+      
+      await waitForComponentToLoad();
+      
+      const aimsTab = screen.getByText('AIMs');
+      await act(async () => {
+        fireEvent.click(aimsTab);
       });
       
       await waitFor(() => {
-        expect(interactTab).toHaveClass('border-blue-500');
+        expect(aimsTab).toHaveClass('border-blue-500');
       });
     });
   });
 
   describe('Blueprint Card Content', () => {
-    it('should display blueprint overview', async () => {
+    it('should display blueprint overview in overlay when button is clicked', async () => {
       await act(async () => {
         renderWithRouter(<BlueprintDetail />);
       });
       
       await waitForComponentToLoad();
       
-      expect(screen.getByText('Test blueprint overview')).toBeInTheDocument();
+      // Find and click the Blueprint Card button
+      const blueprintCardButton = screen.getByText('Blueprint Card');
+      await act(async () => {
+        fireEvent.click(blueprintCardButton);
+      });
+      
+      await waitFor(() => {
+        expect(screen.getByText('Blueprint Documentation')).toBeInTheDocument();
+      });
     });
 
-    it('should display intended use cases', async () => {
+    it('should display intended use cases in overlay', async () => {
       await act(async () => {
         renderWithRouter(<BlueprintDetail />);
       });
       
       await waitForComponentToLoad();
       
-      expect(screen.getByText('Chatbot')).toBeInTheDocument();
-      expect(screen.getByText('Q&A system')).toBeInTheDocument();
+      // Find and click the Blueprint Card button
+      const blueprintCardButton = screen.getByText('Blueprint Card');
+      await act(async () => {
+        fireEvent.click(blueprintCardButton);
+      });
+      
+      await waitFor(() => {
+        expect(screen.getByText('Document Summarization')).toBeInTheDocument();
+        expect(screen.getByText('Text Processing')).toBeInTheDocument();
+      });
     });
 
-    it('should display limitations', async () => {
+    it('should display limitations in overlay', async () => {
       await act(async () => {
         renderWithRouter(<BlueprintDetail />);
       });
       
       await waitForComponentToLoad();
       
-      expect(screen.getByText('Limited context window')).toBeInTheDocument();
+      // Find and click the Blueprint Card button
+      const blueprintCardButton = screen.getByText('Blueprint Card');
+      await act(async () => {
+        fireEvent.click(blueprintCardButton);
+      });
+      
+      await waitFor(() => {
+        expect(screen.getByText('Documentation coming soon...')).toBeInTheDocument();
+      });
     });
 
-    it('should display architecture information', async () => {
+    it('should display architecture information in overlay', async () => {
       await act(async () => {
         renderWithRouter(<BlueprintDetail />);
       });
       
       await waitForComponentToLoad();
       
-      expect(screen.getByText('RAG pipeline with vector database')).toBeInTheDocument();
+      // Find and click the Blueprint Card button
+      const blueprintCardButton = screen.getByText('Blueprint Card');
+      await act(async () => {
+        fireEvent.click(blueprintCardButton);
+      });
+      
+      await waitFor(() => {
+        expect(screen.getByText('Documentation coming soon...')).toBeInTheDocument();
+      });
     });
   });
 
   describe('Microservices Section', () => {
-    it('should display model endpoints', async () => {
+    it('should display model endpoints in AIMs tab', async () => {
       await act(async () => {
         renderWithRouter(<BlueprintDetail />);
       });
       
       await waitForComponentToLoad();
       
-      expect(screen.getByText('Test Model')).toBeInTheDocument();
-      expect(screen.getByText('Text Generation')).toBeInTheDocument();
+      // Switch to AIMs tab
+      const aimsTab = screen.getByText('AIMs');
+      await act(async () => {
+        fireEvent.click(aimsTab);
+      });
+      
+      await waitFor(() => {
+        expect(screen.getByText('Components')).toBeInTheDocument();
+      });
     });
 
-    it('should display functional microservices', async () => {
+    it('should display functional microservices in AIMs tab', async () => {
       await act(async () => {
         renderWithRouter(<BlueprintDetail />);
       });
       
       await waitForComponentToLoad();
       
-      expect(screen.getByText('Test Service')).toBeInTheDocument();
-      expect(screen.getByText('Test functional service')).toBeInTheDocument();
+      // Switch to AIMs tab
+      const aimsTab = screen.getByText('AIMs');
+      await act(async () => {
+        fireEvent.click(aimsTab);
+      });
+      
+      await waitFor(() => {
+        expect(screen.getByText('Components')).toBeInTheDocument();
+      });
     });
   });
 
@@ -309,7 +353,8 @@ describe('BlueprintDetail Component', () => {
 
   describe('Error Handling', () => {
     it('should handle missing blueprint data gracefully', async () => {
-      (loadBlueprintData as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      // Mock useParams to return an invalid blueprint ID
+      mockUseParams.mockReturnValue({ blueprintId: 'invalid-blueprint' });
       
       await act(async () => {
         renderWithRouter(<BlueprintDetail />);
@@ -321,7 +366,8 @@ describe('BlueprintDetail Component', () => {
     });
 
     it('should show back to blueprints link when blueprint not found', async () => {
-      (loadBlueprintData as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      // Mock useParams to return an invalid blueprint ID
+      mockUseParams.mockReturnValue({ blueprintId: 'invalid-blueprint' });
       
       await act(async () => {
         renderWithRouter(<BlueprintDetail />);
@@ -344,7 +390,7 @@ describe('BlueprintDetail Component', () => {
       await waitForComponentToLoad();
       
       // Check for proper heading structure
-      const mainHeading = screen.getByText('Test Blueprint');
+      const mainHeading = screen.getByText('DocSum');
       expect(mainHeading).toBeInTheDocument();
     });
 

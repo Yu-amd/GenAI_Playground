@@ -27,23 +27,11 @@ vi.mock('../assets/blueprints/bp_chatqna.png', () => ({
 vi.mock('../assets/blueprints/bp_agentqna.png', () => ({
   default: 'mocked-agentqna.png'
 }));
-vi.mock('../assets/blueprints/bp_codegen.png', () => ({
-  default: 'mocked-codegen.png'
-}));
 vi.mock('../assets/blueprints/bp_codeTrans.png', () => ({
   default: 'mocked-codeTrans.png'
 }));
-vi.mock('../assets/blueprints/bp_searchQna.png', () => ({
-  default: 'mocked-searchQna.png'
-}));
 vi.mock('../assets/blueprints/bp_docsum.png', () => ({
   default: 'mocked-docsum.png'
-}));
-vi.mock('../assets/blueprints/bp_translation.png', () => ({
-  default: 'mocked-translation.png'
-}));
-vi.mock('../assets/blueprints/bp_avatarchatbot.png', () => ({
-  default: 'mocked-avatarchatbot.png'
 }));
 
 // Mock the PlaygroundLogo component
@@ -77,12 +65,8 @@ describe('BlueprintsCatalog Component', () => {
       await waitFor(() => {
         expect(screen.getByText('ChatQnA')).toBeInTheDocument();
         expect(screen.getByText('AgentQnA')).toBeInTheDocument();
-        expect(screen.getByText('CodeGen')).toBeInTheDocument();
         expect(screen.getByText('CodeTrans')).toBeInTheDocument();
-        expect(screen.getByText('SearchQnA')).toBeInTheDocument();
         expect(screen.getByText('DocSum')).toBeInTheDocument();
-        expect(screen.getByText('Translation')).toBeInTheDocument();
-        expect(screen.getByText('Avatar Chatbot')).toBeInTheDocument();
       });
     });
 
@@ -95,10 +79,7 @@ describe('BlueprintsCatalog Component', () => {
         expect(screen.getAllByText('Conversational AI').length).toBeGreaterThan(0);
         expect(screen.getAllByText('Multi-Agent Systems').length).toBeGreaterThan(0);
         expect(screen.getAllByText('Development Tools').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Enhanced AI').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Content Processing').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Language Processing').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Visual AI').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('Document AI').length).toBeGreaterThan(0);
       });
     });
 
@@ -110,11 +91,9 @@ describe('BlueprintsCatalog Component', () => {
       await waitFor(() => {
         const intermediateElements = screen.getAllByText('Intermediate');
         const advancedElements = screen.getAllByText('Advanced');
-        const beginnerElements = screen.getAllByText('Beginner');
         
         expect(intermediateElements.length).toBeGreaterThan(0);
         expect(advancedElements.length).toBeGreaterThan(0);
-        expect(beginnerElements.length).toBeGreaterThan(0);
       });
     });
 
@@ -140,13 +119,16 @@ describe('BlueprintsCatalog Component', () => {
       await waitFor(() => {
         expect(screen.getByText('RAG')).toBeInTheDocument();
         expect(screen.getByText('Chatbot')).toBeInTheDocument();
+        expect(screen.getByText('Knowledge Base')).toBeInTheDocument();
         expect(screen.getByText('Multi-Agent')).toBeInTheDocument();
-        expect(screen.getByText('Code Generation')).toBeInTheDocument();
+        expect(screen.getByText('Hierarchical')).toBeInTheDocument();
+        expect(screen.getByText('Orchestration')).toBeInTheDocument();
         expect(screen.getByText('Code Translation')).toBeInTheDocument();
-        expect(screen.getByText('Search Integration')).toBeInTheDocument();
-        expect(screen.getByText('Document Summarization')).toBeInTheDocument();
-        expect(screen.getByText('Language Translation')).toBeInTheDocument();
-        expect(screen.getByText('Avatar Integration')).toBeInTheDocument();
+        expect(screen.getByText('Language Conversion')).toBeInTheDocument();
+        expect(screen.getByText('Transpilation')).toBeInTheDocument();
+        expect(screen.getByText('Documentation')).toBeInTheDocument();
+        expect(screen.getByText('Technical Writing')).toBeInTheDocument();
+        expect(screen.getByText('API Docs')).toBeInTheDocument();
       });
     });
 
@@ -158,7 +140,8 @@ describe('BlueprintsCatalog Component', () => {
       await waitFor(() => {
         expect(screen.getByText('RAG-based chatbot for knowledge base interactions with advanced retrieval capabilities.')).toBeInTheDocument();
         expect(screen.getByText('Multi-agent orchestration system for complex question-answering workflows.')).toBeInTheDocument();
-        expect(screen.getByText('AI-powered code generation and completion with multiple language support.')).toBeInTheDocument();
+        expect(screen.getByText('Cross-language code translation and transpilation with syntax preservation.')).toBeInTheDocument();
+        expect(screen.getByText('Summarize technical documentation and extract key insights from code comments and API docs.')).toBeInTheDocument();
       });
     });
   });
@@ -176,14 +159,14 @@ describe('BlueprintsCatalog Component', () => {
       });
     });
 
-    it('should display New badge for AgentQnA and Avatar Chatbot', async () => {
+    it('should display New badge for AgentQnA', async () => {
       await act(async () => {
         renderWithRouter(<BlueprintsCatalog />);
       });
 
       await waitFor(() => {
         const newBadges = screen.getAllByText('New');
-        expect(newBadges.length).toBe(2);
+        expect(newBadges.length).toBe(1);
         newBadges.forEach(badge => {
           expect(badge).toHaveClass('bg-green-600');
         });
@@ -196,10 +179,13 @@ describe('BlueprintsCatalog Component', () => {
       });
 
       await waitFor(() => {
-        // CodeGen, CodeTrans, SearchQnA, DocSum, Translation have no badges
-        const codegenCard = screen.getByText('CodeGen').closest('a');
-        expect(codegenCard).not.toHaveTextContent('Featured');
-        expect(codegenCard).not.toHaveTextContent('New');
+        // CodeTrans and DocSum have no badges
+        const codetransCard = screen.getByText('CodeTrans').closest('a');
+        const docsumCard = screen.getByText('DocSum').closest('a');
+        expect(codetransCard).not.toHaveTextContent('Featured');
+        expect(codetransCard).not.toHaveTextContent('New');
+        expect(docsumCard).not.toHaveTextContent('Featured');
+        expect(docsumCard).not.toHaveTextContent('New');
       });
     });
   });
@@ -241,21 +227,13 @@ describe('BlueprintsCatalog Component', () => {
       await waitFor(() => {
         const chatqnaLink = screen.getByText('ChatQnA').closest('a');
         const agentqnaLink = screen.getByText('AgentQnA').closest('a');
-        const codegenLink = screen.getByText('CodeGen').closest('a');
         const codetransLink = screen.getByText('CodeTrans').closest('a');
-        const searchqnaLink = screen.getByText('SearchQnA').closest('a');
         const docsumLink = screen.getByText('DocSum').closest('a');
-        const translationLink = screen.getByText('Translation').closest('a');
-        const avatarChatbotLink = screen.getByText('Avatar Chatbot').closest('a');
 
         expect(chatqnaLink).toHaveAttribute('href', '/blueprints/chatqna');
         expect(agentqnaLink).toHaveAttribute('href', '/blueprints/agentqna');
-        expect(codegenLink).toHaveAttribute('href', '/blueprints/codegen');
         expect(codetransLink).toHaveAttribute('href', '/blueprints/codetrans');
-        expect(searchqnaLink).toHaveAttribute('href', '/blueprints/searchqna');
         expect(docsumLink).toHaveAttribute('href', '/blueprints/docsum');
-        expect(translationLink).toHaveAttribute('href', '/blueprints/translation');
-        expect(avatarChatbotLink).toHaveAttribute('href', '/blueprints/avatarchatbot');
       });
     });
   });
@@ -270,7 +248,7 @@ describe('BlueprintsCatalog Component', () => {
         const cards = screen.getAllByRole('link').filter(link => 
           link.getAttribute('href')?.startsWith('/blueprints/')
         );
-        expect(cards.length).toBe(8); // All 8 blueprints
+        expect(cards.length).toBe(4); // All 4 blueprints
       });
     });
 

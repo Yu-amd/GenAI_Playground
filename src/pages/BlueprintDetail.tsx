@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { PaperAirplaneIcon, Cog6ToothIcon, DocumentTextIcon, CircleStackIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import { PaperAirplaneIcon, Cog6ToothIcon, DocumentTextIcon, CircleStackIcon, ChatBubbleLeftRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { Highlight, themes } from 'prism-react-renderer';
 import bannerWave from '../assets/banner_wave.png';
 import bp_chatqna from '../assets/blueprints/bp_chatqna.png';
@@ -32,10 +32,13 @@ import searchqnaArchitecture from '../assets/architecture/searchqna-architecture
 import docsumArchitecture from '../assets/architecture/docsum-architecture.svg';
 import translationArchitecture from '../assets/architecture/translation-architecture.svg';
 import avatarchatbotArchitecture from '../assets/architecture/avatarchatbot-architecture.svg';
+// Model images
 import llamaImg from '../assets/models/model_llama3_1.png';
 import qwen2Img from '../assets/models/model_Qwen2-7B.png';
 import deepseekImg from '../assets/models/model_DeepSeek_MoE_18B.png';
 import gemmaImg from '../assets/models/model_Gemma.png';
+import llama4MaverickImg from '../assets/models/model_llama4_maverick.png';
+import { generatedBlueprintData } from '../utils/generatedBlueprintData';
 import PlaygroundLogo from '../components/PlaygroundLogo';
 
 interface Message {
@@ -73,25 +76,11 @@ const blueprints = [
     tags: ['Multi-Agent', 'Hierarchical', 'Orchestration']
   },
   {
-    id: 'codegen',
-    name: 'CodeGen',
-    description: 'A code copilot application for executing code generation.',
-    image: bp_codegen,
-    tags: ['Code Generation', 'Copilot', 'Development']
-  },
-  {
     id: 'codetrans',
     name: 'CodeTrans',
     description: 'A code translation example which converts code from one programming language to another programming language.',
     image: bp_codeTrans,
     tags: ['Code Translation', 'Language Conversion', 'Transpilation']
-  },
-  {
-    id: 'searchqna',
-    name: 'SearchQnA',
-    description: 'An example of improving QnA application quality by expanding the pipeline with the Google search engine.',
-    image: bp_searchQna,
-    tags: ['Search Integration', 'Enhanced QnA', 'External APIs']
   },
   {
     id: 'docsum',
@@ -100,26 +89,12 @@ const blueprints = [
     image: bp_docsum,
     tags: ['Document Summarization', 'Text Processing', 'NLP']
   },
-  {
-    id: 'translation',
-    name: 'Translation',
-    description: 'An application which demonstrates language translation inference.',
-    image: bp_translation,
-    tags: ['Language Translation', 'Multilingual', 'Inference']
-  },
-  {
-    id: 'avatarchatbot',
-    name: 'Avatar Chatbot',
-    description: 'Integrates a conversational chatbot with a virtual avatar.',
-    image: bp_avatarchatbot,
-    tags: ['Avatar Integration', 'Visual AI', 'Conversational']
-  },
 ];
 
 const BlueprintDetail: React.FC = () => {
   const { blueprintId } = useParams<{ blueprintId: string }>();
   const blueprint = blueprints.find(bp => bp.id === blueprintId);
-  const [activeTab, setActiveTab] = useState<'card' | 'interact'>('card');
+  const [activeTab, setActiveTab] = useState<'interact' | 'aims'>('interact');
   const [markdownContent, setMarkdownContent] = useState<string>('');
   
   // CodeGen specific state
@@ -145,6 +120,23 @@ const BlueprintDetail: React.FC = () => {
     frequencyPenalty: 0.0,
     presencePenalty: 0.0
   });
+  
+  // DocSum specific state
+  const [documentText, setDocumentText] = useState('');
+  const [summaryType, setSummaryType] = useState<'extractive' | 'abstractive' | 'key-points'>('abstractive');
+  const [generatedSummary, setGeneratedSummary] = useState('');
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [summaryHistory, setSummaryHistory] = useState<Array<{
+    id: string;
+    documentText: string;
+    summary: string;
+    type: string;
+    timestamp: Date;
+  }>>([]);
+  const [showSummaryHistory, setShowSummaryHistory] = useState(false);
+  const [showUploadSection, setShowUploadSection] = useState(false);
+  const [showExamples, setShowExamples] = useState(true);
+  const [showBlueprintCard, setShowBlueprintCard] = useState(false);
   
   // Knowledge Base Management for RAG
   const [knowledgeBaseEnabled, setKnowledgeBaseEnabled] = useState(false);
@@ -237,6 +229,8 @@ Emergency hotline: +1-555-OPEA-911
   const [showSettings, setShowSettings] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [uploadedFileInfo, setUploadedFileInfo] = React.useState<{name: string, size: number} | null>(null);
+  const [uploadError, setUploadError] = React.useState<string>('');
 
   useEffect(() => {
     const loadMarkdown = async () => {
@@ -338,18 +332,10 @@ Emergency hotline: +1-555-OPEA-911
         return 'Hello! I\'m your ChatQnA assistant. I can help you with questions about the OPEA Framework, RAG systems, and more. What would you like to know?';
       case 'agentqna':
         return 'Hello! I\'m your AgentQnA assistant. I can help you understand multi-agent systems, agent architectures, and coordination patterns. What would you like to explore?';
-      case 'codegen':
-        return 'Hello! I\'m your CodeGen assistant. I can help you generate code in various programming languages. Just describe what you want to build!';
       case 'codetrans':
         return 'Hello! I\'m your CodeTrans assistant. I can help you translate code between different programming languages. What code would you like to translate?';
-      case 'searchqna':
-        return 'Hello! I\'m your SearchQnA assistant. I can help you with search queries and information retrieval. What are you looking for?';
       case 'docsum':
         return 'Hello! I\'m your DocSum assistant. I can help you summarize documents and extract key information. What would you like me to summarize?';
-      case 'translation':
-        return 'Hello! I\'m your Translation assistant. I can help you translate text between different languages. What would you like to translate?';
-      case 'avatarchatbot':
-        return 'Hello! I\'m your Avatar Chatbot assistant. I can help you understand avatar-based conversational AI systems. What would you like to know?';
       default:
         return 'Hello! How can I help you today?';
     }
@@ -639,7 +625,10 @@ main();`
       'Speech Recognition Service': functionalAsr,
       'Fine-tuning Service': functionalFinetuning,
       'Guardrails Service': functionalGuardrails,
-      'Reranking Service': functionalReranking
+      'Reranking Service': functionalReranking,
+      'Documentation Processing Service': functionalDataprep,
+      'Technical Insight Extraction Service': functionalDataprep,
+      'Documentation Quality Service': functionalDataprep
     };
     
     return logoMap[name] || functionalAgent; // Default fallback
@@ -679,15 +668,20 @@ main();`
     }
 
     if (blueprint.id === 'chatqna') {
+      // Use generated blueprint data for ChatQnA
+      const chatqnaData = generatedBlueprintData.chatqna;
       return {
-        models: [
-          { name: 'Qwen2 7B', logo: qwen2Img, tags: ['Code Generation', 'Mathematics', 'Reasoning'] }
-        ],
-        functional: [
-          { name: 'Data Preparation Service', description: 'Handles data preprocessing, cleaning, and preparation for RAG pipeline', logo: getFunctionalLogoByName('Data Preparation Service'), tags: ['Data Processing', 'Preprocessing'] },
-          { name: 'Knowledge Retriever Service', description: 'Retrieves relevant documents and information from knowledge base', logo: getFunctionalLogoByName('Knowledge Retriever Service'), tags: ['Retrieval', 'Search'] },
-          { name: 'Embedding Generation Service', description: 'Generates vector embeddings for documents and queries', logo: getFunctionalLogoByName('Embedding Generation Service'), tags: ['Embeddings', 'Vectorization'] }
-        ]
+        models: chatqnaData.microservices.models.map((model: any) => ({
+          name: model.name,
+          logo: model.logo,
+          tags: model.tags
+        })),
+        functional: chatqnaData.microservices.functional.map((service: any) => ({
+          name: service.name,
+          description: service.description || '',
+          logo: getFunctionalLogoByName(service.name),
+          tags: service.tags
+        }))
       };
     }
 
@@ -695,13 +689,15 @@ main();`
       { name: 'Llama3.1 8B', logo: llamaImg, tags: ['LLM', 'Inference', 'Meta'] },
       { name: 'DeepSeek MoE 18B', logo: deepseekImg, tags: ['Mixture of Experts', 'LLM', 'Scalable'] },
       { name: 'Gemma 7B', logo: gemmaImg, tags: ['Lightweight', 'Google', 'Instruction-Tuned'] },
-      { name: 'Qwen2 7B', logo: qwen2Img, tags: ['Multilingual', 'Chat', 'Reasoning'] }
+      { name: 'Qwen2 7B', logo: qwen2Img, tags: ['Multilingual', 'Chat', 'Reasoning'] },
+      { name: 'LLaMA 4 Maverick 17B 128E Instruct FP8', logo: llama4MaverickImg, tags: ['FP8', 'FlashAttention', 'Featured', 'Extended Context'] },
+      { name: 'Llama 3.1 405B Instruct FP8 KV', logo: llamaImg, tags: ['FP8', 'Large Scale', 'AMD', 'Featured'] }
     ];
 
     switch (blueprint.id) {
       case 'agentqna':
         return {
-          models: [modelPool[0], modelPool[2]],
+          models: [modelPool[4]], // Use Llama4 Maverick
           functional: [
             { name: 'Agent Orchestrator', description: 'Coordinates multiple specialized agents to handle complex tasks and workflows.', logo: getFunctionalLogoByName('Agent Orchestrator'), tags: ['Orchestration', 'Multi-Agent'] },
             { name: 'Task Decomposition Service', description: 'Breaks down complex user queries into smaller, manageable sub-tasks for individual agents.', logo: getFunctionalLogoByName('Task Decomposition'), tags: ['Task Planning', 'Analysis'] },
@@ -719,7 +715,7 @@ main();`
         };
       case 'codetrans':
         return {
-          models: [modelPool[0], modelPool[1]],
+          models: [modelPool[5]], // Use Llama 3.1 405B Instruct FP8 KV
           functional: [
             { name: 'Language Detection Service', description: 'Automatically detects the programming language of input code.', logo: getFunctionalLogoByName('Language Detection Service'), tags: ['Language Detection', 'Analysis'] },
             { name: 'Code Translation Service', description: 'Translates code between different programming languages while preserving functionality.', logo: getFunctionalLogoByName('Code Translation Service'), tags: ['Code Translation', 'Transpilation'] },
@@ -739,11 +735,11 @@ main();`
         };
       case 'docsum':
         return {
-          models: [modelPool[2], modelPool[3]],
+          models: [modelPool[1]], // Use DeepSeek R1 (DeepSeek MoE 18B)
           functional: [
-            { name: 'Document Processing Service', description: 'Processes and prepares documents for summarization analysis.', logo: getFunctionalLogoByName('Document Processing Service'), tags: ['Document Processing', 'Preprocessing'] },
-            { name: 'Key Point Extraction Service', description: 'Extracts key points and important information from documents.', logo: getFunctionalLogoByName('Key Point Extraction Service'), tags: ['Key Extraction', 'Analysis'] },
-            { name: 'Summary Quality Service', description: 'Ensures generated summaries are accurate, coherent, and comprehensive.', logo: getFunctionalLogoByName('Summary Quality Service'), tags: ['Quality Assurance', 'Validation'] }
+            { name: 'Documentation Processing Service', description: 'Processes and prepares technical documentation for summarization analysis.', logo: getFunctionalLogoByName('Documentation Processing Service'), tags: ['Documentation Processing', 'Technical Content'] },
+            { name: 'Technical Insight Extraction Service', description: 'Extracts key technical insights, API endpoints, and important concepts from documentation.', logo: getFunctionalLogoByName('Technical Insight Extraction Service'), tags: ['Technical Analysis', 'API Extraction'] },
+            { name: 'Documentation Quality Service', description: 'Ensures generated summaries maintain technical accuracy and completeness.', logo: getFunctionalLogoByName('Documentation Quality Service'), tags: ['Quality Assurance', 'Technical Validation'] }
           ]
         };
       case 'translation':
@@ -804,7 +800,7 @@ main();`
         <div className="bg-neutral-900 rounded-lg p-4 border border-neutral-800 shadow">
           <h4 className="font-medium text-white mb-3">Models Inference Endpoints</h4>
           <div className="space-y-3">
-            {microservices.models.map((service, index) => (
+            {microservices.models.map((service: any, index: number) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <img src={service.logo} alt={service.name} className="w-6 h-6 rounded object-cover" />
@@ -823,7 +819,7 @@ main();`
         <div className="bg-neutral-900 rounded-lg p-4 border border-neutral-800 shadow flex-1">
           <h4 className="font-medium text-white mb-3">Functional Microservices</h4>
           <div className="space-y-3">
-            {microservices.functional.map((service, index) => (
+            {microservices.functional.map((service: any, index: number) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <img src={service.logo} alt={service.name} className="w-6 h-6 rounded object-cover" />
@@ -902,20 +898,77 @@ main();`
         return 'Ask a question about the OPEA Framework...';
       case 'agentqna':
         return 'Ask a question about the multi-agent system...';
-      case 'codegen':
-        return 'Describe the code you want to generate...';
       case 'codetrans':
         return 'Enter the code you want to translate...';
-      case 'searchqna':
-        return 'Enter a search query...';
       case 'docsum':
         return 'Enter text to summarize...';
-      case 'translation':
-        return 'Enter text to translate...';
-      case 'avatarchatbot':
-        return 'Ask a question about the avatar chatbot...';
       default:
         return 'Ask a question about the system...';
+    }
+  };
+
+  // DocSum specific functions
+  const handleGenerateSummary = async () => {
+    if (!documentText.trim() || isGeneratingSummary) return;
+    
+    setIsGeneratingSummary(true);
+    try {
+      // Simulate summary generation with streaming
+      const sampleSummary = generateDocumentSummary(documentText, summaryType);
+      let summaryStream = '';
+      
+      for (let i = 0; i < sampleSummary.length; i++) {
+        summaryStream += sampleSummary[i];
+        setGeneratedSummary(summaryStream);
+        await new Promise(resolve => setTimeout(resolve, 30));
+      }
+      
+      // Add to history
+      const newEntry = {
+        id: Date.now().toString(),
+        documentText: documentText.substring(0, 200) + (documentText.length > 200 ? '...' : ''),
+        summary: sampleSummary,
+        type: summaryType,
+        timestamp: new Date()
+      };
+      setSummaryHistory(prev => [newEntry, ...prev.slice(0, 9)]); // Keep last 10
+      
+    } catch (error) {
+      console.error('Error generating summary:', error);
+      setGeneratedSummary('Error generating summary. Please try again.');
+    } finally {
+      setIsGeneratingSummary(false);
+    }
+  };
+
+  const generateDocumentSummary = (text: string, type: string): string => {
+    const words = text.split(' ');
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    
+    switch (type) {
+      case 'extractive':
+        // Extract key sentences (first few sentences)
+        const keySentences = sentences.slice(0, Math.min(3, sentences.length));
+        return keySentences.join('. ') + '.';
+        
+      case 'abstractive':
+        // Generate a concise abstractive summary
+        const wordCount = words.length;
+        const summaryLength = Math.max(50, Math.min(200, wordCount / 4));
+        const keyWords = words.filter(word => word.length > 4).slice(0, 10);
+        
+        return `This document contains approximately ${wordCount} words and covers topics including ${keyWords.slice(0, 5).join(', ')}. The content appears to be ${wordCount > 500 ? 'comprehensive' : 'concise'} in nature, providing ${wordCount > 1000 ? 'detailed' : 'overview'} information on the subject matter.`;
+        
+      case 'key-points':
+        // Extract key points as bullet points
+        const points = sentences.slice(0, Math.min(5, sentences.length))
+          .map(sentence => sentence.trim())
+          .filter(sentence => sentence.length > 20);
+        
+        return points.map(point => `• ${point}`).join('\n\n');
+        
+      default:
+        return 'Summary type not recognized.';
     }
   };
 
@@ -926,10 +979,18 @@ main();`
           <img src={bannerWave} alt="Banner" className="w-full h-full object-cover absolute inset-0" />
           {/* Navigation overlay */}
           <nav className="absolute top-0 left-0 w-full flex justify-between items-center pt-8 px-8 z-20 bg-black/30 backdrop-blur-md shadow-lg rounded-b-xl pointer-events-auto">
-            <PlaygroundLogo />
+            <div className="flex flex-col items-start">
+              <PlaygroundLogo />
+              <button
+                onClick={() => setShowBlueprintCard(true)}
+                className="mt-2 px-4 py-2 bg-blue-600/20 text-blue-300 border border-blue-500/30 rounded-lg hover:bg-blue-600/30 transition-colors text-sm font-medium"
+              >
+                Blueprint Card
+              </button>
+            </div>
             <div className="flex gap-16">
               <Link to="/models" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Models</Link>
-              <Link to="/blueprints" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Blueprints</Link>
+              <Link to="/blueprints" className="text-2xl font-bold text-white transition relative px-2 opacity-100 after:content-[''] after:block after:h-1 after:mt-1 after:w-full after:bg-red-500">Blueprints</Link>
               <Link to="/gpu-cloud" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
             </div>
           </nav>
@@ -973,7 +1034,7 @@ main();`
           <PlaygroundLogo />
           <div className="flex gap-16">
             <Link to="/models" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Models</Link>
-            <Link to="/blueprints" className="text-2xl font-bold text-white transition relative px-2 opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-full after:bg-red-500">Blueprints</Link>
+            <Link to="/blueprints" className="text-2xl font-bold text-white transition relative px-2 opacity-100 after:content-[''] after:block after:h-1 after:mt-1 after:w-full after:bg-red-500">Blueprints</Link>
             <Link to="/gpu-cloud" className="text-2xl font-bold text-white transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
           </div>
         </nav>
@@ -990,6 +1051,12 @@ main();`
                   />
                 )}
               </div>
+              <button
+                onClick={() => setShowBlueprintCard(true)}
+                className="mt-4 px-6 py-2 bg-blue-600/20 text-blue-300 border border-blue-500/30 rounded-lg hover:bg-blue-600/30 transition-colors text-sm font-medium backdrop-blur-md"
+              >
+                Blueprint Card
+              </button>
             </div>
           </div>
           <div className="flex-1 flex flex-col justify-center items-start max-w-2xl">
@@ -1016,22 +1083,24 @@ main();`
         </div>
       </div>
 
+      {/* AI Model Disclaimer */}
+      <div className="w-full flex justify-center z-50 mb-6">
+        <div className="flex items-start gap-3 bg-white/20 backdrop-blur-md border border-black text-white px-6 py-2 rounded-xl shadow-md w-[90%] text-sm drop-shadow font-normal">
+          <svg className="w-6 h-6 flex-shrink-0 mt-0.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01"/>
+          </svg>
+          <span>
+            AI models generate responses and outputs based on complex algorithms and machine learning techniques, and those responses or outputs may be inaccurate, harmful, biased or indecent. <b className="font-bold">By testing this model, you assume the risk of any harm caused by any response or output of the model.</b> Please do not upload any confidential information or personal data unless expressly permitted. <b className="font-bold">Your use is logged for security purposes.</b>
+          </span>
+        </div>
+      </div>
+
       <div className="flex-1 flex flex-col max-w-[1600px] mx-auto w-full p-8">
         {/* Main Content */}
         <div className="w-full flex-1 h-full min-h-0 bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow flex flex-col">
           {/* Tabs */}
           <div className="flex border-b border-neutral-700 mb-6">
-            <button
-              onClick={() => setActiveTab('card')}
-              className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
-                ${activeTab === 'card'
-                  ? 'border-blue-500 text-blue-500 bg-transparent'
-                  : 'border-transparent text-gray-400 hover:text-blue-400'}
-              `}
-              style={{ background: 'none', borderRadius: 0 }}
-            >
-              Blueprint Card
-            </button>
             <button
               onClick={() => setActiveTab('interact')}
               className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
@@ -1044,491 +1113,176 @@ main();`
               <ChatBubbleLeftRightIcon className="w-5 h-5 inline mr-2" />
               Interact
             </button>
+            <button
+              onClick={() => setActiveTab('aims')}
+              className={`px-6 py-2 -mb-px text-lg font-medium border-b-2 transition-colors duration-150 focus:outline-none
+                ${activeTab === 'aims'
+                  ? 'border-blue-500 text-blue-500 bg-transparent'
+                  : 'border-transparent text-gray-400 hover:text-blue-400'}
+              `}
+              style={{ background: 'none', borderRadius: 0 }}
+            >
+              <CircleStackIcon className="w-5 h-5 inline mr-2" />
+              AIMs
+            </button>
           </div>
 
           {/* Tab Content */}
-          {activeTab === 'card' && (
-            <div className="space-y-8">
-              {/* Architecture Overview */}
-              {getArchitectureImage() && (
-                <div className="bg-neutral-800 rounded-lg p-6 border border-neutral-700">
-                  <h2 className="text-2xl font-bold mb-4 text-white">Architecture Overview</h2>
-                  <div className="flex justify-center">
-                    <img 
-                      src={getArchitectureImage()!} 
-                      alt={`${blueprint.name} Architecture`}
-                      className="w-full max-w-4xl h-auto rounded-lg shadow-lg"
-                    />
-                  </div>
-                </div>
-              )}
-              
-              {/* Blueprint Documentation */}
-              <div className="prose prose-invert max-w-none">
-                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                  {markdownContent}
-                </ReactMarkdown>
-              </div>
-
-              {/* Microservices Section */}
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-white">Components</h2>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full items-stretch">
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-white">Model Endpoints</h3>
-                    <div className="space-y-6">
-                      {getMicroservicesForBlueprint().models.map((model, index) => (
-                        <Link
-                          key={index}
-                          to={`/models/${model.name === 'Qwen2 7B' ? 'Qwen/Qwen2-7B-Instruct' : model.name.toLowerCase().replace(/\s+/g, '-')}`}
-                          className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-0 flex flex-row items-stretch hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full relative"
-                          title="open in playground"
-                        >
-                          {/* Logo */}
-                          <div className="flex items-center justify-center w-40 h-full bg-white/5 rounded-l-2xl border-r border-white/10">
-                            <img
-                              src={model.logo}
-                              alt={model.name}
-                              className="w-32 h-32 object-cover rounded-xl border-2 border-neutral-700 shadow-md bg-white/10"
-                            />
-                          </div>
-                          {/* Info */}
-                          <div className="flex-1 min-w-0 flex flex-col justify-center px-8 py-6">
-                            <div className="text-xs text-blue-300 font-semibold mb-1 truncate">AI Model</div>
-                            <div className="text-xs text-neutral-400 mb-1 truncate">Inference</div>
-                            <div className="flex items-baseline gap-2 mb-1">
-                              <h4 className="text-2xl font-bold group-hover:text-blue-400 transition truncate">{model.name}</h4>
-                            </div>
-                            <div className="text-sm text-neutral-200 mb-3 line-clamp-2">AI model for inference and generation</div>
-                            <div className="flex flex-wrap gap-2 mb-2">
-                              {model.tags?.map((tag, tagIdx) => (
-                                <span
-                                  key={tagIdx}
-                                  className={`px-2 py-1 rounded text-xs ${
-                                    tagIdx === 0 ? 'bg-green-900/50 text-green-200' :
-                                    tagIdx === 1 ? 'bg-purple-900/50 text-purple-200' :
-                                    'bg-orange-900/50 text-orange-200'
-                                  }`}
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-white">Functional Microservices</h3>
-                    <div className="space-y-6">
-                      {getMicroservicesForBlueprint().functional.map((service, index) => (
-                        <div
-                          key={index}
-                          className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-0 flex flex-row items-stretch h-[280px] w-full relative"
-                        >
-                          {/* Logo */}
-                          <div className="flex items-center justify-center w-40 h-full bg-white/5 rounded-l-2xl border-r border-white/10">
-                            <img 
-                              src={getFunctionalLogoByName(service.name)} 
-                              alt={service.name} 
-                              className="w-32 h-32 object-cover rounded-xl border-2 border-neutral-700 shadow-md bg-white/10" 
-                            />
-                          </div>
-                          {/* Info */}
-                          <div className="flex-1 min-w-0 flex flex-col justify-center px-8 py-6">
-                            <div className="text-xs text-blue-300 font-semibold mb-1 truncate">Microservice</div>
-                            <div className="text-xs text-neutral-400 mb-1 truncate">Functional</div>
-                            <div className="flex items-baseline gap-2 mb-1">
-                              <h4 className="text-2xl font-bold text-white truncate">{service.name}</h4>
-                            </div>
-                            <div className="text-sm text-neutral-200 mb-3 line-clamp-2">{service.description}</div>
-                            <div className="flex flex-wrap gap-2 mb-2">
-                              {service.tags?.map((tag, tagIdx) => (
-                                <span
-                                  key={tagIdx}
-                                  className={`px-2 py-1 rounded text-xs ${
-                                    tagIdx === 0 ? 'bg-green-900/50 text-green-200' :
-                                    tagIdx === 1 ? 'bg-purple-900/50 text-purple-200' :
-                                    'bg-orange-900/50 text-orange-200'
-                                  }`}
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
           {activeTab === 'interact' && (
-            ['codegen', 'codetrans'].includes(blueprint?.id || '') ? (
-              // Specialized CodeGen/CodeTrans Interface
-              <div className="flex flex-col lg:flex-row gap-8 h-[700px]">
-                {/* Left Panel - Code Generation/Translation */}
+            ['codegen', 'codetrans', 'docsum'].includes(blueprint?.id || '') ? (
+              <div className="flex flex-col lg:flex-row gap-8 h-[900px]">
+                {/* Left Panel - Document Summarization */}
                 <div className="flex-1 h-full min-h-0 flex flex-col space-y-6">
-                  {blueprint?.id === 'codetrans' ? (
-                    // Code Translation Interface
-                    <div className="bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow flex flex-col flex-1 h-full space-y-6">
-                      {/* Input Section */}
-                      <div className="flex flex-col flex-1">
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-semibold text-white">Input Code</h3>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm text-gray-400">Language:</span>
-                            <select
-                              className="bg-neutral-800 text-white border border-neutral-700 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              value={inputLanguage}
-                              onChange={(e) => setInputLanguage(e.target.value)}
-                            >
-                              <option value="python">Python</option>
-                              <option value="typescript">TypeScript</option>
-                              <option value="rust">Rust</option>
-                              <option value="go">Go</option>
-                              <option value="shell">Shell</option>
-                            </select>
-                          </div>
-                        </div>
-                        <textarea
-                          className="flex-1 bg-neutral-800 text-white rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-neutral-700 font-mono text-sm"
-                          placeholder="Paste your code here to translate..."
-                          value={inputCode}
-                          onChange={(e) => setInputCode(e.target.value)}
-                          disabled={isGeneratingCode}
-                        />
-                      </div>
-                      
-                      {/* Translation Button */}
-                      <div className="flex justify-center">
-                        <button
-                          onClick={handleTranslateCode}
-                          disabled={isGeneratingCode || !inputCode.trim()}
-                          className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                            isGeneratingCode || !inputCode.trim()
-                              ? 'bg-neutral-700 text-gray-400 cursor-not-allowed'
-                              : 'bg-blue-600 text-white hover:bg-blue-700'
-                          }`}
-                        >
-                          {isGeneratingCode ? (
-                            <div className="flex items-center space-x-2">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                              <span>Translating...</span>
-                            </div>
-                          ) : (
-                            'Translate Code'
-                          )}
-                        </button>
-                      </div>
-                      
-                      {/* Output Section */}
-                      <div className="flex flex-col flex-1">
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-semibold text-white">Translated Code</h3>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm text-gray-400">Language:</span>
-                            <select
-                              className="bg-neutral-800 text-white border border-neutral-700 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              value={outputLanguage}
-                              onChange={(e) => setOutputLanguage(e.target.value)}
-                            >
-                              <option value="python">Python</option>
-                              <option value="typescript">TypeScript</option>
-                              <option value="rust">Rust</option>
-                              <option value="go">Go</option>
-                              <option value="shell">Shell</option>
-                              <option value="rust">Rust</option>
-                            </select>
-                            {translatedCode && (
-                              <button
-                                onClick={() => copyToClipboard(translatedCode)}
-                                className="px-3 py-1 bg-neutral-700 text-white rounded text-sm hover:bg-neutral-600"
-                              >
-                                Copy
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex-1 min-h-0 bg-neutral-800 rounded-lg border border-neutral-700 overflow-auto">
-                          <Highlight
-                            theme={themes.nightOwl}
-                            code={translatedCode || `// Translated code will appear here...`}
-                            language={outputLanguage}
+                  <div className="bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow flex flex-col flex-1 h-full space-y-6">
+                    {/* Document Input Section */}
+                    <div className="flex flex-col flex-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-white">Document Input</h3>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-400">Summary Type:</span>
+                          <select
+                            className="bg-neutral-800 text-white border border-neutral-700 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={summaryType}
+                            onChange={(e) => setSummaryType(e.target.value as 'extractive' | 'abstractive' | 'key-points')}
                           >
-                            {({ style, tokens, getLineProps, getTokenProps }) => (
-                              <pre className="p-4 m-0 min-h-full font-mono text-sm" style={style}>
-                                {tokens.map((line, i) => (
-                                  <div key={i} {...getLineProps({ line })}>
-                                    {line.map((token, key) => (
-                                      <span key={key} {...getTokenProps({ token })} />
-                                    ))}
-                                  </div>
-                                ))}
-                              </pre>
-                            )}
-                          </Highlight>
+                            <option value="abstractive">Abstractive</option>
+                            <option value="extractive">Extractive</option>
+                            <option value="key-points">Key Points</option>
+                          </select>
+                        </div>
+                      </div>
+                      <textarea
+                        className="flex-1 bg-neutral-800 text-white rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-neutral-700"
+                        placeholder="Paste or type your document content here for summarization..."
+                        value={documentText}
+                        onChange={(e) => setDocumentText(e.target.value)}
+                        disabled={isGeneratingSummary}
+                      />
+                    </div>
+                    {/* Generate Summary Button */}
+                    <div className="flex justify-center">
+                      <button
+                        onClick={handleGenerateSummary}
+                        disabled={isGeneratingSummary || !documentText.trim()}
+                        className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                          isGeneratingSummary || !documentText.trim()
+                            ? 'bg-neutral-700 text-gray-400 cursor-not-allowed'
+                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
+                      >
+                        {isGeneratingSummary ? (
+                          <div className="flex items-center space-x-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <span>Generating Summary...</span>
+                          </div>
+                        ) : (
+                          'Generate Summary'
+                        )}
+                      </button>
+                    </div>
+                    {/* Generated Summary Section */}
+                    <div className="flex flex-col flex-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-white">Generated Summary</h3>
+                        {generatedSummary && (
+                          <button
+                            onClick={() => copyToClipboard(generatedSummary)}
+                            className="px-3 py-1 bg-neutral-700 text-white rounded text-sm hover:bg-neutral-600"
+                          >
+                            Copy Summary
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex-1 min-h-0 bg-neutral-800 rounded-lg border border-neutral-700 overflow-auto p-4">
+                        <div className="prose prose-invert max-w-none text-sm">
+                          {generatedSummary ? (
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              rehypePlugins={[rehypeRaw]}
+                            >
+                              {generatedSummary}
+                            </ReactMarkdown>
+                          ) : (
+                            <div className="text-gray-400 italic">
+                              Generated summary will appear here...
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
-                  ) : (
-                    // Code Generation Interface
-                    <div className="bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow flex flex-col flex-1 h-full space-y-6">
-                      {/* Prompt Section */}
-                      <div className="flex flex-col">
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-semibold text-white">Code Generation Prompt</h3>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm text-gray-400">Language:</span>
-                            <select
-                              className="bg-neutral-800 text-white border border-neutral-700 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              value={selectedLanguage}
-                              onChange={(e) => setSelectedLanguage(e.target.value)}
-                            >
-                              <option value="python">Python</option>
-                              <option value="typescript">TypeScript</option>
-                              <option value="rust">Rust</option>
-                              <option value="go">Go</option>
-                              <option value="shell">Shell</option>
-                            </select>
-                          </div>
-                        </div>
-                        <textarea
-                          className="bg-neutral-800 text-white rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-neutral-700"
-                          rows={4}
-                          placeholder="Describe the code you want to generate... (e.g., 'function to calculate fibonacci numbers', 'class for user authentication', 'API endpoint for user management')"
-                          value={codePrompt}
-                          onChange={(e) => setCodePrompt(e.target.value)}
-                          disabled={isGeneratingCode}
-                        />
-                      </div>
-                      
-                      {/* Generation Settings */}
-                      <div className="bg-neutral-800 rounded-lg p-4 border border-neutral-700">
-                        <h4 className="text-sm font-semibold mb-3 text-blue-400">Generation Settings</h4>
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block text-xs text-gray-400 mb-1">Temperature</label>
-                            <input
-                              type="range"
-                              min="0"
-                              max="2"
-                              step="0.1"
-                              value={generationSettings.temperature}
-                              onChange={(e) => setGenerationSettings(prev => ({ ...prev, temperature: parseFloat(e.target.value) }))}
-                              className="w-full"
-                            />
-                            <div className="flex justify-between text-xs text-gray-400">
-                              <span>0.0 (Deterministic)</span>
-                              <span>{generationSettings.temperature}</span>
-                              <span>2.0 (Creative)</span>
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <label className="block text-xs text-gray-400 mb-1">Top P</label>
-                            <input
-                              type="range"
-                              min="0"
-                              max="1"
-                              step="0.1"
-                              value={generationSettings.topP}
-                              onChange={(e) => setGenerationSettings(prev => ({ ...prev, topP: parseFloat(e.target.value) }))}
-                              className="w-full"
-                            />
-                            <div className="flex justify-between text-xs text-gray-400">
-                              <span>0.0 (Focused)</span>
-                              <span>{generationSettings.topP}</span>
-                              <span>1.0 (Diverse)</span>
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <label className="block text-xs text-gray-400 mb-1">Frequency Penalty</label>
-                            <input
-                              type="range"
-                              min="-2"
-                              max="2"
-                              step="0.1"
-                              value={generationSettings.frequencyPenalty}
-                              onChange={(e) => setGenerationSettings(prev => ({ ...prev, frequencyPenalty: parseFloat(e.target.value) }))}
-                              className="w-full"
-                            />
-                            <div className="flex justify-between text-xs text-gray-400">
-                              <span>-2.0 (Repeat)</span>
-                              <span>{generationSettings.frequencyPenalty}</span>
-                              <span>2.0 (Avoid)</span>
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <label className="block text-xs text-gray-400 mb-1">Presence Penalty</label>
-                            <input
-                              type="range"
-                              min="-2"
-                              max="2"
-                              step="0.1"
-                              value={generationSettings.presencePenalty}
-                              onChange={(e) => setGenerationSettings(prev => ({ ...prev, presencePenalty: parseFloat(e.target.value) }))}
-                              className="w-full"
-                            />
-                            <div className="flex justify-between text-xs text-gray-400">
-                              <span>-2.0 (Stay)</span>
-                              <span>{generationSettings.presencePenalty}</span>
-                              <span>2.0 (Explore)</span>
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <label className="block text-xs text-gray-400 mb-1">Max Tokens</label>
-                            <input
-                              type="range"
-                              min="100"
-                              max="2000"
-                              step="100"
-                              value={generationSettings.maxTokens}
-                              onChange={(e) => setGenerationSettings(prev => ({ ...prev, maxTokens: parseInt(e.target.value) }))}
-                              className="w-full"
-                            />
-                            <div className="flex justify-between text-xs text-gray-400">
-                              <span>100</span>
-                              <span>{generationSettings.maxTokens}</span>
-                              <span>2000</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Generate Button */}
-                      <div className="flex justify-center">
-                        <button
-                          onClick={handleGenerateCode}
-                          disabled={isGeneratingCode || !codePrompt.trim()}
-                          className={`px-8 py-3 rounded-lg font-medium transition-colors ${
-                            isGeneratingCode || !codePrompt.trim()
-                              ? 'bg-neutral-700 text-gray-400 cursor-not-allowed'
-                              : 'bg-green-600 text-white hover:bg-green-700'
-                          }`}
-                        >
-                          {isGeneratingCode ? (
-                            <div className="flex items-center space-x-2">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                              <span>Generating...</span>
-                            </div>
-                          ) : (
-                            'Generate Code'
-                          )}
-                        </button>
-                      </div>
-                      
-                      {/* Generated Code Section */}
-                      <div className="flex flex-col flex-1">
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-semibold text-white">Generated Code</h3>
-                          {generatedCode && (
-                            <button
-                              onClick={() => copyToClipboard(generatedCode)}
-                              className="px-3 py-1 bg-neutral-700 text-white rounded text-sm hover:bg-neutral-600"
-                            >
-                              Copy Code
-                            </button>
-                          )}
-                        </div>
-                        <div className="flex-1 min-h-0 bg-neutral-800 rounded-lg border border-neutral-700 overflow-auto">
-                          <Highlight
-                            theme={themes.nightOwl}
-                            code={generatedCode || '// Generated code will appear here...'}
-                            language={selectedLanguage}
-                          >
-                            {({ style, tokens, getLineProps, getTokenProps }) => (
-                              <pre className="p-4 m-0 min-h-full font-mono text-sm" style={style}>
-                                {tokens.map((line, i) => (
-                                  <div key={i} {...getLineProps({ line })}>
-                                    {line.map((token, key) => (
-                                      <span key={key} {...getTokenProps({ token })} />
-                                    ))}
-                                  </div>
-                                ))}
-                              </pre>
-                            )}
-                          </Highlight>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  </div>
                 </div>
-                
                 {/* Right Panel - History & Examples */}
                 <div className="w-full lg:w-80 h-full min-h-0 flex flex-col space-y-4">
-                  {/* Code History */}
-                  {codeHistory.length > 0 && (
-                    <div className="bg-neutral-900 rounded-lg p-4 border border-neutral-800 shadow flex-1">
-                      <h3 className="text-lg font-semibold text-white mb-4">Recent Generations</h3>
-                      <div className="space-y-3 max-h-60 overflow-y-auto">
-                        {codeHistory.map((entry) => (
-                          <div key={entry.id} className="bg-neutral-800 rounded p-3 border border-neutral-700">
-                            <div className="text-sm text-gray-400 mb-1">
-                              {entry.timestamp.toLocaleTimeString()}
-                            </div>
-                            <div className="text-xs text-white mb-2 line-clamp-2">
-                              {entry.prompt}
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-1 rounded">
-                                {entry.language}
-                              </span>
-                              <button
-                                onClick={() => {
-                                  setCodePrompt(entry.prompt);
-                                  setSelectedLanguage(entry.language);
-                                  setGeneratedCode(entry.code);
-                                }}
-                                className="text-xs text-blue-400 hover:text-blue-300"
-                              >
-                                Load
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Quick Examples */}
-                  <div className="bg-neutral-900 rounded-lg p-4 border border-neutral-800 shadow">
-                    <h3 className="text-lg font-semibold text-white mb-4">Quick Examples</h3>
-                    <div className="space-y-2">
-                      {[
-                        'function to calculate fibonacci numbers',
-                        'class for user authentication',
-                        'API endpoint for user management',
-                        'database connection utility',
-                        'file upload handler'
-                      ].map((example, index) => (
+                  {/* Collapsible Sections */}
+                  <div className="bg-neutral-900 rounded-lg border border-neutral-800 shadow">
+                    {/* Recent Summaries - Overlay Trigger */}
+                    {summaryHistory.length > 0 && (
+                      <div className="border-b border-neutral-800">
                         <button
-                          key={index}
-                          onClick={() => setCodePrompt(example)}
-                          className="w-full text-left text-sm text-gray-300 hover:text-white p-2 rounded bg-neutral-800 hover:bg-neutral-700 transition-colors"
+                          onClick={() => setShowSummaryHistory(!showSummaryHistory)}
+                          className="w-full p-4 text-left flex items-center justify-between hover:bg-neutral-800 transition-colors"
                         >
-                          {example}
+                          <h3 className="text-lg font-semibold text-white">Recent Summaries</h3>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs text-gray-400">{summaryHistory.length} items</span>
+                            <ChevronDownIcon className={`w-5 h-5 text-gray-400 transition-transform ${showSummaryHistory ? 'rotate-180' : ''}`} />
+                          </div>
                         </button>
-                      ))}
+                      </div>
+                    )}
+                    {/* Upload Documentation - Overlay Trigger */}
+                    <div className="border-b border-neutral-800">
+                      <button
+                        onClick={() => setShowUploadSection(!showUploadSection)}
+                        className="w-full p-4 text-left flex items-center justify-between hover:bg-neutral-800 transition-colors"
+                      >
+                        <h3 className="text-lg font-semibold text-white">Upload Documentation</h3>
+                        <div className="flex items-center space-x-2">
+                          {uploadedFileInfo && (
+                            <span className="text-xs text-green-400">1 file</span>
+                          )}
+                          <ChevronDownIcon className={`w-5 h-5 text-gray-400 transition-transform ${showUploadSection ? 'rotate-180' : ''}`} />
+                        </div>
+                      </button>
+                    </div>
+                    {/* Try Examples - Collapsible */}
+                    <div>
+                      <button
+                        onClick={() => setShowExamples(!showExamples)}
+                        className="w-full p-4 text-left flex items-center justify-between hover:bg-neutral-800 transition-colors"
+                      >
+                        <h3 className="text-lg font-semibold text-white">Try Examples</h3>
+                        <ChevronDownIcon className={`w-5 h-5 text-gray-400 transition-transform ${showExamples ? 'rotate-180' : ''}`} />
+                      </button>
+                      {showExamples && (
+                        <div className="p-4 space-y-2">
+                          {[
+                            `# API Reference\n\n## POST /v1/users\nCreate a new user in the system.\n\n**Request Body:**\n- name: string\n- email: string\n\n**Response:**\n- 201 Created: User object\n- 400 Bad Request: Validation error`,
+                            `# Changelog\n\n## [1.2.0] - 2024-06-01\n### Added\n- Support for multi-factor authentication.\n- New API endpoint for password reset.\n\n### Fixed\n- Minor bug fixes in user profile module.`,
+                            `# README\n\nThis project provides a RESTful API for managing tasks.\n\n## Features\n- Create, update, delete tasks\n- Assign tasks to users\n- Track task status and deadlines`,
+                            `# Technical Specification\n\nThe system uses a microservices architecture with the following components:\n- Auth Service\n- User Service\n- Task Service\n\nAll services communicate via gRPC.`,
+                            `# Integration Guide\n\nTo integrate with the payment gateway:\n1. Obtain your API key from the dashboard.\n2. Use the /v1/payments endpoint for transactions.\n3. Handle webhook events for payment status updates.`,
+                          ].map((example, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setDocumentText(example)}
+                              className="w-full text-left text-sm text-gray-300 hover:text-white p-2 rounded bg-neutral-800 hover:bg-neutral-700 transition-colors"
+                            >
+                              {example.split('\n')[0].replace(/^#+\s*/, '')}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  
-                  {/* Microservice Status */}
+                  {/* Microservice Status - Fixed at bottom */}
                   <div className="flex-1">
                     {renderMicroserviceStatus()}
                   </div>
                 </div>
               </div>
             ) : (
-              // Generic Chat Interface for other blueprints
               <div className="flex flex-row gap-8 h-[700px]">
                 {/* Chat Interface (left) */}
                 <div className="w-full md:w-[60%] flex-1 h-full min-h-0 bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow flex flex-col">
@@ -1543,9 +1297,7 @@ main();`
                       <Cog6ToothIcon className="h-6 w-6" />
                     </button>
                   </div>
-                  
                   {showSettings && renderSettings()}
-                  
                   <div className="flex flex-col space-y-4 flex-1 min-h-0">
                     {/* Chat messages */}
                     <div className="flex-1 min-h-0 overflow-y-auto">
@@ -1626,7 +1378,6 @@ main();`
                     </div>
                   </div>
                 </div>
-
                 {/* Microservice Status (right) */}
                 <div className="w-full md:w-[40%] flex-1 h-full min-h-0 flex flex-col space-y-4">
                   {/* Data Sources for RAG */}
@@ -1733,10 +1484,340 @@ main();`
               </div>
             )
           )}
+
+          {activeTab === 'aims' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white">Components</h2>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full items-stretch">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white">Model Endpoints</h3>
+                  <div className="space-y-6">
+                    {getMicroservicesForBlueprint().models.map((model, index) => (
+                      <Link
+                        key={index}
+                        to={`/models/${model.name === 'Qwen2 7B' ? 'Qwen/Qwen2-7B-Instruct' : 
+                             model.name === 'Qwen3 32B' ? 'Qwen/Qwen3-32B' :
+                             model.name === 'LLaMA 4 Maverick 17B 128E Instruct FP8' ? 'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8' :
+                             model.name === 'DeepSeek MoE 18B' ? 'deepseek-ai/DeepSeek-R1-0528' :
+                             model.name === 'Llama 3.1 405B Instruct FP8 KV' ? 'amd/Llama-3_1-405B-Instruct-FP8-KV' :
+                             model.name.toLowerCase().replace(/\s+/g, '-')}`}
+                        className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-0 flex flex-row items-stretch hover:bg-white/20 hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-1 transition-all cursor-pointer h-[280px] w-full relative"
+                        title="open in playground"
+                      >
+                        {/* Logo */}
+                        <div className="flex items-center justify-center w-40 h-full bg-white/5 rounded-l-2xl border-r border-white/10">
+                          <img
+                            src={model.logo}
+                            alt={model.name}
+                            className="w-32 h-32 object-cover rounded-xl border-2 border-neutral-700 shadow-md bg-white/10"
+                          />
+                        </div>
+                        {/* Info */}
+                        <div className="flex-1 min-w-0 flex flex-col justify-center px-8 py-6">
+                          <div className="text-xs text-blue-300 font-semibold mb-1 truncate">AI Model</div>
+                          <div className="text-xs text-neutral-400 mb-1 truncate">Inference</div>
+                          <div className="flex items-baseline gap-2 mb-1">
+                            <h4 className="text-2xl font-bold group-hover:text-blue-400 transition truncate">{model.name}</h4>
+                          </div>
+                          <div className="text-sm text-neutral-200 mb-3 line-clamp-2">AI model for inference and generation</div>
+                          <div className="flex flex-wrap gap-2 mb-2">
+                            {model.tags?.map((tag: string, tagIdx: number) => (
+                              <span
+                                key={tagIdx}
+                                className={`px-2 py-1 rounded text-xs ${
+                                  tagIdx === 0 ? 'bg-green-900/50 text-green-200' :
+                                  tagIdx === 1 ? 'bg-purple-900/50 text-purple-200' :
+                                  'bg-orange-900/50 text-orange-200'
+                                }`}
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white">Functional Microservices</h3>
+                  <div className="space-y-6">
+                    {getMicroservicesForBlueprint().functional.map((service, index) => (
+                      <div
+                        key={index}
+                        className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-0 flex flex-row items-stretch h-[280px] w-full relative"
+                      >
+                        {/* Logo */}
+                        <div className="flex items-center justify-center w-40 h-full bg-white/5 rounded-l-2xl border-r border-white/10">
+                          <img 
+                            src={getFunctionalLogoByName(service.name)} 
+                            alt={service.name} 
+                            className="w-32 h-32 object-cover rounded-xl border-2 border-neutral-700 shadow-md bg-white/10" 
+                          />
+                        </div>
+                        {/* Info */}
+                        <div className="flex-1 min-w-0 flex flex-col justify-center px-8 py-6">
+                          <div className="text-xs text-blue-300 font-semibold mb-1 truncate">Microservice</div>
+                          <div className="text-xs text-neutral-400 mb-1 truncate">Functional</div>
+                          <div className="flex items-baseline gap-2 mb-1">
+                            <h4 className="text-2xl font-bold group-hover:text-blue-400 transition truncate">{service.name}</h4>
+                          </div>
+                          <div className="text-sm text-neutral-200 mb-3 line-clamp-2">{service.description}</div>
+                          <div className="flex flex-wrap gap-2 mb-2">
+                            {service.tags?.map((tag: string, tagIdx: number) => (
+                              <span
+                                key={tagIdx}
+                                className={`px-2 py-1 rounded text-xs ${
+                                  tagIdx === 0 ? 'bg-green-900/50 text-green-200' :
+                                  tagIdx === 1 ? 'bg-purple-900/50 text-purple-200' :
+                                  'bg-orange-900/50 text-orange-200'
+                                }`}
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+      
+      {/* Recent Summaries Overlay */}
+      {showSummaryHistory && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-neutral-900 rounded-lg border border-neutral-800 shadow-lg max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-neutral-800">
+              <h3 className="text-lg font-semibold text-white">Recent Summaries</h3>
+              <button
+                onClick={() => setShowSummaryHistory(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4 space-y-3 overflow-y-auto max-h-[calc(80vh-80px)]">
+              {summaryHistory.map((entry) => (
+                <div key={entry.id} className="bg-neutral-800 rounded p-4 border border-neutral-700">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-sm text-gray-400">
+                      {entry.timestamp.toLocaleString()}
+                    </div>
+                    <span className="text-xs bg-green-900/50 text-green-200 px-2 py-1 rounded">
+                      {entry.type}
+                    </span>
+                  </div>
+                  <div className="text-sm text-white mb-3 line-clamp-3">
+                    {entry.documentText}
+                  </div>
+                  <div className="text-sm text-gray-300 mb-3 line-clamp-4">
+                    {entry.summary}
+                  </div>
+                  <div className="flex justify-end space-x-2">
+                    <button
+                      onClick={() => {
+                        setDocumentText(entry.documentText);
+                        setSummaryType(entry.type as 'extractive' | 'abstractive' | 'key-points');
+                        setGeneratedSummary(entry.summary);
+                        setShowSummaryHistory(false);
+                      }}
+                      className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                    >
+                      Load
+                    </button>
+                    <button
+                      onClick={() => {
+                        setGeneratedSummary(entry.summary);
+                        setShowSummaryHistory(false);
+                      }}
+                      className="px-3 py-1 bg-neutral-700 text-white rounded text-sm hover:bg-neutral-600"
+                    >
+                      View Summary
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Upload Documentation Overlay */}
+      {showUploadSection && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-neutral-900 rounded-lg border border-neutral-800 shadow-lg max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-neutral-800">
+              <h3 className="text-lg font-semibold text-white">Upload Documentation</h3>
+              <button
+                onClick={() => setShowUploadSection(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 space-y-6">
+              <div
+                className="w-full border-2 border-dashed border-blue-400 rounded-lg p-8 text-center text-gray-400 cursor-pointer hover:bg-blue-950/30 transition-colors"
+                onDragOver={e => { e.preventDefault(); e.stopPropagation(); }}
+                onDrop={async e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const file = e.dataTransfer.files?.[0];
+                  if (!file) return;
+                  if (!file.name.match(/\.(txt|md)$/i)) {
+                    setUploadError('Only .txt and .md files are supported.');
+                    return;
+                  }
+                  if (file.size > 1024 * 1024) {
+                    setUploadError('File size must be less than 1MB.');
+                    return;
+                  }
+                  setUploadError('');
+                  setUploadedFileInfo({ name: file.name, size: file.size });
+                  const text = await file.text();
+                  setDocumentText(text);
+                }}
+              >
+                <div className="mb-4">
+                  <svg className="w-12 h-12 mx-auto text-blue-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                </div>
+                <div className="text-lg font-medium mb-2">Drag & drop your document here</div>
+                <div className="text-sm mb-4">or</div>
+                <label className="inline-block cursor-pointer text-blue-400 hover:underline font-semibold">
+                  <input
+                    type="file"
+                    accept=".txt,.md,text/plain,text/markdown"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (!file.name.match(/\.(txt|md)$/i)) {
+                        setUploadError('Only .txt and .md files are supported.');
+                        return;
+                      }
+                      if (file.size > 1024 * 1024) {
+                        setUploadError('File size must be less than 1MB.');
+                        return;
+                      }
+                      setUploadError('');
+                      setUploadedFileInfo({ name: file.name, size: file.size });
+                      const text = await file.text();
+                      setDocumentText(text);
+                    }}
+                  />
+                  browse to upload
+                </label>
+                <div className="text-xs text-gray-500 mt-4">
+                  Supported formats: .txt, .md (Max size: 1MB)
+                </div>
+              </div>
+              
+              {uploadedFileInfo && (
+                <div className="bg-green-900/20 border border-green-700 rounded-lg p-4">
+                  <div className="flex items-center space-x-3">
+                    <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <div>
+                      <div className="text-sm font-medium text-green-400">File uploaded successfully!</div>
+                      <div className="text-xs text-gray-400">{uploadedFileInfo.name} ({(uploadedFileInfo.size/1024).toFixed(1)} KB)</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {uploadError && (
+                <div className="bg-red-900/20 border border-red-700 rounded-lg p-4">
+                  <div className="flex items-center space-x-3">
+                    <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="text-sm text-red-400">{uploadError}</div>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowUploadSection(false)}
+                  className="px-4 py-2 bg-neutral-700 text-white rounded hover:bg-neutral-600"
+                >
+                  Cancel
+                </button>
+                {uploadedFileInfo && (
+                  <button
+                    onClick={() => setShowUploadSection(false)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Use Document
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Blueprint Card Overlay */}
+      {showBlueprintCard && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => setShowBlueprintCard(false)}
+        >
+          <div 
+            className="bg-neutral-900 rounded-lg border border-neutral-800 shadow-lg max-w-6xl w-full mx-4 max-h-[90vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b border-neutral-800">
+              <h3 className="text-lg font-semibold text-white">Blueprint Card - {blueprint?.name}</h3>
+              <button
+                onClick={() => setShowBlueprintCard(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 space-y-8 overflow-y-auto max-h-[calc(90vh-80px)]">
+              {/* Architecture Overview */}
+              {getArchitectureImage() && (
+                <div className="bg-neutral-800 rounded-lg p-6 border border-neutral-700">
+                  <h2 className="text-2xl font-bold mb-4 text-white">Architecture Overview</h2>
+                  <div className="flex justify-center">
+                    <img 
+                      src={getArchitectureImage()!} 
+                      alt={`${blueprint?.name} Architecture`}
+                      className="w-full max-w-4xl h-auto rounded-lg shadow-lg"
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {/* Blueprint Documentation */}
+              <div className="prose prose-invert max-w-none">
+                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                  {markdownContent}
+                </ReactMarkdown>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default BlueprintDetail; 
+export default BlueprintDetail;
