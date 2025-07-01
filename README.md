@@ -6,6 +6,7 @@ A modern web application for exploring and interacting with AI models and bluepr
 
 ### 🚀 Getting Started
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
   - [Standard Installation](#standard-installation)
@@ -35,6 +36,60 @@ A modern web application for exploring and interacting with AI models and bluepr
 - **Blueprints**: Interactive AI application templates including ChatQnA, CodeGen, and more
 - **GPU Cloud Integration**: Cloud computing resources for AI workloads
 - **Real-time Interaction**: Chat interfaces and code generation tools
+
+## Screenshots
+
+### Landing Page
+![Playground Landing Page](screenshots/playground_landing.png)
+*Main landing page showcasing the GenAI Playground interface*
+
+### Model Catalog
+![Model Catalog](screenshots/modelcatalog.png)
+*Browse and explore different AI models with detailed information*
+
+### Model Interaction
+![Model Interaction](screenshots/model_interact.png)
+*Interactive chat interface for model conversations*
+
+### Model Tools
+![Model Tools](screenshots/model_tools.png)
+*Tool calling interface for enhanced model capabilities*
+
+### Model Tools Instructions
+![Model Tools Instructions](screenshots/model_tools_instructions.png)
+*Detailed instructions for using model tools*
+
+### Model Behavior Parameters
+![Model Behavior Parameters](screenshots/model_behavior_params.png)
+*Configure model behavior and parameters*
+
+### Model Deployment Guide
+![Model Deployment Guide](screenshots/model_deployment_guide.png)
+*Comprehensive deployment instructions for models*
+
+### Model Card
+![Model Card](screenshots/modelcard.png)
+*Detailed model information and specifications*
+
+### Blueprint Catalog
+![Blueprint Catalog](screenshots/blueprint_catalog.png)
+*Browse available AI application blueprints*
+
+### Blueprint ChatQnA Interaction
+![Blueprint ChatQnA Interaction](screenshots/blueprint_chatqna_interact.png)
+*Interactive ChatQnA blueprint with RAG capabilities*
+
+### Blueprint Card
+![Blueprint Card](screenshots/blueprint_card.png)
+*Detailed blueprint information and overview*
+
+### Blueprint AIMs
+![Blueprint AIMs](screenshots/blueprint_AIMs.png)
+*AMD Inference Microservices architecture view*
+
+### GPU Cloud
+![GPU Cloud](screenshots/GPU_Cloud.png)
+*GPU cloud integration and resource management*
 
 ## Prerequisites
 
