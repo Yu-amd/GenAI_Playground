@@ -471,7 +471,11 @@ The Blueprint Catalog mirrors the Model Catalog structure and provides a robust,
 
 ## AIM (AMD Inference Microservice) Assets
 
-The AIM (AMD Inference Microservice) system provides tools for managing AI model serving recipes, validation workflows, and integration with external model repositories. Below are the key assets and how to use them:
+The AIM (AMD Inference Microservice) system provides tools for managing AI model serving recipes, validation workflows, and integration with external model repositories. 
+
+> 📖 **For a comprehensive overview of AIM and AIM recipes, see [AIM_OVERVIEW.md](AIM_OVERVIEW.md)**
+
+Below are the key assets and how to use them:
 
 ### 1. AIM Recipe Schema
 - **Location:** `src/aim/aim_recipe_schema.json`
