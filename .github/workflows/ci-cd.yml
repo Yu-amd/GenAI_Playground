@@ -1,4 +1,4 @@
-name: Model Catalog CI/CD Pipeline
+name: GenAI Playground CI/CD Pipeline
 
 on:
   push:
