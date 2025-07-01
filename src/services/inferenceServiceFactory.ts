@@ -1,4 +1,8 @@
-import type { ChatCompletionRequest, ChatCompletionResponse, StreamChunk } from './cloudInferenceService';
+import type {
+  ChatCompletionRequest,
+  ChatCompletionResponse,
+  StreamChunk,
+} from './cloudInferenceService';
 import { cloudInferenceService } from './cloudInferenceService';
 import { lmStudioService } from './lmStudioService';
 import { cloudConfigService } from './cloudConfigService';
@@ -22,17 +26,22 @@ export interface InferenceService {
     request: ChatCompletionRequest,
     onStreamChunk?: (chunk: StreamChunk) => void
   ): Promise<ChatCompletionResponse>;
-  
+
   setConfig(config: Partial<InferenceServiceConfig>): void;
   getConfig(): InferenceServiceConfig;
   getProvider(): InferenceProvider;
   switchProvider(provider: InferenceProvider): void;
   isAvailable(provider: InferenceProvider): boolean;
-  getHealthStatus(): Promise<Record<InferenceProvider, {
-    isHealthy: boolean;
-    responseTime?: number;
-    error?: string;
-  }>>;
+  getHealthStatus(): Promise<
+    Record<
+      InferenceProvider,
+      {
+        isHealthy: boolean;
+        responseTime?: number;
+        error?: string;
+      }
+    >
+  >;
   getAvailableProviders(): Promise<InferenceProvider[]>;
   testProvider(provider: InferenceProvider): Promise<boolean>;
 }
@@ -65,15 +74,18 @@ class InferenceServiceFactory implements InferenceService {
     onStreamChunk?: (chunk: StreamChunk) => void
   ): Promise<ChatCompletionResponse> {
     const provider = this.currentProvider;
-    
+
     try {
       switch (provider) {
         case 'lm-studio':
           return await lmStudioService.chatCompletion(request, onStreamChunk);
-        
+
         case 'cloud':
-          return await cloudInferenceService.chatCompletion(request, onStreamChunk);
-        
+          return await cloudInferenceService.chatCompletion(
+            request,
+            onStreamChunk
+          );
+
         default:
           throw new Error(`Unknown provider: ${provider}`);
       }
@@ -82,26 +94,29 @@ class InferenceServiceFactory implements InferenceService {
       if (this.config.cloudConfig?.autoFallback && provider === 'lm-studio') {
         console.warn('LM Studio failed, falling back to cloud provider');
         this.currentProvider = 'cloud';
-        return await cloudInferenceService.chatCompletion(request, onStreamChunk);
+        return await cloudInferenceService.chatCompletion(
+          request,
+          onStreamChunk
+        );
       }
-      
+
       if (this.config.cloudConfig?.autoFallback && provider === 'cloud') {
         console.warn('Cloud provider failed, falling back to LM Studio');
         this.currentProvider = 'lm-studio';
         return await lmStudioService.chatCompletion(request, onStreamChunk);
       }
-      
+
       throw error;
     }
   }
 
   setConfig(config: Partial<InferenceServiceConfig>): void {
     this.config = { ...this.config, ...config };
-    
+
     if (config.lmStudioConfig) {
       lmStudioService.setConfig(config.lmStudioConfig);
     }
-    
+
     if (config.cloudConfig?.enabled) {
       const cloudConfig = cloudConfigService.getConfig();
       cloudInferenceService.updateConfig(cloudConfig);
@@ -127,16 +142,16 @@ class InferenceServiceFactory implements InferenceService {
     switch (provider) {
       case 'lm-studio': {
         // Check if LM Studio config is available
-        return !!(this.config.lmStudioConfig?.endpoint);
+        return !!this.config.lmStudioConfig?.endpoint;
       }
-      
+
       case 'cloud': {
         // Check if cloud providers are configured and enabled
         if (!this.config.cloudConfig?.enabled) return false;
         const cloudConfig = cloudConfigService.getConfig();
         return cloudConfig.providers.length > 0;
       }
-      
+
       default:
         return false;
     }
@@ -148,9 +163,9 @@ class InferenceServiceFactory implements InferenceService {
       const testRequest: ChatCompletionRequest = {
         messages: [
           { role: 'system', content: 'You are a helpful assistant.' },
-          { role: 'user', content: 'Hello' }
+          { role: 'user', content: 'Hello' },
         ],
-        max_tokens: 10
+        max_tokens: 10,
       };
 
       await this.chatCompletion(testRequest);
@@ -173,10 +188,10 @@ class InferenceServiceFactory implements InferenceService {
           name: 'LM Studio',
           description: 'Local inference server',
           status: this.isAvailable(provider) ? 'available' : 'unavailable',
-          details: this.config.lmStudioConfig?.endpoint
+          details: this.config.lmStudioConfig?.endpoint,
         };
       }
-      
+
       case 'cloud': {
         const cloudConfig = cloudConfigService.getConfig();
         const healthyProviders = cloudConfig.providers.filter(p => p.enabled);
@@ -184,46 +199,54 @@ class InferenceServiceFactory implements InferenceService {
           name: 'Cloud Inference',
           description: 'Multi-provider cloud inference',
           status: this.isAvailable(provider) ? 'available' : 'unavailable',
-          details: `${healthyProviders.length} providers configured`
+          details: `${healthyProviders.length} providers configured`,
         };
       }
-      
+
       default:
         return {
           name: 'Unknown',
           description: 'Unknown provider',
-          status: 'error'
+          status: 'error',
         };
     }
   }
 
   async getAvailableProviders(): Promise<InferenceProvider[]> {
     const providers: InferenceProvider[] = [];
-    
+
     if (this.isAvailable('lm-studio')) {
       providers.push('lm-studio');
     }
-    
+
     if (this.isAvailable('cloud')) {
       providers.push('cloud');
     }
-    
+
     return providers;
   }
 
   // Health monitoring
-  async getHealthStatus(): Promise<Record<InferenceProvider, {
-    isHealthy: boolean;
-    responseTime?: number;
-    error?: string;
-  }>> {
-    const status: Record<InferenceProvider, {
-      isHealthy: boolean;
-      responseTime?: number;
-      error?: string;
-    }> = {
+  async getHealthStatus(): Promise<
+    Record<
+      InferenceProvider,
+      {
+        isHealthy: boolean;
+        responseTime?: number;
+        error?: string;
+      }
+    >
+  > {
+    const status: Record<
+      InferenceProvider,
+      {
+        isHealthy: boolean;
+        responseTime?: number;
+        error?: string;
+      }
+    > = {
       'lm-studio': { isHealthy: false },
-      'cloud': { isHealthy: false }
+      cloud: { isHealthy: false },
     };
 
     // Test LM Studio
@@ -233,12 +256,12 @@ class InferenceServiceFactory implements InferenceService {
         await this.testProvider('lm-studio');
         status['lm-studio'] = {
           isHealthy: true,
-          responseTime: Date.now() - startTime
+          responseTime: Date.now() - startTime,
         };
       } catch (error) {
         status['lm-studio'] = {
           isHealthy: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? error.message : 'Unknown error',
         };
       }
     }
@@ -249,9 +272,12 @@ class InferenceServiceFactory implements InferenceService {
       const healthyProviders = healthStatus.filter(h => h.isHealthy);
       status['cloud'] = {
         isHealthy: healthyProviders.length > 0,
-        responseTime: healthyProviders.length > 0 ? 
-          Math.min(...healthyProviders.map(h => h.responseTime)) : undefined,
-        error: healthyProviders.length === 0 ? 'No healthy providers' : undefined
+        responseTime:
+          healthyProviders.length > 0
+            ? Math.min(...healthyProviders.map(h => h.responseTime))
+            : undefined,
+        error:
+          healthyProviders.length === 0 ? 'No healthy providers' : undefined,
       };
     }
 
@@ -263,23 +289,29 @@ class InferenceServiceFactory implements InferenceService {
 const defaultConfig: InferenceServiceConfig = {
   defaultProvider: 'lm-studio',
   lmStudioConfig: {
-    endpoint: 'http://localhost:1234'
+    endpoint: 'http://localhost:1234',
   },
   cloudConfig: {
     enabled: true,
-    autoFallback: true
-  }
+    autoFallback: true,
+  },
 };
 
 // Create singleton instance
-export const inferenceServiceFactory = new InferenceServiceFactory(defaultConfig);
+export const inferenceServiceFactory = new InferenceServiceFactory(
+  defaultConfig
+);
 
 // Export convenience functions
 export const inferenceService: InferenceService = inferenceServiceFactory;
 
 // Utility functions for easy access
-export const switchToCloud = () => inferenceServiceFactory.switchProvider('cloud');
-export const switchToLMStudio = () => inferenceServiceFactory.switchProvider('lm-studio');
+export const switchToCloud = () =>
+  inferenceServiceFactory.switchProvider('cloud');
+export const switchToLMStudio = () =>
+  inferenceServiceFactory.switchProvider('lm-studio');
 export const getCurrentProvider = () => inferenceServiceFactory.getProvider();
-export const isCloudAvailable = () => inferenceServiceFactory.isAvailable('cloud');
-export const isLMStudioAvailable = () => inferenceServiceFactory.isAvailable('lm-studio'); 
+export const isCloudAvailable = () =>
+  inferenceServiceFactory.isAvailable('cloud');
+export const isLMStudioAvailable = () =>
+  inferenceServiceFactory.isAvailable('lm-studio');

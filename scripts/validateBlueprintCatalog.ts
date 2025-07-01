@@ -9,12 +9,12 @@ import addFormats from 'ajv-formats';
 const SCHEMA_PATH = path.resolve('src/aim/schemas/blueprint_catalog.schema.json');
 const DEFAULT_CATALOG_PATH = path.resolve('src/aim/blueprint-catalog.yaml');
 
-function loadYamlOrJson(filePath: string): any {
+function loadYamlOrJson(filePath: string): Record<string, unknown> {
   const content = fs.readFileSync(filePath, 'utf8');
   if (filePath.endsWith('.json')) {
     return JSON.parse(content);
   } else {
-    return yaml.load(content);
+    return yaml.load(content) as Record<string, unknown>;
   }
 }
 
@@ -33,7 +33,7 @@ function validateCatalog(catalogPath: string, schemaPath: string): boolean {
   } else {
     console.error('❌ Blueprint catalog validation failed. Errors:');
     for (const err of validate.errors || []) {
-      const path = (err as any).instancePath || (err as any).dataPath || '';
+      const path = (err as { instancePath?: string; dataPath?: string }).instancePath || (err as { instancePath?: string; dataPath?: string }).dataPath || '';
       console.error(`- ${path} ${err.message}`);
     }
     return false;

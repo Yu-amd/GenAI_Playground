@@ -11,7 +11,7 @@ interface BlueprintCatalog {
     total_blueprints: number;
     categories: string[];
   };
-  blueprints: any[];
+  blueprints: IndividualBlueprint[];
 }
 
 interface IndividualBlueprint {

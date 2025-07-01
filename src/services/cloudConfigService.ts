@@ -1,4 +1,7 @@
-import type { CloudProvider, CloudInferenceConfig } from './cloudInferenceService';
+import type {
+  CloudProvider,
+  CloudInferenceConfig,
+} from './cloudInferenceService';
 
 export interface EnvironmentConfig {
   openaiApiKey?: string;
@@ -45,7 +48,7 @@ export class CloudConfigService {
       gcpApiKey: process.env.REACT_APP_GCP_API_KEY,
       gcpProjectId: process.env.REACT_APP_GCP_PROJECT_ID,
       customEndpoints: process.env.REACT_APP_CUSTOM_ENDPOINTS?.split(','),
-      customApiKeys: process.env.REACT_APP_CUSTOM_API_KEYS?.split(',')
+      customApiKeys: process.env.REACT_APP_CUSTOM_API_KEYS?.split(','),
     };
   }
 
@@ -58,7 +61,8 @@ export class CloudConfigService {
         id: 'openai',
         name: 'OpenAI',
         type: 'openai',
-        endpoint: this.environmentConfig.openaiEndpoint || 'https://api.openai.com',
+        endpoint:
+          this.environmentConfig.openaiEndpoint || 'https://api.openai.com',
         apiKey: this.environmentConfig.openaiApiKey,
         priority: 1,
         enabled: true,
@@ -66,13 +70,16 @@ export class CloudConfigService {
           url: '/v1/models',
           method: 'GET',
           expectedStatus: 200,
-          timeout: 5000
-        }
+          timeout: 5000,
+        },
       });
     }
 
     // Add Azure OpenAI provider if configured
-    if (this.environmentConfig.azureApiKey && this.environmentConfig.azureEndpoint) {
+    if (
+      this.environmentConfig.azureApiKey &&
+      this.environmentConfig.azureEndpoint
+    ) {
       providers.push({
         id: 'azure',
         name: 'Azure OpenAI',
@@ -80,7 +87,8 @@ export class CloudConfigService {
         endpoint: this.environmentConfig.azureEndpoint,
         apiKey: this.environmentConfig.azureApiKey,
         config: {
-          apiVersion: this.environmentConfig.azureApiVersion || '2024-02-15-preview'
+          apiVersion:
+            this.environmentConfig.azureApiVersion || '2024-02-15-preview',
         },
         priority: 2,
         enabled: true,
@@ -88,13 +96,16 @@ export class CloudConfigService {
           url: '/openai/deployments',
           method: 'GET',
           expectedStatus: 200,
-          timeout: 5000
-        }
+          timeout: 5000,
+        },
       });
     }
 
     // Add AWS Bedrock provider if configured
-    if (this.environmentConfig.awsAccessKeyId && this.environmentConfig.awsSecretAccessKey) {
+    if (
+      this.environmentConfig.awsAccessKeyId &&
+      this.environmentConfig.awsSecretAccessKey
+    ) {
       providers.push({
         id: 'aws',
         name: 'AWS Bedrock',
@@ -104,7 +115,7 @@ export class CloudConfigService {
         config: {
           region: this.environmentConfig.awsRegion,
           secretKey: this.environmentConfig.awsSecretAccessKey,
-          modelId: 'anthropic.claude-3-sonnet-20240229-v1:0'
+          modelId: 'anthropic.claude-3-sonnet-20240229-v1:0',
         },
         priority: 3,
         enabled: true,
@@ -112,8 +123,8 @@ export class CloudConfigService {
           url: '/invoke',
           method: 'POST',
           expectedStatus: 400, // Bedrock returns 400 for invalid requests, but connection works
-          timeout: 5000
-        }
+          timeout: 5000,
+        },
       });
     }
 
@@ -126,7 +137,7 @@ export class CloudConfigService {
         endpoint: 'https://generativelanguage.googleapis.com',
         apiKey: this.environmentConfig.gcpApiKey,
         config: {
-          projectId: this.environmentConfig.gcpProjectId
+          projectId: this.environmentConfig.gcpProjectId,
         },
         priority: 4,
         enabled: true,
@@ -134,8 +145,8 @@ export class CloudConfigService {
           url: '/v1beta/models',
           method: 'GET',
           expectedStatus: 200,
-          timeout: 5000
-        }
+          timeout: 5000,
+        },
       });
     }
 
@@ -155,8 +166,8 @@ export class CloudConfigService {
             url: '/health',
             method: 'GET',
             expectedStatus: 200,
-            timeout: 5000
-          }
+            timeout: 5000,
+          },
         });
       });
     }
@@ -168,7 +179,7 @@ export class CloudConfigService {
       retryDelay: 1000,
       timeout: 30000,
       enableHealthMonitoring: true,
-      healthCheckInterval: 30000
+      healthCheckInterval: 30000,
     };
   }
 
@@ -178,7 +189,7 @@ export class CloudConfigService {
 
   async updateConfig(config: Partial<CloudInferenceConfig>): Promise<void> {
     this.config = { ...this.config, ...config };
-    
+
     // Save to localStorage for persistence
     try {
       localStorage.setItem('cloudInferenceConfig', JSON.stringify(this.config));
@@ -217,14 +228,22 @@ export class CloudConfigService {
   }
 
   async removeProvider(providerId: string): Promise<void> {
-    this.config.providers = this.config.providers.filter(p => p.id !== providerId);
+    this.config.providers = this.config.providers.filter(
+      p => p.id !== providerId
+    );
     await this.saveConfigToStorage();
   }
 
-  async updateProvider(providerId: string, updates: Partial<CloudProvider>): Promise<void> {
+  async updateProvider(
+    providerId: string,
+    updates: Partial<CloudProvider>
+  ): Promise<void> {
     const index = this.config.providers.findIndex(p => p.id === providerId);
     if (index !== -1) {
-      this.config.providers[index] = { ...this.config.providers[index], ...updates };
+      this.config.providers[index] = {
+        ...this.config.providers[index],
+        ...updates,
+      };
       await this.saveConfigToStorage();
     }
   }
@@ -237,7 +256,8 @@ export class CloudConfigService {
   getOpenAIConfig() {
     return {
       apiKey: this.environmentConfig.openaiApiKey,
-      endpoint: this.environmentConfig.openaiEndpoint || 'https://api.openai.com'
+      endpoint:
+        this.environmentConfig.openaiEndpoint || 'https://api.openai.com',
     };
   }
 
@@ -245,7 +265,8 @@ export class CloudConfigService {
     return {
       apiKey: this.environmentConfig.azureApiKey,
       endpoint: this.environmentConfig.azureEndpoint,
-      apiVersion: this.environmentConfig.azureApiVersion || '2024-02-15-preview'
+      apiVersion:
+        this.environmentConfig.azureApiVersion || '2024-02-15-preview',
     };
   }
 
@@ -253,14 +274,14 @@ export class CloudConfigService {
     return {
       accessKeyId: this.environmentConfig.awsAccessKeyId,
       secretAccessKey: this.environmentConfig.awsSecretAccessKey,
-      region: this.environmentConfig.awsRegion
+      region: this.environmentConfig.awsRegion,
     };
   }
 
   getGCPConfig() {
     return {
       apiKey: this.environmentConfig.gcpApiKey,
-      projectId: this.environmentConfig.gcpProjectId
+      projectId: this.environmentConfig.gcpProjectId,
     };
   }
 
@@ -293,7 +314,8 @@ export class CloudConfigService {
         break;
       case 'aws':
         if (!provider.apiKey) errors.push('Access key ID is required for AWS');
-        if (!provider.config?.secretKey) errors.push('Secret access key is required for AWS');
+        if (!provider.config?.secretKey)
+          errors.push('Secret access key is required for AWS');
         if (!provider.config?.region) errors.push('AWS region is required');
         break;
       case 'gcp':
@@ -320,8 +342,8 @@ export class CloudConfigService {
             url: '/v1/models',
             method: 'GET',
             expectedStatus: 200,
-            timeout: 5000
-          }
+            timeout: 5000,
+          },
         };
       case 'azure':
         return {
@@ -330,14 +352,14 @@ export class CloudConfigService {
           priority: 2,
           enabled: true,
           config: {
-            apiVersion: '2024-02-15-preview'
+            apiVersion: '2024-02-15-preview',
           },
           healthCheck: {
             url: '/openai/deployments',
             method: 'GET',
             expectedStatus: 200,
-            timeout: 5000
-          }
+            timeout: 5000,
+          },
         };
       case 'aws':
         return {
@@ -347,14 +369,14 @@ export class CloudConfigService {
           enabled: true,
           config: {
             region: 'us-east-1',
-            modelId: 'anthropic.claude-3-sonnet-20240229-v1:0'
+            modelId: 'anthropic.claude-3-sonnet-20240229-v1:0',
           },
           healthCheck: {
             url: '/invoke',
             method: 'POST',
             expectedStatus: 400,
-            timeout: 5000
-          }
+            timeout: 5000,
+          },
         };
       case 'gcp':
         return {
@@ -366,8 +388,8 @@ export class CloudConfigService {
             url: '/v1beta/models',
             method: 'GET',
             expectedStatus: 200,
-            timeout: 5000
-          }
+            timeout: 5000,
+          },
         };
       case 'custom':
         return {
@@ -379,8 +401,8 @@ export class CloudConfigService {
             url: '/health',
             method: 'GET',
             expectedStatus: 200,
-            timeout: 5000
-          }
+            timeout: 5000,
+          },
         };
       default:
         return {};
@@ -389,4 +411,4 @@ export class CloudConfigService {
 }
 
 // Export singleton instance
-export const cloudConfigService = CloudConfigService.getInstance(); 
+export const cloudConfigService = CloudConfigService.getInstance();

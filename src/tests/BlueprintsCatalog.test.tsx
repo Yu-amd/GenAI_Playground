@@ -9,42 +9,47 @@ vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    Link: ({ children, to, ...rest }: { children: React.ReactNode; to: string }) => (
-      <a href={to} {...rest}>{children}</a>
-    )
+    Link: ({
+      children,
+      to,
+      ...rest
+    }: {
+      children: React.ReactNode;
+      to: string;
+    }) => (
+      <a href={to} {...rest}>
+        {children}
+      </a>
+    ),
   };
 });
 
 // Mock the assets
 vi.mock('../assets/banner_wave.png', () => ({
-  default: 'mocked-banner.png'
+  default: 'mocked-banner.png',
 }));
 
 // Mock the blueprint images
 vi.mock('../assets/blueprints/bp_chatqna.png', () => ({
-  default: 'mocked-chatqna.png'
+  default: 'mocked-chatqna.png',
 }));
 vi.mock('../assets/blueprints/bp_agentqna.png', () => ({
-  default: 'mocked-agentqna.png'
+  default: 'mocked-agentqna.png',
 }));
 vi.mock('../assets/blueprints/bp_codeTrans.png', () => ({
-  default: 'mocked-codeTrans.png'
+  default: 'mocked-codeTrans.png',
 }));
 vi.mock('../assets/blueprints/bp_docsum.png', () => ({
-  default: 'mocked-docsum.png'
+  default: 'mocked-docsum.png',
 }));
 
 // Mock the PlaygroundLogo component
 vi.mock('../components/PlaygroundLogo', () => ({
-  default: () => <div data-testid="playground-logo">Playground Logo</div>
+  default: () => <div data-testid='playground-logo'>Playground Logo</div>,
 }));
 
 const renderWithRouter = (component: React.ReactElement) => {
-  return render(
-    <BrowserRouter>
-      {component}
-    </BrowserRouter>
-  );
+  return render(<BrowserRouter>{component}</BrowserRouter>);
 };
 
 describe('BlueprintsCatalog Component', () => {
@@ -76,9 +81,15 @@ describe('BlueprintsCatalog Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getAllByText('Conversational AI').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Multi-Agent Systems').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Development Tools').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('Conversational AI').length).toBeGreaterThan(
+          0
+        );
+        expect(
+          screen.getAllByText('Multi-Agent Systems').length
+        ).toBeGreaterThan(0);
+        expect(screen.getAllByText('Development Tools').length).toBeGreaterThan(
+          0
+        );
         expect(screen.getAllByText('Document AI').length).toBeGreaterThan(0);
       });
     });
@@ -91,7 +102,7 @@ describe('BlueprintsCatalog Component', () => {
       await waitFor(() => {
         const intermediateElements = screen.getAllByText('Intermediate');
         const advancedElements = screen.getAllByText('Advanced');
-        
+
         expect(intermediateElements.length).toBeGreaterThan(0);
         expect(advancedElements.length).toBeGreaterThan(0);
       });
@@ -105,7 +116,7 @@ describe('BlueprintsCatalog Component', () => {
       await waitFor(() => {
         const productionReadyElements = screen.getAllByText('Production Ready');
         const techPreviewElements = screen.getAllByText('Tech Preview');
-        
+
         expect(productionReadyElements.length).toBeGreaterThan(0);
         expect(techPreviewElements.length).toBeGreaterThan(0);
       });
@@ -138,10 +149,26 @@ describe('BlueprintsCatalog Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('RAG-based chatbot for knowledge base interactions with advanced retrieval capabilities.')).toBeInTheDocument();
-        expect(screen.getByText('Multi-agent orchestration system for complex question-answering workflows.')).toBeInTheDocument();
-        expect(screen.getByText('Cross-language code translation and transpilation with syntax preservation.')).toBeInTheDocument();
-        expect(screen.getByText('Summarize technical documentation and extract key insights from code comments and API docs.')).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            'RAG-based chatbot for knowledge base interactions with advanced retrieval capabilities.'
+          )
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            'Multi-agent orchestration system for complex question-answering workflows.'
+          )
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            'Cross-language code translation and transpilation with syntax preservation.'
+          )
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            'Summarize technical documentation and extract key insights from code comments and API docs.'
+          )
+        ).toBeInTheDocument();
       });
     });
   });
@@ -245,9 +272,11 @@ describe('BlueprintsCatalog Component', () => {
       });
 
       await waitFor(() => {
-        const cards = screen.getAllByRole('link').filter(link => 
-          link.getAttribute('href')?.startsWith('/blueprints/')
-        );
+        const cards = screen
+          .getAllByRole('link')
+          .filter(link =>
+            link.getAttribute('href')?.startsWith('/blueprints/')
+          );
         expect(cards.length).toBe(4); // All 4 blueprints
       });
     });
@@ -259,7 +288,13 @@ describe('BlueprintsCatalog Component', () => {
 
       await waitFor(() => {
         const chatqnaCard = screen.getByText('ChatQnA').closest('a');
-        expect(chatqnaCard).toHaveClass('bg-white/10', 'backdrop-blur-md', 'border', 'border-white/20', 'rounded-2xl');
+        expect(chatqnaCard).toHaveClass(
+          'bg-white/10',
+          'backdrop-blur-md',
+          'border',
+          'border-white/20',
+          'rounded-2xl'
+        );
       });
     });
 
@@ -270,7 +305,12 @@ describe('BlueprintsCatalog Component', () => {
 
       await waitFor(() => {
         const chatqnaCard = screen.getByText('ChatQnA').closest('a');
-        expect(chatqnaCard).toHaveClass('hover:bg-white/20', 'hover:shadow-2xl', 'hover:shadow-white/30', 'hover:-translate-y-1');
+        expect(chatqnaCard).toHaveClass(
+          'hover:bg-white/20',
+          'hover:shadow-2xl',
+          'hover:shadow-white/30',
+          'hover:-translate-y-1'
+        );
       });
     });
   });
@@ -298,4 +338,4 @@ describe('BlueprintsCatalog Component', () => {
       });
     });
   });
-}); 
+});

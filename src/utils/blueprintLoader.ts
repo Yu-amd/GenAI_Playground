@@ -78,21 +78,21 @@ export interface BlueprintCatalogItem {
 
 // Map blueprint IDs to their image assets
 export const blueprintImageMap: Record<string, string> = {
-  'chatqna': bp_chatqna,
-  'agentqna': bp_agentqna,
-  'codegen': bp_codegen,
-  'codetrans': bp_codeTrans,
-  'searchqna': bp_searchQna,
-  'docsum': bp_docsum,
-  'translation': bp_translation,
-  'avatarchatbot': bp_avatarchatbot,
+  chatqna: bp_chatqna,
+  agentqna: bp_agentqna,
+  codegen: bp_codegen,
+  codetrans: bp_codeTrans,
+  searchqna: bp_searchQna,
+  docsum: bp_docsum,
+  translation: bp_translation,
+  avatarchatbot: bp_avatarchatbot,
 };
 
 // Map readiness levels to display values
 const readinessMap: Record<string, string> = {
   'Production-Ready': 'production-ready',
   'Tech-Preview': 'tech-preview',
-  'Experimental': 'experimental',
+  Experimental: 'experimental',
 };
 
 // Map tags to categories - commented out as unused
@@ -107,7 +107,9 @@ const readinessMap: Record<string, string> = {
 //   'Avatar Integration': 'Visual AI',
 // };
 
-export async function loadBlueprintData(blueprintId: string): Promise<BlueprintData | null> {
+export async function loadBlueprintData(
+  blueprintId: string
+): Promise<BlueprintData | null> {
   try {
     // Try to load from YAML files first
     const response = await fetch(`/src/aim/blueprints/${blueprintId}.yaml`);
@@ -119,15 +121,21 @@ export async function loadBlueprintData(blueprintId: string): Promise<BlueprintD
   } catch (error) {
     console.warn(`Failed to load YAML for ${blueprintId}:`, error);
   }
-  
-  return generatedBlueprintData[blueprintId as keyof typeof generatedBlueprintData] || null;
+
+  return (
+    generatedBlueprintData[
+      blueprintId as keyof typeof generatedBlueprintData
+    ] || null
+  );
 }
 
 export async function loadAllBlueprints(): Promise<BlueprintCatalogItem[]> {
   try {
     // Load all blueprints from the generated data
-    const blueprintIds = Object.keys(generatedBlueprintData) as Array<keyof typeof generatedBlueprintData>;
-    
+    const blueprintIds = Object.keys(generatedBlueprintData) as Array<
+      keyof typeof generatedBlueprintData
+    >;
+
     const blueprints: BlueprintCatalogItem[] = [];
     for (const blueprintId of blueprintIds) {
       const blueprintData = await loadBlueprintData(blueprintId as string);
@@ -143,7 +151,9 @@ export async function loadAllBlueprints(): Promise<BlueprintCatalogItem[]> {
   }
 }
 
-function convertToCatalogItem(blueprintData: BlueprintData): BlueprintCatalogItem {
+function convertToCatalogItem(
+  blueprintData: BlueprintData
+): BlueprintCatalogItem {
   const tags = Array.from(blueprintData.tags);
   const status_badges = Array.from(blueprintData.status_badges);
   // const category = tags.find(tag => tagToCategoryMap[tag]) || 'AI Application';
@@ -155,7 +165,7 @@ function convertToCatalogItem(blueprintData: BlueprintData): BlueprintCatalogIte
   } else if (blueprintData.readiness_level === 'Tech-Preview') {
     badge = 'Tech Preview';
   }
-  
+
   return {
     id: blueprintData.blueprint_id,
     category: blueprintData.category,
@@ -164,10 +174,13 @@ function convertToCatalogItem(blueprintData: BlueprintData): BlueprintCatalogIte
     description: blueprintData.description,
     shortDescription: blueprintData.shortDescription,
     image: '/src/assets/banner_wave.png',
-    localCard: blueprintImageMap[blueprintData.blueprint_id] || '/src/assets/blueprints/default.png',
+    localCard:
+      blueprintImageMap[blueprintData.blueprint_id] ||
+      '/src/assets/blueprints/default.png',
     tags,
     status: blueprintData.status,
-    readiness: readinessMap[blueprintData.readiness_level] || 'production-ready',
-    badge
+    readiness:
+      readinessMap[blueprintData.readiness_level] || 'production-ready',
+    badge,
   };
-} 
+}

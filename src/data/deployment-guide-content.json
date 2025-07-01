@@ -232,7 +232,10 @@
                 { "name": "Google AI", "models": "Gemini Pro, PaLM" }
               ],
               "custom": [
-                { "name": "Self-hosted", "description": "Your own infrastructure" },
+                {
+                  "name": "Self-hosted",
+                  "description": "Your own infrastructure"
+                },
                 { "name": "VPS", "description": "DigitalOcean, Linode, Vultr" },
                 { "name": "Edge", "description": "Cloudflare Workers, Vercel" },
                 { "name": "Hybrid", "description": "Multi-provider setup" }
@@ -291,4 +294,4 @@
       ]
     }
   ]
-} 
+}

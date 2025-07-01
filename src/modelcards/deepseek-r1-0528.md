@@ -2,56 +2,60 @@
 
 The DeepSeek R1 model has undergone a minor version upgrade, with the current version being DeepSeek-R1-0528. In the latest update, DeepSeek R1 has significantly improved its depth of reasoning and inference capabilities by leveraging increased computational resources and introducing algorithmic optimization mechanisms during post-training. The model has demonstrated outstanding performance across various benchmark evaluations, including mathematics, programming, and general logic. Its overall performance is now approaching that of leading models, such as O3 and Gemini 2.5 Pro.
 
-Compared to the previous version, the upgraded model shows significant improvements in handling complex reasoning tasks. For instance, in the AIME 2025 test, the model’s accuracy has increased from 70% in the previous version to 87.5% in the current version. This advancement stems from enhanced thinking depth during the reasoning process: in the AIME test set, the previous model used an average of 12K tokens per question, whereas the new version averages 23K tokens per question.
+Compared to the previous version, the upgraded model shows significant improvements in handling complex reasoning tasks. For instance, in the AIME 2025 test, the model's accuracy has increased from 70% in the previous version to 87.5% in the current version. This advancement stems from enhanced thinking depth during the reasoning process: in the AIME test set, the previous model used an average of 12K tokens per question, whereas the new version averages 23K tokens per question.
 
 Beyond its improved reasoning capabilities, this version also offers a reduced hallucination rate, enhanced support for function calling, and better experience for vibe coding.
 
 ## 2. Evaluation Results
 
 ### DeepSeek-R1-0528
- For all our models, the maximum generation length is set to 64K tokens. For benchmarks requiring sampling, we use a temperature of $0.6$, a top-p value of $0.95$, and generate 16 responses per query to estimate pass@1.
+
+For all our models, the maximum generation length is set to 64K tokens. For benchmarks requiring sampling, we use a temperature of $0.6$, a top-p value of $0.95$, and generate 16 responses per query to estimate pass@1.
+
 <div align="center">
 
-| Category | Benchmark (Metric)               | DeepSeek R1     | DeepSeek R1 0528
-|----------|----------------------------------|-----------------|---|
+| Category | Benchmark (Metric)                 | DeepSeek R1 | DeepSeek R1 0528           |
+| -------- | ---------------------------------- | ----------- | -------------------------- |
 | General  |
-|          | MMLU-Redux (EM)                   | 92.9            | 93.4
-|          | MMLU-Pro (EM)                     | 84.0            | 85.0
-|          | GPQA-Diamond (Pass@1)             | 71.5            | 81.0
-|          | SimpleQA (Correct)                | 30.1            | 27.8
-|          | FRAMES (Acc.)                     | 82.5            | 83.0
-|          | Humanity's Last Exam (Pass@1)                     | 8.5            | 17.7
-| Code |
-|          | LiveCodeBench (2408-2505) (Pass@1)        | 63.5          | 73.3
-|          | Codeforces-Div1 (Rating)          | 1530            | 1930
-|          | SWE Verified (Resolved)           | 49.2            | 57.6
-|          | Aider-Polyglot (Acc.)             | 53.3            | 71.6
-| Math |
-|          | AIME 2024 (Pass@1)                | 79.8            | 91.4
-|          | AIME 2025 (Pass@1)                     | 70.0           | 87.5
-|          | HMMT 2025 (Pass@1)            | 41.7 | 79.4 |
-|          | CNMO 2024 (Pass@1)                | 78.8            | 86.9
-| Tools |
-|          | BFCL_v3_MultiTurn (Acc)     | -            | 37.0 |
-|          | Tau-Bench   (Pass@1)       | -            | 53.5(Airline)/63.9(Retail)
+|          | MMLU-Redux (EM)                    | 92.9        | 93.4                       |
+|          | MMLU-Pro (EM)                      | 84.0        | 85.0                       |
+|          | GPQA-Diamond (Pass@1)              | 71.5        | 81.0                       |
+|          | SimpleQA (Correct)                 | 30.1        | 27.8                       |
+|          | FRAMES (Acc.)                      | 82.5        | 83.0                       |
+|          | Humanity's Last Exam (Pass@1)      | 8.5         | 17.7                       |
+| Code     |
+|          | LiveCodeBench (2408-2505) (Pass@1) | 63.5        | 73.3                       |
+|          | Codeforces-Div1 (Rating)           | 1530        | 1930                       |
+|          | SWE Verified (Resolved)            | 49.2        | 57.6                       |
+|          | Aider-Polyglot (Acc.)              | 53.3        | 71.6                       |
+| Math     |
+|          | AIME 2024 (Pass@1)                 | 79.8        | 91.4                       |
+|          | AIME 2025 (Pass@1)                 | 70.0        | 87.5                       |
+|          | HMMT 2025 (Pass@1)                 | 41.7        | 79.4                       |
+|          | CNMO 2024 (Pass@1)                 | 78.8        | 86.9                       |
+| Tools    |
+|          | BFCL_v3_MultiTurn (Acc)            | -           | 37.0                       |
+|          | Tau-Bench (Pass@1)                 | -           | 53.5(Airline)/63.9(Retail) |
 
 </div>
 Note: We use Agentless framework to evaluate model performance on SWE-Verified. We only evaluate text-only prompts in HLE testsets.  GPT-4.1 is employed to act user role in Tau-bench evaluation.
 
 ### DeepSeek-R1-0528-Qwen3-8B
+
 Meanwhile, we distilled the chain-of-thought from DeepSeek-R1-0528 to post-train Qwen3 8B Base, obtaining DeepSeek-R1-0528-Qwen3-8B. This model achieves state-of-the-art (SOTA) performance among open-source models on the AIME 2024, surpassing Qwen3 8B by +10.0% and matching the performance of Qwen3-235B-thinking. We believe that the chain-of-thought from DeepSeek-R1-0528 will hold significant importance for both academic research on reasoning models and industrial development focused on small-scale models.
 
 |                                | AIME 24 | AIME 25 | HMMT Feb 25 | GPQA Diamond | LiveCodeBench (2408-2505) |
-|--------------------------------|---------|---------|-------------|--------------|---------------------------|
-| Qwen3-235B-A22B	                | 85.7    | 81.5    | 62.5        | 71.1         | 66.5                  |
+| ------------------------------ | ------- | ------- | ----------- | ------------ | ------------------------- |
+| Qwen3-235B-A22B                | 85.7    | 81.5    | 62.5        | 71.1         | 66.5                      |
 | Qwen3-32B                      | 81.4    | 72.9    | -           | 68.4         | -                         |
-| Qwen3-8B                      | 76.0   | 67.3    | -           | 62.0       | -                         |
-| Phi-4-Reasoning-Plus-14B       | 81.3    | 78.0    | 53.6        | 69.3         | -          |
-| Gemini-2.5-Flash-Thinking-0520 | 82.3    | 72.0    | 64.2        | 82.8         | 62.3                  |
-| o3-mini (medium)               | 79.6    | 76.7    | 53.3        | 76.8         | 65.9                     |
-| DeepSeek-R1-0528-Qwen3-8B      | 86.0   | 76.3    | 61.5        | 61.1         | 60.5                      |
+| Qwen3-8B                       | 76.0    | 67.3    | -           | 62.0         | -                         |
+| Phi-4-Reasoning-Plus-14B       | 81.3    | 78.0    | 53.6        | 69.3         | -                         |
+| Gemini-2.5-Flash-Thinking-0520 | 82.3    | 72.0    | 64.2        | 82.8         | 62.3                      |
+| o3-mini (medium)               | 79.6    | 76.7    | 53.3        | 76.8         | 65.9                      |
+| DeepSeek-R1-0528-Qwen3-8B      | 86.0    | 76.3    | 61.5        | 61.1         | 60.5                      |
 
 ## 3. Chat Website & API Platform
+
 You can chat with DeepSeek-R1 on DeepSeek's official website: [chat.deepseek.com](https://chat.deepseek.com/sign_in), and switch on the button "DeepThink"
 
 We also provide OpenAI-Compatible API at DeepSeek Platform: [platform.deepseek.com](https://platform.deepseek.com/)
@@ -68,21 +72,30 @@ Compared to previous versions of DeepSeek-R1, the usage recommendations for Deep
 The model architecture of DeepSeek-R1-0528-Qwen3-8B is identical to that of Qwen3-8B, but it shares the same tokenizer configuration as DeepSeek-R1-0528. This model can be run in the same manner as Qwen3-8B.
 
 ### System Prompt
+
 In the official DeepSeek web/app, we use the same system prompt with a specific date.
-```
+
+```text
 该助手为DeepSeek-R1，由深度求索公司创造。
 今天是{current date}。
 ```
+
 For example,
-```
+
+```text
 该助手为DeepSeek-R1，由深度求索公司创造。
 今天是2025年5月28日，星期一。
 ```
+
 ### Temperature
-In our web and application environments, the temperature parameter $T_{model}$ is set to 0.6. 
+
+In our web and application environments, the temperature parameter $T_{model}$ is set to 0.6.
+
 ### Prompts for File Uploading and Web Search
+
 For file uploading, please follow the template to create prompts, where {file_name}, {file_content} and {question} are arguments.
-```
+
+```text
 file_template = \
 """[file name]: {file_name}
 [file content begin]
@@ -90,9 +103,11 @@ file_template = \
 [file content end]
 {question}"""
 ```
+
 For Web Search, {search_results}, {cur_date}, and {question} are arguments.
 For Chinese query, we use the prompt:
-```
+
+```text
 search_answer_zh_template = \
 '''# 以下内容是基于用户发送的消息的搜索结果:
 {search_results}
@@ -110,8 +125,10 @@ search_answer_zh_template = \
 # 用户消息为：
 {question}'''
 ```
+
 For English query, we use the prompt:
-```
+
+```text
 search_answer_en_template = \
 '''# The following contents are the search results related to the user's message:
 {search_results}
@@ -131,21 +148,23 @@ When responding, please keep the following points in mind:
 ```
 
 ## 5. License
+
 This code repository is licensed under [MIT License](LICENSE). The use of DeepSeek-R1 models is also subject to [MIT License](LICENSE). DeepSeek-R1 series (including Base and Chat) supports commercial use and distillation.
 
 ## 6. Citation
-```
+
+```text
 @misc{deepseekai2025deepseekr1incentivizingreasoningcapability,
-      title={DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning}, 
+      title={DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning},
       author={DeepSeek-AI},
       year={2025},
       eprint={2501.12948},
       archivePrefix={arXiv},
       primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2501.12948}, 
+      url={https://arxiv.org/abs/2501.12948},
 }
 ```
 
 ## 7. Contact
-If you have any questions, please raise an issue or contact us at [service@deepseek.com](service@deepseek.com).
 
+If you have any questions, please raise an issue or contact us at [service@deepseek.com](service@deepseek.com).

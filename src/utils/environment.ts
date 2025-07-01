@@ -33,4 +33,4 @@ export const isDeploymentGuideEditorEnabled = (): boolean => {
  */
 export const getEnvironment = (): 'development' | 'production' => {
   return isDevelopment() ? 'development' : 'production';
-}; 
+};

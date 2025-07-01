@@ -12,4 +12,4 @@ declare module '@monaco-editor/react' {
 
   const Editor: ComponentType<EditorProps>;
   export default Editor;
-} 
+}

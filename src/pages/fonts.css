@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap'); 
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap');
 
 /* Custom underscore cursor */
 .underscore-cursor {
@@ -14,8 +14,14 @@
 }
 
 @keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 /* Fast blinking cursor */
@@ -33,6 +39,12 @@
 }
 
 @keyframes fastBlink {
-  0%, 45% { opacity: 1; }
-  46%, 100% { opacity: 0; }
-} 
+  0%,
+  45% {
+    opacity: 1;
+  }
+  46%,
+  100% {
+    opacity: 0;
+  }
+}

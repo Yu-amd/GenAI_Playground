@@ -224,7 +224,13 @@
           "maxItems": 10
         }
       },
-      "required": ["overview", "intended_use", "limitations", "architecture", "evaluation"]
+      "required": [
+        "overview",
+        "intended_use",
+        "limitations",
+        "architecture",
+        "evaluation"
+      ]
     },
     "microservices": {
       "type": "object",
@@ -322,4 +328,4 @@
     "microservices"
   ],
   "additionalProperties": false
-} 
+}

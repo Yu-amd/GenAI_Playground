@@ -8,7 +8,7 @@ export interface ChatQnASystemConfig {
     similarityThreshold: number;
     maxResults: number;
   };
-  
+
   // Model Configuration
   models: {
     embedding: {
@@ -23,7 +23,7 @@ export interface ChatQnASystemConfig {
       maxTokens: number;
     };
   };
-  
+
   // Response Configuration
   response: {
     includeSources: boolean;
@@ -31,7 +31,7 @@ export interface ChatQnASystemConfig {
     temperature: number;
     systemPrompt: string;
   };
-  
+
   // Performance Configuration
   performance: {
     enableCaching: boolean;
@@ -65,33 +65,34 @@ export class ChatQnAConfigService {
         collectionName: 'documents',
         embeddingModel: 'text-embedding-ada-002',
         similarityThreshold: 0.7,
-        maxResults: 5
+        maxResults: 5,
       },
       models: {
         embedding: {
           provider: 'openai',
           model: 'text-embedding-ada-002',
-          dimensions: 1536
+          dimensions: 1536,
         },
         language: {
           provider: 'openai',
           model: 'gpt-4',
           temperature: 0.7,
-          maxTokens: 2048
-        }
+          maxTokens: 2048,
+        },
       },
       response: {
         includeSources: true,
         maxContextLength: 4000,
         temperature: 0.7,
-        systemPrompt: 'You are a helpful AI assistant powered by a RAG (Retrieval Augmented Generation) system. Use the provided context to answer questions accurately and cite sources when appropriate.'
+        systemPrompt:
+          'You are a helpful AI assistant powered by a RAG (Retrieval Augmented Generation) system. Use the provided context to answer questions accurately and cite sources when appropriate.',
       },
       performance: {
         enableCaching: true,
         cacheTimeout: 300000, // 5 minutes
         enableStreaming: true,
-        batchSize: 10
-      }
+        batchSize: 10,
+      },
     };
   }
 
@@ -124,7 +125,9 @@ export class ChatQnAConfigService {
     this.saveToStorage();
   }
 
-  updateKnowledgeBaseConfig(updates: Partial<ChatQnASystemConfig['knowledgeBase']>): void {
+  updateKnowledgeBaseConfig(
+    updates: Partial<ChatQnASystemConfig['knowledgeBase']>
+  ): void {
     this.config.knowledgeBase = { ...this.config.knowledgeBase, ...updates };
     this.saveToStorage();
   }
@@ -134,12 +137,16 @@ export class ChatQnAConfigService {
     this.saveToStorage();
   }
 
-  updateResponseConfig(updates: Partial<ChatQnASystemConfig['response']>): void {
+  updateResponseConfig(
+    updates: Partial<ChatQnASystemConfig['response']>
+  ): void {
     this.config.response = { ...this.config.response, ...updates };
     this.saveToStorage();
   }
 
-  updatePerformanceConfig(updates: Partial<ChatQnASystemConfig['performance']>): void {
+  updatePerformanceConfig(
+    updates: Partial<ChatQnASystemConfig['performance']>
+  ): void {
     this.config.performance = { ...this.config.performance, ...updates };
     this.saveToStorage();
   }
@@ -180,4 +187,4 @@ export class ChatQnAConfigService {
 }
 
 // Export singleton instance
-export const chatQnAConfigService = ChatQnAConfigService.getInstance(); 
+export const chatQnAConfigService = ChatQnAConfigService.getInstance();

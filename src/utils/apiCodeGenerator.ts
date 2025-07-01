@@ -202,4 +202,4 @@ ${formattedMessages}
     fi
   done`;
   }
-}; 
+};

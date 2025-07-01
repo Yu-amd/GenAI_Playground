@@ -1,7 +1,9 @@
 ## Overview
+
 ChatQnA is a powerful chatbot application based on Retrieval Augmented Generation (RAG) architecture. It enables intelligent question answering by combining the power of large language models with efficient information retrieval from knowledge bases.
 
 ## Features
+
 - **RAG Architecture**: Combines retrieval and generation for accurate responses
 - **Context-Aware**: Maintains conversation context for coherent interactions
 - **Customizable**: Easy to adapt to different domains and use cases
@@ -10,9 +12,11 @@ ChatQnA is a powerful chatbot application based on Retrieval Augmented Generatio
 - **Multi-Modal Support**: Handles text, documents, and structured data
 
 ## Architecture
+
 The blueprint follows a modular architecture:
 
 ### Core Components
+
 1. **Query Processor**: Analyzes and understands user questions
    - Intent recognition
    - Query optimization
@@ -34,6 +38,7 @@ The blueprint follows a modular architecture:
    - Context windowing
 
 ### Integration Points
+
 - **Vector Databases**: Pinecone, Weaviate, Qdrant
 - **Document Stores**: Elasticsearch, MongoDB
 - **Embedding Models**: OpenAI, Cohere, Sentence Transformers
@@ -42,12 +47,14 @@ The blueprint follows a modular architecture:
 ## Getting Started
 
 ### Prerequisites
+
 - Python 3.8+
 - Node.js 16+
 - Vector database (Pinecone, Weaviate, etc.)
 - LLM API access
 
 ### Installation
+
 ```bash
 # Clone the repository
 git clone https://github.com/opena/chatqna-blueprint
@@ -62,6 +69,7 @@ cp .env.example .env
 ```
 
 ### Quick Start
+
 ```python
 from chatqna import ChatQnA
 
@@ -81,63 +89,74 @@ print(response.sources)
 ## Configuration
 
 ### Knowledge Base Settings
+
 ```yaml
 knowledge_base:
-  type: "vector"  # vector, document, database
-  connection_string: "mongodb://localhost:27017/chatqna"
-  collection_name: "documents"
-  embedding_model: "text-embedding-ada-002"
+  type: 'vector' # vector, document, database
+  connection_string: 'mongodb://localhost:27017/chatqna'
+  collection_name: 'documents'
+  embedding_model: 'text-embedding-ada-002'
   similarity_threshold: 0.7
   max_results: 5
 ```
 
 ### Model Configuration
+
 ```yaml
 models:
   embedding:
-    provider: "openai"
-    model: "text-embedding-ada-002"
+    provider: 'openai'
+    model: 'text-embedding-ada-002'
     dimensions: 1536
-  
+
   language:
-    provider: "openai"
-    model: "gpt-4"
+    provider: 'openai'
+    model: 'gpt-4'
     temperature: 0.7
     max_tokens: 2048
 ```
 
 ### Response Settings
+
 ```yaml
 response:
   include_sources: true
   max_context_length: 4000
   temperature: 0.7
-  system_prompt: "You are a helpful assistant..."
+  system_prompt: 'You are a helpful assistant...'
 ```
 
 ## Implementation Workflow
 
 ### Step 1: Deploy Model Inference Endpoints
+
 Set up dedicated microservices for ML workloads:
+
 - **Embedding Service**: Deploy with GPU support for text embedding generation
 - **LLM Inference Service**: Configure with streaming capabilities for response generation
 - **Reranking Service**: Implement semantic reranking for improved document relevance
 
 ### Step 2: Implement Functional Microservices
+
 Build business logic services:
+
 - **Query Processing Service**: Handle query preprocessing and intent recognition
 - **Retrieval Orchestrator**: Coordinate knowledge base queries and similarity search
 - **Context Management Service**: Manage conversation history and session state
 
 ### Step 3: Configure Service Communication
+
 Set up reliable inter-service communication:
+
 - API gateways for external access
 - Load balancers for traffic distribution
 - Message queues for asynchronous processing
 - Service discovery and health checks
 
 ### Step 4: Deploy & Monitor
+
 Deploy with container orchestration and monitoring:
+
 - Kubernetes deployment with proper resource allocation
 - Comprehensive monitoring and logging
 - Performance metrics and alerting
@@ -146,24 +165,28 @@ Deploy with container orchestration and monitoring:
 ## Best Practices
 
 ### Knowledge Base Management
+
 - **Regular Updates**: Keep knowledge base current with latest information
 - **Quality Control**: Validate and clean documents before ingestion
 - **Chunking Strategy**: Optimize document chunking for better retrieval
 - **Metadata**: Add rich metadata for better filtering and ranking
 
 ### Performance Optimization
+
 - **Caching**: Implement response caching for common queries
 - **Indexing**: Optimize vector database indexes for faster search
 - **Batching**: Process multiple queries in batches when possible
 - **Monitoring**: Track response times and accuracy metrics
 
 ### Security Considerations
+
 - **Access Control**: Implement proper authentication and authorization
 - **Data Privacy**: Ensure sensitive information is properly handled
 - **API Security**: Use secure API keys and rate limiting
 - **Audit Logging**: Log all interactions for compliance
 
 ### Quality Assurance
+
 - **Response Validation**: Implement quality checks for generated responses
 - **Feedback Loops**: Collect user feedback to improve responses
 - **A/B Testing**: Test different configurations and models
@@ -172,6 +195,7 @@ Deploy with container orchestration and monitoring:
 ## API Reference
 
 ### Chat Endpoint
+
 ```http
 POST /api/chat
 Content-Type: application/json
@@ -184,6 +208,7 @@ Content-Type: application/json
 ```
 
 ### Response Format
+
 ```json
 {
   "answer": "Based on our knowledge base...",
@@ -203,6 +228,7 @@ Content-Type: application/json
 ## Deployment
 
 ### Docker Deployment
+
 ```dockerfile
 FROM python:3.9-slim
 
@@ -217,6 +243,7 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
 ### Kubernetes Deployment
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -233,21 +260,22 @@ spec:
         app: chatqna
     spec:
       containers:
-      - name: chatqna
-        image: chatqna:latest
-        ports:
-        - containerPort: 8000
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: chatqna-secrets
-              key: database-url
+        - name: chatqna
+          image: chatqna:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: chatqna-secrets
+                  key: database-url
 ```
 
 ## Monitoring and Analytics
 
 ### Key Metrics
+
 - **Response Time**: Average time to generate responses
 - **Accuracy**: Percentage of correct answers
 - **User Satisfaction**: Feedback scores and ratings
@@ -255,6 +283,7 @@ spec:
 - **Error Rates**: Failed requests and error types
 
 ### Logging
+
 ```python
 import logging
 
@@ -268,6 +297,7 @@ logger.info(f"Query: {query}, Response: {response}, Sources: {sources}")
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Slow Response Times**
    - Check vector database performance
    - Optimize embedding generation
@@ -284,4 +314,5 @@ logger.info(f"Query: {query}, Response: {response}, Sources: {sources}")
    - Review error logs
 
 ## Support
-For questions and support, please contact the OPEA team or visit our documentation at [docs.opena.org](https://docs.opena.org). 
+
+For questions and support, please contact the OPEA team or visit our documentation at [docs.opena.org](https://docs.opena.org).

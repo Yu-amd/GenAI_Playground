@@ -24,6 +24,7 @@ This directory contains YAML files and validation workflows for both the model c
 - `PyYAML`, `jsonschema`, and `requests` Python packages
 
 Install requirements:
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -225,4 +226,4 @@ For a complete model setup workflow:
 
 ---
 
-For questions or improvements, please open an issue or contact the maintainers. 
+For questions or improvements, please open an issue or contact the maintainers.

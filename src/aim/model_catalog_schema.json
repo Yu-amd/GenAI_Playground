@@ -68,11 +68,7 @@
     "readiness_level": {
       "type": "string",
       "description": "Model readiness level for production use",
-      "enum": [
-        "Day-0 Available",
-        "Tech Preview",
-        "Production-Ready"
-      ]
+      "enum": ["Day-0 Available", "Tech Preview", "Production-Ready"]
     },
     "status_badges": {
       "type": "array",
@@ -160,12 +156,7 @@
       "description": "AIM deployment recipes for different hardware configurations",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "hardware",
-          "precision",
-          "recipe_file"
-        ],
+        "required": ["name", "hardware", "precision", "recipe_file"],
         "properties": {
           "name": {
             "type": "string",
@@ -180,13 +171,7 @@
           "precision": {
             "type": "string",
             "description": "Numerical precision for inference",
-            "enum": [
-              "fp16",
-              "bf16",
-              "fp8",
-              "int8",
-              "int4"
-            ]
+            "enum": ["fp16", "bf16", "fp8", "int8", "int4"]
           },
           "recipe_file": {
             "type": "string",

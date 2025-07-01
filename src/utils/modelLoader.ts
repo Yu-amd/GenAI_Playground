@@ -1,5 +1,4 @@
 import llamaImg from '../assets/models/model_llama3_1.png';
-import qwen2Img from '../assets/models/model_Qwen2-7B.png';
 import deepseekImg from '../assets/models/model_DeepSeek_MoE_18B.png';
 import llama4MaverickImg from '../assets/models/model_llama4_maverick.png';
 import { generatedModelData } from './generatedModelData';
@@ -71,7 +70,6 @@ export interface ModelCatalogItem {
 export const modelImageMap: Record<string, string> = {
   'deepseek-ai/DeepSeek-R1-0528': deepseekImg,
   'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8': llama4MaverickImg,
-  'Qwen/Qwen3-32B': qwen2Img, // Using Qwen2 image temporarily
   'amd/Llama-3_1-405B-Instruct-FP8-KV': llamaImg, // Using Llama 3 image as placeholder
 };
 
@@ -79,22 +77,26 @@ export const modelImageMap: Record<string, string> = {
 const readinessMap: Record<string, string> = {
   'Production-Ready': 'production-ready',
   'Tech-Preview': 'tech-preview',
-  'Experimental': 'experimental',
+  Experimental: 'experimental',
 };
 
 // Map tags to use cases
 const tagToUseCaseMap: Record<string, string> = {
   'Text Generation': 'Text Generation',
   'Code Generation': 'Code Generation',
-  'Multimodal': 'Multimodal',
+  Multimodal: 'Multimodal',
   'MoE Architecture': 'Efficient LLM',
-  'Efficient': 'Efficient LLM',
+  Efficient: 'Efficient LLM',
 };
 
-export async function loadModelData(modelId: string): Promise<ModelData | null> {
+export async function loadModelData(
+  modelId: string
+): Promise<ModelData | null> {
   try {
     // Try to load from YAML files first
-    const response = await fetch(`/src/aim/models/${modelId.split('/').pop()}.yaml`);
+    const response = await fetch(
+      `/src/aim/models/${modelId.split('/').pop()}.yaml`
+    );
     if (response.ok) {
       // For now, fall back to generated data since we need a YAML parser
       // In a real implementation, you'd parse the YAML here
@@ -103,15 +105,17 @@ export async function loadModelData(modelId: string): Promise<ModelData | null> 
   } catch (error) {
     console.warn(`Failed to load YAML for ${modelId}:`, error);
   }
-  
+
   return generatedModelData[modelId as keyof typeof generatedModelData] || null;
 }
 
 export async function loadAllModels(): Promise<ModelCatalogItem[]> {
   try {
     // Load all models from the generated data
-    const modelIds = Object.keys(generatedModelData) as Array<keyof typeof generatedModelData>;
-    
+    const modelIds = Object.keys(generatedModelData) as Array<
+      keyof typeof generatedModelData
+    >;
+
     const models: ModelCatalogItem[] = [];
     for (const modelId of modelIds) {
       const modelData = await loadModelData(modelId as string);
@@ -152,13 +156,14 @@ function convertToCatalogItem(modelData: ModelData): ModelCatalogItem {
     description: modelData.description,
     shortDescription: modelData.description,
     image: '/src/assets/banner_wave.png',
-    localCard: modelImageMap[modelData.model_id] || '/src/assets/models/default.png',
+    localCard:
+      modelImageMap[modelData.model_id] || '/src/assets/models/default.png',
     tags,
     useCase,
     precision: status_badges.find(badge => badge.includes('FP')) || 'FP16',
     license: modelData.license,
     compatibility,
     readiness: readinessMap[modelData.readiness_level] || 'production-ready',
-    badge
+    badge,
   };
-} 
+}

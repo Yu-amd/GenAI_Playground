@@ -12,14 +12,17 @@ function App() {
   return (
     <Router>
       <Routes>
-           <Route path="/" element={<LandingPage />} />
-           <Route path="/models" element={<ModelsCatalog />} />
-	   <Route path="/models/:modelId/*" element={<ModelDetail />} />
-           <Route path="/blueprints" element={<BlueprintsCatalog />} />
-           <Route path="/blueprints/:blueprintId" element={<BlueprintDetail />} />
-           <Route path="/services/:serviceId" element={<FunctionalServiceDetail />} />
-           <Route path="/gpu-cloud" element={<GPUCloud />} />
-           <Route path="/content-editor" element={<ContentEditorDemo />} />
+        <Route path='/' element={<LandingPage />} />
+        <Route path='/models' element={<ModelsCatalog />} />
+        <Route path='/models/:modelId/*' element={<ModelDetail />} />
+        <Route path='/blueprints' element={<BlueprintsCatalog />} />
+        <Route path='/blueprints/:blueprintId' element={<BlueprintDetail />} />
+        <Route
+          path='/services/:serviceId'
+          element={<FunctionalServiceDetail />}
+        />
+        <Route path='/gpu-cloud' element={<GPUCloud />} />
+        <Route path='/content-editor' element={<ContentEditorDemo />} />
       </Routes>
     </Router>
   );

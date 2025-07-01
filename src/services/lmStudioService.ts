@@ -91,12 +91,12 @@ export class LMStudioService {
       baseURL: config.endpoint,
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Access-Control-Allow-Origin': '*',
-        ...(config.apiKey && { 'Authorization': `Bearer ${config.apiKey}` })
+        ...(config.apiKey && { Authorization: `Bearer ${config.apiKey}` }),
       },
       timeout: 30000,
-      withCredentials: false
+      withCredentials: false,
     });
 
     // Add response interceptor for debugging
@@ -119,19 +119,24 @@ export class LMStudioService {
     try {
       console.log('Sending request to LM-studio:', {
         url: `${this.config.endpoint}/v1/chat/completions`,
-        request
+        request,
       });
 
       if (onStreamChunk) {
         // Handle streaming response
-        const response = await fetch(`${this.config.endpoint}/v1/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(this.config.apiKey && { 'Authorization': `Bearer ${this.config.apiKey}` })
-          },
-          body: JSON.stringify({ ...request, stream: true })
-        });
+        const response = await fetch(
+          `${this.config.endpoint}/v1/chat/completions`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(this.config.apiKey && {
+                Authorization: `Bearer ${this.config.apiKey}`,
+              }),
+            },
+            body: JSON.stringify({ ...request, stream: true }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -176,33 +181,42 @@ export class LMStudioService {
           object: 'chat.completion',
           created: Date.now(),
           model: request.messages[0]?.content || '',
-          choices: [{
-            index: 0,
-            message: {
-              role: 'assistant',
-              content: accumulatedContent
+          choices: [
+            {
+              index: 0,
+              message: {
+                role: 'assistant',
+                content: accumulatedContent,
+              },
+              finish_reason: 'stop',
             },
-            finish_reason: 'stop'
-          }],
+          ],
           usage: {
             prompt_tokens: 0,
             completion_tokens: 0,
-            total_tokens: 0
-          }
+            total_tokens: 0,
+          },
         };
       } else {
         // Handle regular response
-        const response = await this.axiosInstance.post('/v1/chat/completions', request);
+        const response = await this.axiosInstance.post(
+          '/v1/chat/completions',
+          request
+        );
         console.log('Received response from LM-studio:', response.data);
         return response.data;
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.code === 'ECONNREFUSED') {
-          throw new Error('Could not connect to LM-studio. Please make sure it is running on the correct port.');
+          throw new Error(
+            'Could not connect to LM-studio. Please make sure it is running on the correct port.'
+          );
         }
         if (error.code === 'ERR_NETWORK') {
-          throw new Error('Network error. Please check if LM-studio is running and accessible.');
+          throw new Error(
+            'Network error. Please check if LM-studio is running and accessible.'
+          );
         }
         console.error('LM-studio API Error:', {
           status: error.response?.status,
@@ -210,7 +224,7 @@ export class LMStudioService {
           data: error.response?.data,
           message: error.message,
           code: error.code,
-          headers: error.response?.headers
+          headers: error.response?.headers,
         });
         throw new Error(`LM-studio API Error: ${error.message}`);
       }
@@ -225,12 +239,12 @@ export class LMStudioService {
       baseURL: config.endpoint,
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Access-Control-Allow-Origin': '*',
-        ...(config.apiKey && { 'Authorization': `Bearer ${config.apiKey}` })
+        ...(config.apiKey && { Authorization: `Bearer ${config.apiKey}` }),
       },
       timeout: 30000,
-      withCredentials: false
+      withCredentials: false,
     });
   }
 }
@@ -240,4 +254,4 @@ const defaultConfig: LMStudioConfig = {
   endpoint: 'http://localhost:1234',
 };
 
-export const lmStudioService = new LMStudioService(defaultConfig); 
+export const lmStudioService = new LMStudioService(defaultConfig);

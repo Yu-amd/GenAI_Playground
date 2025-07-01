@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { isDevelopment, isProduction, isDeploymentGuideEditorEnabled, getEnvironment } from './environment';
+import {
+  isDevelopment,
+  isProduction,
+  isDeploymentGuideEditorEnabled,
+  getEnvironment,
+} from './environment';
 
 describe('Environment Utilities', () => {
   describe('Environment Detection', () => {
@@ -7,7 +12,7 @@ describe('Environment Utilities', () => {
       // In test environment, we're typically in development mode
       const dev = isDevelopment();
       const prod = isProduction();
-      
+
       // One should be true, the other false
       expect(dev).toBe(!prod);
     });
@@ -20,7 +25,7 @@ describe('Environment Utilities', () => {
     it('should enable editor in development mode', () => {
       const enabled = isDeploymentGuideEditorEnabled();
       const dev = isDevelopment();
-      
+
       // Editor should be enabled if and only if we're in development
       expect(enabled).toBe(dev);
     });
@@ -30,11 +35,11 @@ describe('Environment Utilities', () => {
       const prod = isProduction();
       const enabled = isDeploymentGuideEditorEnabled();
       const env = getEnvironment();
-      
+
       // Verify logical consistency
       expect(dev).toBe(!prod);
       expect(enabled).toBe(dev);
       expect(env).toBe(dev ? 'development' : 'production');
     });
   });
-}); 
+});

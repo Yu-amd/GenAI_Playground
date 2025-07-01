@@ -127,7 +127,7 @@ export class CloudInferenceService {
     this.config = config;
     this.providers = config.providers.filter(p => p.enabled);
     this.initializeProviders();
-    
+
     if (config.enableHealthMonitoring) {
       this.startHealthMonitoring();
     }
@@ -139,11 +139,13 @@ export class CloudInferenceService {
         baseURL: provider.endpoint,
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          ...(provider.apiKey && { 'Authorization': `Bearer ${provider.apiKey}` })
+          Accept: 'application/json',
+          ...(provider.apiKey && {
+            Authorization: `Bearer ${provider.apiKey}`,
+          }),
         },
         timeout: this.config.timeout,
-        withCredentials: false
+        withCredentials: false,
       });
 
       // Add response interceptor for debugging
@@ -163,18 +165,20 @@ export class CloudInferenceService {
         providerId: provider.id,
         isHealthy: true,
         lastCheck: Date.now(),
-        responseTime: 0
+        responseTime: 0,
       });
     });
   }
 
-  private async checkProviderHealth(provider: CloudProvider): Promise<ProviderHealth> {
+  private async checkProviderHealth(
+    provider: CloudProvider
+  ): Promise<ProviderHealth> {
     const startTime = Date.now();
     const health: ProviderHealth = {
       providerId: provider.id,
       isHealthy: false,
       lastCheck: Date.now(),
-      responseTime: 0
+      responseTime: 0,
     };
 
     try {
@@ -187,10 +191,11 @@ export class CloudInferenceService {
         const response = await axiosInstance.request({
           url: provider.healthCheck.url,
           method: provider.healthCheck.method,
-          timeout: provider.healthCheck.timeout
+          timeout: provider.healthCheck.timeout,
         });
 
-        health.isHealthy = response.status === provider.healthCheck.expectedStatus;
+        health.isHealthy =
+          response.status === provider.healthCheck.expectedStatus;
         health.responseTime = Date.now() - startTime;
       } else {
         // Default health check - try to make a simple request
@@ -230,25 +235,30 @@ export class CloudInferenceService {
   private getNextProvider(): CloudProvider | null {
     switch (this.config.loadBalancing) {
       case 'round-robin': {
-        const healthyProviders = this.providers.filter(p => 
-          this.healthStatus.get(p.id)?.isHealthy !== false
+        const healthyProviders = this.providers.filter(
+          p => this.healthStatus.get(p.id)?.isHealthy !== false
         );
         if (healthyProviders.length === 0) return null;
-        this.currentProviderIndex = (this.currentProviderIndex + 1) % healthyProviders.length;
+        this.currentProviderIndex =
+          (this.currentProviderIndex + 1) % healthyProviders.length;
         return healthyProviders[this.currentProviderIndex];
       }
       case 'priority': {
-        const sortedProviders = [...this.providers].sort((a, b) => a.priority - b.priority);
-        return sortedProviders.find(p => 
-          this.healthStatus.get(p.id)?.isHealthy !== false
-        ) || null;
+        const sortedProviders = [...this.providers].sort(
+          (a, b) => a.priority - b.priority
+        );
+        return (
+          sortedProviders.find(
+            p => this.healthStatus.get(p.id)?.isHealthy !== false
+          ) || null
+        );
       }
       case 'health-based': {
         const healthyProvidersHealth = this.providers
           .filter(p => this.healthStatus.get(p.id)?.isHealthy !== false)
           .map(p => ({
             provider: p,
-            health: this.healthStatus.get(p.id)!
+            health: this.healthStatus.get(p.id)!,
           }))
           .sort((a, b) => a.health.responseTime - b.health.responseTime);
         return healthyProvidersHealth[0]?.provider || null;
@@ -272,12 +282,19 @@ export class CloudInferenceService {
     const preparedRequest = this.prepareRequestForProvider(provider, request);
 
     if (onStreamChunk) {
-      return this.handleStreamingRequest(provider, preparedRequest, onStreamChunk);
+      return this.handleStreamingRequest(
+        provider,
+        preparedRequest,
+        onStreamChunk
+      );
     } else {
-      const response = await axiosInstance.post('/v1/chat/completions', preparedRequest);
+      const response = await axiosInstance.post(
+        '/v1/chat/completions',
+        preparedRequest
+      );
       return {
         ...response.data,
-        provider: provider.name
+        provider: provider.name,
       };
     }
   }
@@ -297,7 +314,7 @@ export class CloudInferenceService {
         // Azure OpenAI format
         return {
           ...baseRequest,
-          api_version: provider.config?.apiVersion || '2024-02-15-preview'
+          api_version: provider.config?.apiVersion || '2024-02-15-preview',
         };
 
       case 'aws':
@@ -305,21 +322,21 @@ export class CloudInferenceService {
         return {
           ...baseRequest,
           modelId: provider.config?.modelId || request.model,
-          inferenceConfig: provider.config?.inferenceConfig || {}
+          inferenceConfig: provider.config?.inferenceConfig || {},
         };
 
       case 'gcp':
         // Google AI format
         return {
           ...baseRequest,
-          generationConfig: provider.config?.generationConfig || {}
+          generationConfig: provider.config?.generationConfig || {},
         };
 
       case 'custom':
         // Custom endpoint format
         return {
           ...baseRequest,
-          ...(provider.config?.customFormat || {})
+          ...(provider.config?.customFormat || {}),
         };
 
       default:
@@ -336,9 +353,9 @@ export class CloudInferenceService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(provider.apiKey && { 'Authorization': `Bearer ${provider.apiKey}` })
+        ...(provider.apiKey && { Authorization: `Bearer ${provider.apiKey}` }),
       },
-      body: JSON.stringify({ ...request, stream: true })
+      body: JSON.stringify({ ...request, stream: true }),
     });
 
     if (!response.ok) {
@@ -383,20 +400,22 @@ export class CloudInferenceService {
       object: 'chat.completion',
       created: Date.now(),
       model: typeof request.model === 'string' ? request.model : 'unknown',
-      choices: [{
-        index: 0,
-        message: {
-          role: 'assistant',
-          content: accumulatedContent
+      choices: [
+        {
+          index: 0,
+          message: {
+            role: 'assistant',
+            content: accumulatedContent,
+          },
+          finish_reason: 'stop',
         },
-        finish_reason: 'stop'
-      }],
+      ],
       usage: {
         prompt_tokens: 0,
         completion_tokens: 0,
-        total_tokens: 0
+        total_tokens: 0,
       },
-      provider: provider.name
+      provider: provider.name,
     };
   }
 
@@ -408,32 +427,45 @@ export class CloudInferenceService {
 
     for (let attempt = 0; attempt < this.config.retryAttempts; attempt++) {
       const provider = this.getNextProvider();
-      
+
       if (!provider) {
         throw new Error('No healthy providers available');
       }
 
       try {
-        console.log(`Attempting request with provider: ${provider.name} (attempt ${attempt + 1})`);
-        const response = await this.makeRequest(provider, request, onStreamChunk);
-        console.log(`Successfully completed request with provider: ${provider.name}`);
+        console.log(
+          `Attempting request with provider: ${provider.name} (attempt ${attempt + 1})`
+        );
+        const response = await this.makeRequest(
+          provider,
+          request,
+          onStreamChunk
+        );
+        console.log(
+          `Successfully completed request with provider: ${provider.name}`
+        );
         return response;
       } catch (error) {
         lastError = error instanceof Error ? error : new Error('Unknown error');
-        console.error(`Request failed with provider ${provider.name}:`, lastError.message);
-        
+        console.error(
+          `Request failed with provider ${provider.name}:`,
+          lastError.message
+        );
+
         // Mark provider as unhealthy
         this.healthStatus.set(provider.id, {
           providerId: provider.id,
           isHealthy: false,
           lastCheck: Date.now(),
           responseTime: 0,
-          error: lastError.message
+          error: lastError.message,
         });
 
         // Wait before retry
         if (attempt < this.config.retryAttempts - 1) {
-          await new Promise(resolve => setTimeout(resolve, this.config.retryDelay));
+          await new Promise(resolve =>
+            setTimeout(resolve, this.config.retryDelay)
+          );
         }
       }
     }
@@ -443,7 +475,7 @@ export class CloudInferenceService {
 
   async updateConfig(config: Partial<CloudInferenceConfig>): Promise<void> {
     this.config = { ...this.config, ...config };
-    
+
     if (config.providers) {
       this.providers = config.providers.filter(p => p.enabled);
       this.initializeProviders();
@@ -496,8 +528,8 @@ const defaultConfig: CloudInferenceConfig = {
   retryDelay: 1000,
   timeout: 30000,
   enableHealthMonitoring: true,
-  healthCheckInterval: 30000
+  healthCheckInterval: 30000,
 };
 
 // Create singleton instance
-export const cloudInferenceService = new CloudInferenceService(defaultConfig); 
+export const cloudInferenceService = new CloudInferenceService(defaultConfig);

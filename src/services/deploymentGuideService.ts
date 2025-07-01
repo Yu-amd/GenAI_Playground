@@ -53,11 +53,11 @@ class DeploymentGuideService {
     // console.log('Loading deployment guide content:', deploymentGuideContent);
     this.content = deploymentGuideContent as DeploymentGuideContent;
     // console.log('Service content loaded:', this.content);
-    
+
     // Debug code blocks in loaded content
-    this.content.categories.forEach((category) => {
-      category.tabs.forEach((tab) => {
-        tab.sections.forEach((section) => {
+    this.content.categories.forEach(category => {
+      category.tabs.forEach(tab => {
+        tab.sections.forEach(section => {
           if (section.type === 'code-block') {
             // console.log(`Service: Code block:`, section);
             // console.log('Service: Code content:', section.code);
@@ -123,7 +123,10 @@ class DeploymentGuideService {
   /**
    * Process template variables in content
    */
-  processTemplate(content: string, modelInfo: { name: string; size: string; requirements: string }): string {
+  processTemplate(
+    content: string,
+    modelInfo: { name: string; size: string; requirements: string }
+  ): string {
     return content
       .replace(/\{\{modelName\}\}/g, modelInfo.name)
       .replace(/\{\{modelSize\}\}/g, modelInfo.size)
@@ -133,30 +136,42 @@ class DeploymentGuideService {
   /**
    * Get processed sections with template variables replaced
    */
-  getProcessedSections(categoryId: string, tabId: string, modelInfo: { name: string; size: string; requirements: string }): DeploymentSection[] {
+  getProcessedSections(
+    categoryId: string,
+    tabId: string,
+    modelInfo: { name: string; size: string; requirements: string }
+  ): DeploymentSection[] {
     const sections = this.getSections(categoryId, tabId);
-    
+
     return sections.map(section => {
       const processedSection = { ...section };
-      
+
       // Process description
       if (processedSection.description) {
-        processedSection.description = this.processTemplate(processedSection.description, modelInfo);
+        processedSection.description = this.processTemplate(
+          processedSection.description,
+          modelInfo
+        );
       }
-      
+
       // Process code blocks
       if (processedSection.code) {
-        processedSection.code = this.processTemplate(processedSection.code, modelInfo);
+        processedSection.code = this.processTemplate(
+          processedSection.code,
+          modelInfo
+        );
       }
-      
+
       // Process subsections
       if (processedSection.subsections) {
-        processedSection.subsections = processedSection.subsections.map(subsection => ({
-          ...subsection,
-          code: this.processTemplate(subsection.code, modelInfo)
-        }));
+        processedSection.subsections = processedSection.subsections.map(
+          subsection => ({
+            ...subsection,
+            code: this.processTemplate(subsection.code, modelInfo),
+          })
+        );
       }
-      
+
       return processedSection;
     });
   }
@@ -167,15 +182,15 @@ class DeploymentGuideService {
   getIconComponent(iconName: string): string {
     // Map icon names to actual component imports
     const iconMap: Record<string, string> = {
-      'HomeIcon': 'HomeIcon',
-      'CubeIcon': 'CubeIcon',
-      'CloudIcon': 'CloudIcon',
-      'GlobeAltIcon': 'GlobeAltIcon',
-      'DocumentTextIcon': 'DocumentTextIcon',
-      'ComputerDesktopIcon': 'ComputerDesktopIcon',
-      'BuildingOfficeIcon': 'BuildingOfficeIcon'
+      HomeIcon: 'HomeIcon',
+      CubeIcon: 'CubeIcon',
+      CloudIcon: 'CloudIcon',
+      GlobeAltIcon: 'GlobeAltIcon',
+      DocumentTextIcon: 'DocumentTextIcon',
+      ComputerDesktopIcon: 'ComputerDesktopIcon',
+      BuildingOfficeIcon: 'BuildingOfficeIcon',
     };
-    
+
     return iconMap[iconName] || 'DocumentTextIcon';
   }
 
@@ -184,40 +199,48 @@ class DeploymentGuideService {
    */
   validateContent(): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
-    
+
     if (!this.content.categories || !Array.isArray(this.content.categories)) {
       errors.push('Categories array is missing or invalid');
       return { isValid: false, errors };
     }
-    
+
     this.content.categories.forEach((category, categoryIndex) => {
       if (!category.id || !category.name) {
         errors.push(`Category ${categoryIndex}: Missing id or name`);
       }
-      
+
       if (!category.tabs || !Array.isArray(category.tabs)) {
-        errors.push(`Category ${category.id}: Tabs array is missing or invalid`);
+        errors.push(
+          `Category ${category.id}: Tabs array is missing or invalid`
+        );
         return;
       }
-      
+
       category.tabs.forEach((tab, tabIndex) => {
         if (!tab.id || !tab.name) {
-          errors.push(`Category ${category.id}, Tab ${tabIndex}: Missing id or name`);
+          errors.push(
+            `Category ${category.id}, Tab ${tabIndex}: Missing id or name`
+          );
         }
-        
+
         if (!tab.sections || !Array.isArray(tab.sections)) {
-          errors.push(`Category ${category.id}, Tab ${tab.id}: Sections array is missing or invalid`);
+          errors.push(
+            `Category ${category.id}, Tab ${tab.id}: Sections array is missing or invalid`
+          );
           return;
         }
-        
+
         tab.sections.forEach((section, sectionIndex) => {
           if (!section.type || !section.title) {
-            errors.push(`Category ${category.id}, Tab ${tab.id}, Section ${sectionIndex}: Missing type or title`);
+            errors.push(
+              `Category ${category.id}, Tab ${tab.id}, Section ${sectionIndex}: Missing type or title`
+            );
           }
         });
       });
     });
-    
+
     return { isValid: errors.length === 0, errors };
   }
 
@@ -257,18 +280,21 @@ class DeploymentGuideService {
       // In a real implementation, this would make an API call to save the content
       // For now, we'll just validate and return the content
       const validatedContent = this.validateContent(content);
-      
+
       // Simulate API call
       // console.log('Saving content to deployment guide:', validatedContent);
-      
+
       // In a real implementation, you would:
       // 1. Make an API call to save the content
       // 2. Update the local cache
       // 3. Trigger a reload of the content
-      
+
       // For demo purposes, we'll just log the content
-      localStorage.setItem('deployment-guide-content', JSON.stringify(validatedContent));
-      
+      localStorage.setItem(
+        'deployment-guide-content',
+        JSON.stringify(validatedContent)
+      );
+
       return Promise.resolve();
     } catch (error) {
       console.error('Failed to save deployment guide content:', error);
@@ -279,31 +305,53 @@ class DeploymentGuideService {
   /**
    * Validate content structure before saving
    */
-  private static validateContent(content: DeploymentGuideContent): DeploymentGuideContent {
+  private static validateContent(
+    content: DeploymentGuideContent
+  ): DeploymentGuideContent {
     if (!content || !content.categories || !Array.isArray(content.categories)) {
       throw new Error('Invalid content structure: missing categories array');
     }
 
     // Validate each category
-    content.categories.forEach((category: DeploymentCategory, categoryIndex: number) => {
-      if (!category.id || !category.name || !category.tabs || !Array.isArray(category.tabs)) {
-        throw new Error(`Invalid category structure at index ${categoryIndex}`);
-      }
-
-      // Validate each tab
-      category.tabs.forEach((tab: DeploymentTab, tabIndex: number) => {
-        if (!tab.id || !tab.name || !tab.sections || !Array.isArray(tab.sections)) {
-          throw new Error(`Invalid tab structure at category ${categoryIndex}, tab ${tabIndex}`);
+    content.categories.forEach(
+      (category: DeploymentCategory, categoryIndex: number) => {
+        if (
+          !category.id ||
+          !category.name ||
+          !category.tabs ||
+          !Array.isArray(category.tabs)
+        ) {
+          throw new Error(
+            `Invalid category structure at index ${categoryIndex}`
+          );
         }
 
-        // Validate each section
-        tab.sections.forEach((section: DeploymentSection, sectionIndex: number) => {
-          if (!section.type || !section.title) {
-            throw new Error(`Invalid section structure at category ${categoryIndex}, tab ${tabIndex}, section ${sectionIndex}`);
+        // Validate each tab
+        category.tabs.forEach((tab: DeploymentTab, tabIndex: number) => {
+          if (
+            !tab.id ||
+            !tab.name ||
+            !tab.sections ||
+            !Array.isArray(tab.sections)
+          ) {
+            throw new Error(
+              `Invalid tab structure at category ${categoryIndex}, tab ${tabIndex}`
+            );
           }
+
+          // Validate each section
+          tab.sections.forEach(
+            (section: DeploymentSection, sectionIndex: number) => {
+              if (!section.type || !section.title) {
+                throw new Error(
+                  `Invalid section structure at category ${categoryIndex}, tab ${tabIndex}, section ${sectionIndex}`
+                );
+              }
+            }
+          );
         });
-      });
-    });
+      }
+    );
 
     return content;
   }
@@ -313,4 +361,4 @@ class DeploymentGuideService {
 export const deploymentGuideService = new DeploymentGuideService();
 
 // Export the class for static method access
-export { DeploymentGuideService }; 
+export { DeploymentGuideService };
