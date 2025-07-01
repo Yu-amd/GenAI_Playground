@@ -424,7 +424,7 @@ const LandingPage: React.FC = () => {
             artificial intelligence
           </p>
           <div className='flex justify-center gap-8 text-sm text-gray-500'>
-            <span>© 2024 GenAI Playground</span>
+            <span>© 2025 GenAI Playground</span>
             <span>•</span>
             <span>Open Source</span>
             <span>•</span>

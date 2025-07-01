@@ -41,7 +41,7 @@ const testQueries = [
   },
   {
     name: 'Historical Stock Price',
-    query: 'What was AMD stock price on June 20, 2024?',
+    query: 'What was AMD stock price on June 20, 2025?',
     expectedTool: 'get_stock_price',
     description: 'Get historical stock price for specific date',
   },

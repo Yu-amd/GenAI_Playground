@@ -308,7 +308,7 @@ export class ToolService {
       }
 
       if (!targetDate) {
-        return `Please specify a date for historical stock data. Example: "AMD stock price on June 20, 2024"`;
+        return `Please specify a date for historical stock data. Example: "AMD stock price on June 20, 2025"`;
       }
 
       // Convert date to YYYY-MM-DD format for Alpha Vantage
@@ -343,7 +343,7 @@ export class ToolService {
 
           formattedDate = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         } else {
-          return `Unable to parse date: ${targetDate}. Please use format like "June 20, 2024" or "2024-06-20"`;
+          return `Unable to parse date: ${targetDate}. Please use format like "June 20, 2025" or "2025-06-20"`;
         }
       }
 

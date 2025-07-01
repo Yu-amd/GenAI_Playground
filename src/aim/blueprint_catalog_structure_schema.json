@@ -20,7 +20,7 @@
           "type": "string",
           "description": "Date when the catalog was last updated",
           "format": "date",
-          "examples": ["2024-12-19", "2024-01-15"]
+          "examples": ["2025-06-30", "2025-01-15"]
         },
         "total_blueprints": {
           "type": "integer",

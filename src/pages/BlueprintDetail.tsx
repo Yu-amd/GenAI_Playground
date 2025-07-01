@@ -222,7 +222,7 @@ Emergency hotline: +1-555-OPEA-911
     metadata: {
       author: 'OPEA Engineering Team',
       version: '2.1',
-      lastUpdated: '2024-01-15',
+      lastUpdated: '2025-06-30',
       classification: 'Public',
       size: '15.2 KB',
     },
@@ -1877,7 +1877,7 @@ for (let i = 0; i < 10; i++) {
                               ))
                             : [
                                 `# API Reference\n\n## POST /v1/users\nCreate a new user in the system.\n\n**Request Body:**\n- name: string\n- email: string\n\n**Response:**\n- 201 Created: User object\n- 400 Bad Request: Validation error`,
-                                `# Changelog\n\n## [1.2.0] - 2024-06-01\n### Added\n- Support for multi-factor authentication.\n- New API endpoint for password reset.\n\n### Fixed\n- Minor bug fixes in user profile module.`,
+                                `# Changelog\n\n## [1.2.0] - 2025-06-01\n### Added\n- Support for multi-factor authentication.\n- New API endpoint for password reset.\n\n### Fixed\n- Minor bug fixes in user profile module.`,
                                 `# README\n\nThis project provides a RESTful API for managing tasks.\n\n## Features\n- Create, update, delete tasks\n- Assign tasks to users\n- Track task status and deadlines`,
                                 `# Technical Specification\n\nThe system uses a microservices architecture with the following components:\n- Auth Service\n- User Service\n- Task Service\n\nAll services communicate via gRPC.`,
                                 `# Integration Guide\n\nTo integrate with the payment gateway:\n1. Obtain your API key from the dashboard.\n2. Use the /v1/payments endpoint for transactions.\n3. Handle webhook events for payment status updates.`,

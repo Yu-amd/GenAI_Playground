@@ -36,7 +36,7 @@ The blueprint catalog template (`src/aim/templates/blueprint_catalog_template.ya
 ```yaml
 catalog_metadata:
   version: "1.0.0"
-  last_updated: "2024-12-19"
+  last_updated: "2025-06-30"
   total_blueprints: 0
   categories:
     - Conversational AI

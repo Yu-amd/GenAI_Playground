@@ -707,6 +707,6 @@ When adding new features to the project:
 
 ---
 
-**Last Updated**: June 28, 2025
+**Last Updated**: June 30, 2025
 **Maintainer**: Yu Wang ([yu.wang6@amd.com](mailto:yu.wang6@amd.com))
 **Test Frameworks**: Jest + React Testing Library, Vitest

@@ -275,12 +275,12 @@ const toolDocumentation: ToolDoc[] = [
       {
         prompt: 'What time is it in Tokyo?',
         response:
-          'Current time in Asia/Tokyo:\n• 2024-01-15, 14:30:25\n• Format: 24-hour',
+          'Current time in Asia/Tokyo:\n• 2025-06-30, 14:30:25\n• Format: 24-hour',
       },
       {
         prompt: "What's the current time in New York in 12-hour format?",
         response:
-          'Current time in America/New_York:\n• 01/15/2024, 02:30:25 AM\n• Format: 12-hour',
+          'Current time in America/New_York:\n• 06/30/2025, 02:30:25 AM\n• Format: 12-hour',
       },
     ],
     tips: [

@@ -221,7 +221,7 @@ Content-Type: application/json
     }
   ],
   "session_id": "user_session_123",
-  "timestamp": "2024-01-15T10:30:00Z"
+  "timestamp": "2025-06-30T10:30:00Z"
 }
 ```
 

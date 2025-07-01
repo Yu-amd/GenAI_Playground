@@ -261,6 +261,6 @@ For technical support or feature requests:
 
 ---
 
-**Last Updated**: December 2024  
+**Last Updated**: June 2025  
 **Version**: 1.0.0  
 **Maintainer**: Development Team 

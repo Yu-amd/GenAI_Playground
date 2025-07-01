@@ -77,7 +77,7 @@ The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a 
 
 **Llama 3.1 family of models**. Token counts refer to pretraining data only. All model versions use Grouped-Query Attention (GQA) for improved inference scalability.
 
-**Model Release Date:** July 23, 2024.
+**Model Release Date:** July 23, 2025.
 
 **Status:** This is a static model trained on an offline dataset. Future versions of the tuned models will be released as we improve model safety with community feedback.
 
