@@ -1,6 +1,7 @@
 import llamaImg from '../assets/models/model_llama3_1.png';
 import deepseekImg from '../assets/models/model_DeepSeek_MoE_18B.png';
 import llama4MaverickImg from '../assets/models/model_llama4_maverick.png';
+import qwen3Img from '../assets/models/model_qwen3_32b.png';
 import { generatedModelData } from './generatedModelData';
 
 export interface ModelData {
@@ -71,6 +72,7 @@ export const modelImageMap: Record<string, string> = {
   'deepseek-ai/DeepSeek-R1-0528': deepseekImg,
   'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8': llama4MaverickImg,
   'amd/Llama-3_1-405B-Instruct-FP8-KV': llamaImg, // Using Llama 3 image as placeholder
+  'Qwen/Qwen3-32B': qwen3Img,
 };
 
 // Map readiness levels to display values

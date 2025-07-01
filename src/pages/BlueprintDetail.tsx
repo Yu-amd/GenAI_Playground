@@ -42,7 +42,7 @@ import avatarchatbotArchitecture from '../assets/architecture/avatarchatbot-arch
 // Model images
 import llamaImg from '../assets/models/model_llama3_1.png';
 import deepseekImg from '../assets/models/model_DeepSeek_MoE_18B.png';
-
+import qwen3Img from '../assets/models/model_qwen3_32b.png';
 import llama4MaverickImg from '../assets/models/model_llama4_maverick.png';
 import { generatedBlueprintData } from '../utils/generatedBlueprintData';
 import PlaygroundLogo from '../components/PlaygroundLogo';
@@ -630,7 +630,7 @@ Emergency hotline: +1-555-OPEA-911
       return {
         models: chatqnaData.microservices.models.map(model => ({
           name: model.name,
-          logo: model.logo,
+          logo: model.name === 'Qwen3 32B' ? qwen3Img : model.logo,
           tags: [...model.tags],
         })),
         functional: chatqnaData.microservices.functional.map(service => ({
@@ -662,6 +662,11 @@ Emergency hotline: +1-555-OPEA-911
         name: 'Llama 3.1 405B Instruct FP8 KV',
         logo: llamaImg,
         tags: ['FP8', 'Large Scale', 'AMD', 'Featured'],
+      },
+      {
+        name: 'Qwen3 32B',
+        logo: qwen3Img,
+        tags: ['Multilingual', 'Chat', 'Reasoning'],
       },
     ];
 

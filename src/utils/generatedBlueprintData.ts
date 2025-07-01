@@ -89,7 +89,7 @@ export const generatedBlueprintData = {
       models: [
         {
           name: 'Qwen3 32B',
-          logo: '/src/assets/models/model_Qwen2-7B.png',
+          logo: '/src/assets/models/model_qwen3_32b.png',
           tags: [
             'Text Generation',
             'RAG',

@@ -50,7 +50,7 @@ src/assets/
 ├── banner_wave.png            # Page banner background
 └── models/
     ├── model_llama3_1.png     # Llama 3 model logo
-    ├── model_Qwen2-7B.png     # Qwen2 model logo
+    ├── model_qwen3_32b.png     # Qwen3 model logo
     ├── model_DeepSeek_MoE_18B.png  # DeepSeek model logo
     └── model_Gemma.png        # Gemma model logo
 ```
