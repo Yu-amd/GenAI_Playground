@@ -264,13 +264,15 @@ npm run convert-blueprints
 2. **Create a new YAML file** in the `blueprints/` directory
 3. **Follow the naming convention**: `<blueprint-name>.yaml` (e.g., `chatqna.yaml`)
 4. **Validate the blueprint**:
+
    ```bash
    # Python validation (recommended for YAML structure)
    python3 validate_blueprint_yaml.py blueprints/your-blueprint.yaml
-   
+
    # Node.js validation (recommended for integration)
    npm run validate-blueprint-data
    ```
+
 5. **Update the catalog**:
    ```bash
    npm run convert-blueprints
@@ -344,13 +346,15 @@ For a complete model and blueprint setup workflow:
    ```
 6. **Create blueprint YAMLs** using the template in `templates/blueprint_catalog_template.yaml`
 7. **Validate blueprints**:
+
    ```bash
    # Python validation (recommended for YAML structure)
    python3 validate_blueprint_yaml.py --all
-   
+
    # Node.js validation (recommended for integration)
    npm run validate-blueprint-data
    ```
+
 8. **Update blueprint catalog**:
    ```bash
    npm run convert-blueprints
