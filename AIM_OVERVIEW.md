@@ -1,8 +1,8 @@
-# AIM (AMD Inference Microservice) Overview
+# AIM (AMD Inference Microservice) Overview (work-in-progress)
 
 ## Introduction
 
-**AIM (AMD Inference Microservice)** is a comprehensive framework for deploying and serving AI models on AMD hardware, specifically designed for AMD Instinct™ GPUs (MI250, MI300X). AIM provides standardized recipes and configurations for efficient model inference across different hardware configurations and precision formats.
+**AIM (AMD Inference Microservice)** is a comprehensive framework for deploying and serving AI models on AMD hardware, specifically designed for AMD Instinct™ GPUs (MI250, MI300X, MI325X, MI355X, etc.). AIM provides standardized recipes and configurations for efficient model inference across different hardware configurations and precision formats.
 
 ### Key Features
 - **Hardware Optimization**: Tailored configurations for AMD Instinct™ GPUs
