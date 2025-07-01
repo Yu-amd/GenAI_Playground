@@ -1,0 +1,389 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Blueprint Catalog Structure Schema",
+  "description": "Schema for the overall blueprint catalog structure",
+  "type": "object",
+  "required": ["catalog_metadata", "blueprints"],
+  "properties": {
+    "catalog_metadata": {
+      "type": "object",
+      "description": "Metadata about the blueprint catalog",
+      "required": ["version", "last_updated", "total_blueprints", "categories"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Version of the catalog",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "examples": ["1.0.0", "2.1.0"]
+        },
+        "last_updated": {
+          "type": "string",
+          "description": "Date when the catalog was last updated",
+          "format": "date",
+          "examples": ["2024-12-19", "2024-01-15"]
+        },
+        "total_blueprints": {
+          "type": "integer",
+          "description": "Total number of blueprints in the catalog",
+          "minimum": 0
+        },
+        "categories": {
+          "type": "array",
+          "description": "List of categories available in the catalog",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Conversational AI",
+              "Multi-Agent Systems",
+              "Development Tools",
+              "Enhanced AI",
+              "Content Processing",
+              "Language Processing",
+              "Visual AI"
+            ]
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "blueprints": {
+      "type": "array",
+      "description": "Array of blueprint entries",
+      "items": {
+        "$ref": "#/definitions/blueprint"
+      },
+      "minItems": 0
+    }
+  },
+  "definitions": {
+    "blueprint": {
+      "type": "object",
+      "description": "Individual blueprint entry",
+      "required": [
+        "blueprint_id",
+        "name",
+        "category",
+        "complexity",
+        "description",
+        "shortDescription",
+        "logo",
+        "readiness_level",
+        "status_badges",
+        "tags",
+        "status",
+        "endpoint",
+        "demo_assets",
+        "aim_recipes",
+        "blueprint_card",
+        "microservices"
+      ],
+      "properties": {
+        "blueprint_id": {
+          "type": "string",
+          "description": "Unique identifier for the blueprint",
+          "pattern": "^[a-z0-9-]+$",
+          "examples": ["chatqna", "agentqna", "codegen"]
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the blueprint",
+          "minLength": 1,
+          "maxLength": 100,
+          "examples": ["ChatQnA", "AgentQnA", "CodeGen"]
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the blueprint",
+          "enum": [
+            "Conversational AI",
+            "Multi-Agent Systems",
+            "Development Tools",
+            "Enhanced AI",
+            "Content Processing",
+            "Language Processing",
+            "Visual AI"
+          ]
+        },
+        "complexity": {
+          "type": "string",
+          "description": "Complexity level of the blueprint",
+          "enum": ["Beginner", "Intermediate", "Advanced"]
+        },
+        "description": {
+          "type": "string",
+          "description": "Full description of the blueprint",
+          "minLength": 10,
+          "maxLength": 1000
+        },
+        "shortDescription": {
+          "type": "string",
+          "description": "Short description for catalog display",
+          "minLength": 10,
+          "maxLength": 200
+        },
+        "logo": {
+          "type": "string",
+          "description": "Filename of the blueprint logo image",
+          "pattern": "^[a-zA-Z0-9_-]+\\.(png|jpg|jpeg|svg)$",
+          "examples": ["bp_chatqna.png", "bp_agentqna.png"]
+        },
+        "readiness_level": {
+          "type": "string",
+          "description": "Readiness level of the blueprint",
+          "enum": ["Production-Ready", "Tech-Preview", "Experimental"]
+        },
+        "status_badges": {
+          "type": "array",
+          "description": "Status badges for the blueprint",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Featured",
+              "New",
+              "Tech-Preview",
+              "Production-Ready",
+              "RAG",
+              "Multi-Agent",
+              "Code Generation",
+              "Search Integration",
+              "Document Summarization",
+              "Language Translation",
+              "Avatar Integration"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 5
+        },
+        "tags": {
+          "type": "array",
+          "description": "Tags for categorizing the blueprint",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "minItems": 1,
+          "maxItems": 10
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the blueprint",
+          "enum": ["Production Ready", "Tech Preview", "Experimental"]
+        },
+        "endpoint": {
+          "type": "string",
+          "description": "API endpoint for the blueprint",
+          "format": "uri",
+          "pattern": "^https://api\\.inference-hub\\.com/v1/blueprints/[a-z0-9-]+$"
+        },
+        "demo_assets": {
+          "type": "object",
+          "description": "Demo assets for the blueprint",
+          "properties": {
+            "notebook": {
+              "type": "string",
+              "description": "URL to the demo notebook",
+              "format": "uri"
+            },
+            "demo_link": {
+              "type": "string",
+              "description": "URL to the live demo",
+              "format": "uri"
+            }
+          },
+          "required": ["notebook", "demo_link"]
+        },
+        "aim_recipes": {
+          "type": "array",
+          "description": "AIM recipes for deploying the blueprint",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the recipe",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "hardware": {
+                "type": "string",
+                "description": "Target hardware for the recipe",
+                "enum": ["MI300X", "MI250", "MI210", "CPU"]
+              },
+              "precision": {
+                "type": "string",
+                "description": "Precision format for the recipe",
+                "enum": ["fp8", "fp16", "fp32", "int8", "int4"]
+              },
+              "recipe_file": {
+                "type": "string",
+                "description": "Path to the recipe configuration file",
+                "pattern": "^configs/[a-z0-9-]+-[a-z0-9]+-[a-z0-9]+\\.yaml$"
+              }
+            },
+            "required": ["name", "hardware", "precision", "recipe_file"]
+          },
+          "minItems": 1
+        },
+        "blueprint_card": {
+          "type": "object",
+          "description": "Blueprint card information",
+          "properties": {
+            "overview": {
+              "type": "string",
+              "description": "Overview of the blueprint",
+              "minLength": 10,
+              "maxLength": 2000
+            },
+            "intended_use": {
+              "type": "array",
+              "description": "Intended use cases for the blueprint",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "minItems": 1,
+              "maxItems": 10
+            },
+            "limitations": {
+              "type": "array",
+              "description": "Limitations of the blueprint",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "minItems": 1,
+              "maxItems": 10
+            },
+            "architecture": {
+              "type": "string",
+              "description": "Architecture description of the blueprint",
+              "minLength": 10,
+              "maxLength": 500
+            },
+            "evaluation": {
+              "type": "array",
+              "description": "Evaluation metrics and results",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "minItems": 1,
+              "maxItems": 10
+            },
+            "known_issues": {
+              "type": "array",
+              "description": "Known issues with the blueprint",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "minItems": 0,
+              "maxItems": 10
+            },
+            "references": {
+              "type": "array",
+              "description": "References and citations",
+              "items": {
+                "type": "string",
+                "format": "uri",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "minItems": 0,
+              "maxItems": 10
+            }
+          },
+          "required": [
+            "overview",
+            "intended_use",
+            "limitations",
+            "architecture",
+            "evaluation"
+          ]
+        },
+        "microservices": {
+          "type": "object",
+          "description": "Microservices used by the blueprint",
+          "properties": {
+            "models": {
+              "type": "array",
+              "description": "AI models used by the blueprint",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the model",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "logo": {
+                    "type": "string",
+                    "description": "Path to the model logo",
+                    "pattern": "^/src/assets/models/[a-zA-Z0-9_-]+\\.png$"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "description": "Tags for the model",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 50
+                    },
+                    "minItems": 1,
+                    "maxItems": 5
+                  }
+                },
+                "required": ["name", "logo", "tags"]
+              },
+              "minItems": 0,
+              "maxItems": 10
+            },
+            "functional": {
+              "type": "array",
+              "description": "Functional microservices used by the blueprint",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the functional service",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the functional service",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "tags": {
+                    "type": "array",
+                    "description": "Tags for the functional service",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 50
+                    },
+                    "minItems": 1,
+                    "maxItems": 5
+                  }
+                },
+                "required": ["name", "description", "tags"]
+              },
+              "minItems": 0,
+              "maxItems": 10
+            }
+          },
+          "required": ["models", "functional"]
+        }
+      }
+    }
+  }
+} 

@@ -6,7 +6,7 @@ import * as yaml from 'js-yaml';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 
-const SCHEMA_PATH = path.resolve('src/aim/schemas/blueprint_catalog.schema.json');
+const SCHEMA_PATH = path.resolve('src/aim/blueprint_catalog_structure_schema.json');
 const DEFAULT_CATALOG_PATH = path.resolve('src/aim/blueprint-catalog.yaml');
 
 function loadYamlOrJson(filePath: string): Record<string, unknown> {
@@ -54,7 +54,7 @@ for (let i = 0; i < args.length; i++) {
       schemaPath = path.resolve(args[++i]);
       break;
     case '--help':
-      console.log(`\nBlueprint Catalog Validator\n\nUsage:\n  npm run validate-blueprint-catalog [options]\n\nOptions:\n  --catalog <path>   Path to blueprint catalog YAML/JSON (default: src/aim/blueprint-catalog.yaml)\n  --schema <path>    Path to JSON schema (default: src/aim/schemas/blueprint_catalog.schema.json)\n  --help             Show this help message\n`);
+      console.log(`\nBlueprint Catalog Validator\n\nUsage:\n  npm run validate-blueprint-catalog [options]\n\nOptions:\n  --catalog <path>   Path to blueprint catalog YAML/JSON (default: src/aim/blueprint-catalog.yaml)\n  --schema <path>    Path to JSON schema (default: src/aim/blueprint_catalog_structure_schema.json)\n  --help             Show this help message\n`);
       process.exit(0);
       break;
   }

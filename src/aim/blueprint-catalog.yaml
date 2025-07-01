@@ -73,7 +73,6 @@ blueprints:
             - Inference
             - Reasoning
             - Code Generation
-            - Multilingual
       functional:
         - name: Retriever
           description: Vector-based document retrieval service

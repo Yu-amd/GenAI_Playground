@@ -1,17 +1,21 @@
-# Model & AIM Recipe Validation Workflow
+# Model, Blueprint & AIM Recipe Validation Workflow
 
-This directory contains YAML files and validation workflows for both the model catalog and AIM serving recipes. Both types of YAMLs have their own schema and validation scripts.
+This directory contains YAML files and validation workflows for the model catalog, blueprint catalog, and AIM serving recipes. All types of YAMLs have their own schema and validation scripts.
 
 ---
 
 ## Directory Structure
 
 - `models/` — Per-model YAML files for the model catalog
+- `blueprints/` — Individual blueprint YAML files for the blueprint catalog
 - `recipes/` — AIM recipe YAML files (one per model/hardware/precision combination)
-- `templates/` — Templates for new model YAMLs
+- `templates/` — Templates for new model and blueprint YAML files
 - `model_catalog_schema.json` — JSON schema for validating model YAML files
+- `blueprint_catalog_schema.json` — JSON schema for validating blueprint YAML files
 - `aim_recipe_schema.json` — JSON schema for validating recipe files
+- `blueprint-catalog.yaml` — Aggregated blueprint catalog file
 - `validate_model_yaml.py` — Python script to validate model YAMLs
+- `validate_blueprint_yaml.py` — Python script to validate blueprint YAMLs
 - `validate_aim_recipe_yaml.py` — Python script to validate AIM recipes
 - `fetch_model_cards.py` — Python script to fetch model card information from Hugging Face
 - `requirements.txt` — Python dependencies for the scripts
@@ -191,9 +195,138 @@ $ python3 validate_aim_recipe_yaml.py --all
 
 ---
 
+## Blueprint Catalog Management
+
+The blueprint catalog provides a structured way to manage AI application blueprints, similar to the model catalog. Blueprints are pre-configured AI application templates that combine models with functional microservices.
+
+### Directory Structure
+
+- `blueprints/` — Individual blueprint YAML files
+- `blueprint-catalog.yaml` — Aggregated blueprint catalog file
+- `blueprint_catalog_schema.json` — JSON schema for validating blueprint YAML files
+- `templates/blueprint_catalog_template.yaml` — Template for new blueprint YAML files
+
+### Blueprint YAML Structure
+
+Each blueprint YAML file contains:
+
+- **Basic Information**: ID, name, category, complexity, description
+- **Status & Badges**: Readiness level, status badges, tags
+- **API Information**: Endpoint, demo assets, API examples
+- **AIM Recipes**: Hardware-specific deployment configurations
+- **Blueprint Card**: Detailed documentation including overview, intended use, limitations
+- **Microservices**: Models and functional services used by the blueprint
+
+### Available Blueprints
+
+- **ChatQnA**: RAG-based chatbot for knowledge base interactions
+- **AgentQnA**: Multi-agent system for complex question-answering
+- **CodeTrans**: Code translation between programming languages
+- **DocSum**: Document summarization with different approaches
+
+### Blueprint Validation
+
+#### Validate Individual Blueprint YAMLs (Python)
+
+```bash
+# Validate a single blueprint YAML file
+python3 validate_blueprint_yaml.py blueprints/chatqna.yaml
+
+# Validate all blueprint YAML files
+python3 validate_blueprint_yaml.py --all
+```
+
+#### Validate Individual Blueprint YAMLs (Node.js)
+
+```bash
+# Using Node.js validation (recommended)
+npm run validate-blueprint-data
+
+# Or using TypeScript directly
+npx tsx scripts/validateBlueprintData.ts
+```
+
+#### Validate Blueprint Catalog
+
+```bash
+npm run validate-blueprint-catalog
+```
+
+#### Convert Individual YAMLs to Catalog
+
+```bash
+npm run convert-blueprints
+```
+
+### Creating New Blueprints
+
+1. **Use the template** in `templates/blueprint_catalog_template.yaml`
+2. **Create a new YAML file** in the `blueprints/` directory
+3. **Follow the naming convention**: `<blueprint-name>.yaml` (e.g., `chatqna.yaml`)
+4. **Validate the blueprint**:
+   ```bash
+   # Python validation (recommended for YAML structure)
+   python3 validate_blueprint_yaml.py blueprints/your-blueprint.yaml
+   
+   # Node.js validation (recommended for integration)
+   npm run validate-blueprint-data
+   ```
+5. **Update the catalog**:
+   ```bash
+   npm run convert-blueprints
+   npm run validate-blueprint-catalog
+   ```
+
+### Blueprint Schema Validation
+
+The `blueprint_catalog_schema.json` ensures:
+
+- **Required fields** are present and correctly typed
+- **Allowed values** for enums (status, complexity, etc.)
+- **Nested structures** for microservices and API examples
+- **Consistent formatting** across all blueprints
+
+### Example Blueprint YAML
+
+```yaml
+blueprint_id: chatqna
+name: ChatQnA
+category: Conversational AI
+complexity: Intermediate
+description: RAG-based chatbot for knowledge base interactions
+shortDescription: Advanced chatbot with retrieval capabilities
+logo: bp_chatqna.png
+readiness_level: Production-Ready
+status_badges: [Featured, Production-Ready, RAG]
+tags: [RAG, Chatbot, Knowledge Base, Vector Search]
+status: Production Ready
+endpoint: https://api.inference-hub.com/v1/blueprints/chatqna
+
+microservices:
+  models:
+    - name: Qwen3 32B
+      logo: /src/assets/models/model_qwen3_32b.png
+      tags: [Text Generation, RAG, Inference, Reasoning]
+  functional:
+    - name: Retriever
+      description: Vector-based document retrieval service
+      tags: [RAG, Vector Search, Document Processing]
+```
+
+### Blueprint Integration
+
+Blueprints integrate with:
+
+- **Model Catalog**: Uses models from the model catalog
+- **AIM Recipes**: Leverages hardware-specific deployment configurations
+- **Functional Services**: Combines with specialized microservices
+- **API Framework**: Provides standardized API endpoints
+
+---
+
 ## Complete Workflow
 
-For a complete model setup workflow:
+For a complete model and blueprint setup workflow:
 
 1. **Create a new model YAML** using the template in `templates/model_template.yaml`
 2. **Fetch model card information** from Hugging Face:
@@ -208,6 +341,20 @@ For a complete model setup workflow:
 5. **Validate the recipes**:
    ```bash
    python3 validate_aim_recipe_yaml.py --all
+   ```
+6. **Create blueprint YAMLs** using the template in `templates/blueprint_catalog_template.yaml`
+7. **Validate blueprints**:
+   ```bash
+   # Python validation (recommended for YAML structure)
+   python3 validate_blueprint_yaml.py --all
+   
+   # Node.js validation (recommended for integration)
+   npm run validate-blueprint-data
+   ```
+8. **Update blueprint catalog**:
+   ```bash
+   npm run convert-blueprints
+   npm run validate-blueprint-catalog
    ```
 
 ---

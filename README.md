@@ -464,7 +464,7 @@ The Blueprint Catalog mirrors the Model Catalog structure and provides a robust,
     npm run validate-blueprint-catalog
     # Options:
     #   --catalog <file>    # Path to catalog YAML/JSON (default: src/aim/blueprint-catalog.yaml)
-    #   --schema <file>     # Path to schema (default: src/aim/schemas/blueprint_catalog.schema.json)
+    #   --schema <file>     # Path to schema (default: src/aim/blueprint_catalog_schema.json)
     ```
 
 ---
@@ -531,10 +531,12 @@ The AIM (AMD Inference Microservice) system provides tools for managing AI model
   - `blueprint_catalog_template.yaml` - Template for blueprint catalog structure
 
 ### 7. AIM Schemas
-- **Location:** `src/aim/schemas/`
+- **Location:** `src/aim/`
 - **Purpose:** JSON schemas for validating various AIM-related YAML files.
 - **Files:**
-  - `blueprint_catalog.schema.json` - Schema for blueprint catalog validation
+  - `blueprint_catalog_schema.json` - Schema for blueprint catalog validation
+  - `model_catalog_schema.json` - Schema for model catalog validation
+  - `aim_recipe_schema.json` - Schema for AIM recipe validation
 
 ### 8. Python Dependencies
 - **Location:** `src/aim/requirements.txt`
@@ -1003,7 +1005,7 @@ The cloud inference system is production-ready and provides a smooth migration p
   npm run validate-blueprint-catalog
   # Options:
   #   --catalog <file>    # Path to catalog YAML/JSON (default: src/aim/blueprint-catalog.yaml)
-  #   --schema <file>     # Path to schema (default: src/aim/schemas/blueprint_catalog.schema.json)
+  #   --schema <file>     # Path to schema (default: src/aim/blueprint_catalog_schema.json)
   ```
 - **Convert all blueprint YAMLs to a single catalog file**
   ```bash
