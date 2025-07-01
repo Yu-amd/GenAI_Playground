@@ -1,28 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaRocket, FaBrain, FaCloud, FaCode, FaComments, FaArrowRight, FaPlay, FaBookOpen, FaServer } from 'react-icons/fa';
 import bannerWave from '../assets/banner_wave.png';
-import llamaImg from '../assets/models/model_llama3_1.png';
-import qwen2Img from '../assets/models/model_Qwen2-7B.png';
-import deepseekImg from '../assets/models/model_DeepSeek_MoE_18B.png';
-import gemmaImg from '../assets/models/model_Gemma.png';
 import bp_chatqna from '../assets/blueprints/bp_chatqna.png';
-import bp_codegen from '../assets/blueprints/bp_codegen.png';
-import bp_agentqna from '../assets/blueprints/bp_agentqna.png';
+import bp_codetrans from '../assets/blueprints/bp_codeTrans.png';
+import bp_docsum from '../assets/blueprints/bp_docsum.png';
 import PlaygroundLogo from '../components/PlaygroundLogo';
+import { loadAllModels } from '../utils/modelLoader';
 
 const LandingPage: React.FC = () => {
-  const featuredModels = [
-    { id: 'meta-llama/Llama-3-8B', name: 'Llama 3 8B', org: 'Meta', image: llamaImg, description: 'Multilingual large language model with 8B parameters' },
-    { id: 'Qwen/Qwen2-7B-Instruct', name: 'Qwen2 7B', org: 'Qwen', image: qwen2Img, description: 'Advanced model for code generation and reasoning' },
-    { id: 'deepseek-ai/deepseek-moe-16b-base', name: 'DeepSeek MoE 16B', org: 'DeepSeek', image: deepseekImg, description: 'Mixture-of-Experts architecture for efficiency' },
-    { id: 'google/gemma-3-4b-it', name: 'Gemma 3', org: 'Google', image: gemmaImg, description: 'Lightweight multimodal model with open weights' }
-  ];
+  // Dynamically load models from the catalog
+  const [featuredModels, setFeaturedModels] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchModels() {
+      const models = await loadAllModels();
+      setFeaturedModels(models.slice(0, 4)); // Show first 4 models
+    }
+    fetchModels();
+  }, []);
 
   const featuredBlueprints = [
     { id: 'chatqna', name: 'ChatQnA', image: bp_chatqna, description: 'RAG-powered chatbot with knowledge base management', icon: FaComments },
-    { id: 'codegen', name: 'CodeGen', image: bp_codegen, description: 'AI code copilot for development workflows', icon: FaCode },
-    { id: 'agentqna', name: 'AgentQnA', image: bp_agentqna, description: 'Multi-agent system for complex Q&A tasks', icon: FaBrain }
+    { id: 'codetrans', name: 'CodeTrans', image: bp_codetrans, description: 'Cross-language code translation and transpilation', icon: FaCode },
+    { id: 'docsum', name: 'DocSum', image: bp_docsum, description: 'Document summarization and key insight extraction', icon: FaBookOpen }
   ];
 
   const features = [
@@ -171,7 +172,7 @@ const LandingPage: React.FC = () => {
               >
                 <div className="w-full h-32 rounded-lg mb-4 overflow-hidden">
                   <img
-                    src={model.image}
+                    src={model.localCard}
                     alt={model.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />

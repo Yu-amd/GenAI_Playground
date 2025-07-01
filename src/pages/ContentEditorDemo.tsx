@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import DeploymentGuideEditor from '../components/DeploymentGuideEditor';
 import { Link } from 'react-router-dom';
+import { isDeploymentGuideEditorEnabled } from '../utils/environment';
 
 const ContentEditorDemo: React.FC = () => {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -69,22 +70,32 @@ const ContentEditorDemo: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setIsEditorOpen(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all font-medium"
-              >
-                <PencilIcon className="w-5 h-5" />
-                Open Content Editor
-              </button>
-              <button
-                onClick={() => setIsEditorOpen(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all font-medium"
-              >
-                <EyeIcon className="w-5 h-5" />
-                Preview Mode
-              </button>
-            </div>
+            {isDeploymentGuideEditorEnabled() ? (
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setIsEditorOpen(true)}
+                  className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all font-medium"
+                >
+                  <PencilIcon className="w-5 h-5" />
+                  Open Content Editor
+                </button>
+                <button
+                  onClick={() => setIsEditorOpen(true)}
+                  className="flex items-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all font-medium"
+                >
+                  <EyeIcon className="w-5 h-5" />
+                  Preview Mode
+                </button>
+              </div>
+            ) : (
+              <div className="bg-yellow-600/10 border border-yellow-500/20 rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-yellow-300 mb-2">Content Editor Disabled</h3>
+                <p className="text-sm text-gray-300">
+                  The deployment guide content editor is only available in development builds for security reasons. 
+                  In production builds, content should be managed through the JSON configuration files directly.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Features */}
@@ -215,15 +226,17 @@ const ContentEditorDemo: React.FC = () => {
         </div>
       </div>
 
-      {/* Content Editor Modal */}
-      <DeploymentGuideEditor
-        isOpen={isEditorOpen}
-        onClose={() => setIsEditorOpen(false)}
-        onSave={(content) => {
-          console.log('Content saved:', content);
-          alert('Content saved successfully! Check the browser console for details.');
-        }}
-      />
+      {/* Content Editor Modal - Only rendered in development */}
+      {isDeploymentGuideEditorEnabled() && (
+        <DeploymentGuideEditor
+          isOpen={isEditorOpen}
+          onClose={() => setIsEditorOpen(false)}
+          onSave={(content) => {
+            console.log('Content saved:', content);
+            alert('Content saved successfully! Check the browser console for details.');
+          }}
+        />
+      )}
     </div>
   );
 };

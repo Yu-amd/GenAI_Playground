@@ -95,17 +95,17 @@ const readinessMap: Record<string, string> = {
   'Experimental': 'experimental',
 };
 
-// Map tags to categories
-const tagToCategoryMap: Record<string, string> = {
-  'RAG': 'Conversational AI',
-  'Multi-Agent': 'Multi-Agent Systems',
-  'Code Generation': 'Development Tools',
-  'Code Translation': 'Development Tools',
-  'Search Integration': 'Enhanced AI',
-  'Document Summarization': 'Content Processing',
-  'Language Translation': 'Language Processing',
-  'Avatar Integration': 'Visual AI',
-};
+// Map tags to categories - commented out as unused
+// const tagToCategoryMap: Record<string, string> = {
+//   'RAG': 'Conversational AI',
+//   'Multi-Agent': 'Multi-Agent Systems',
+//   'Code Generation': 'Development Tools',
+//   'Code Translation': 'Development Tools',
+//   'Search Integration': 'Enhanced AI',
+//   'Document Summarization': 'Content Processing',
+//   'Language Translation': 'Language Processing',
+//   'Avatar Integration': 'Visual AI',
+// };
 
 export async function loadBlueprintData(blueprintId: string): Promise<BlueprintData | null> {
   try {
@@ -146,7 +146,7 @@ export async function loadAllBlueprints(): Promise<BlueprintCatalogItem[]> {
 function convertToCatalogItem(blueprintData: BlueprintData): BlueprintCatalogItem {
   const tags = Array.from(blueprintData.tags);
   const status_badges = Array.from(blueprintData.status_badges);
-  const category = tags.find(tag => tagToCategoryMap[tag]) || 'AI Application';
+  // const category = tags.find(tag => tagToCategoryMap[tag]) || 'AI Application';
   let badge = undefined;
   if (status_badges.includes('Featured')) {
     badge = 'Featured';

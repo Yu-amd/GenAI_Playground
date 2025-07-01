@@ -485,7 +485,6 @@ const ModelDetail: React.FC = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [copied, setCopied] = useState(false);
   const [codeContent, setCodeContent] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showParameters, setShowParameters] = useState(false);
   const [showModelCard, setShowModelCard] = useState(false);
@@ -663,13 +662,10 @@ const ModelDetail: React.FC = () => {
     }
   }, [tools]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  // Track if user has interacted
+  const hasUserInteracted = useRef(false);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, streamingContent]);
+  // Auto-scrolling disabled to prevent unwanted scrolling behavior
 
   useEffect(() => {
     setCodeContent(getDefaultCode(
@@ -745,6 +741,9 @@ const ModelDetail: React.FC = () => {
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
+    // Mark that user has interacted
+    hasUserInteracted.current = true;
+
     const messageToSend = inputMessage;
     setInputMessage('');
     setIsLoading(true);
@@ -796,6 +795,8 @@ const ModelDetail: React.FC = () => {
         tool_calls: response.choices[0].message.tool_calls
       };
       setMessages(prev => [...prev, assistantMessage]);
+      
+      // Auto-scrolling disabled to prevent unwanted scrolling behavior
 
       // Handle tool calls if present
       if (assistantMessage.tool_calls && assistantMessage.tool_calls.length > 0) {
@@ -1281,7 +1282,6 @@ const ModelDetail: React.FC = () => {
                       </div>
                     </div>
                   )}
-                  <div ref={messagesEndRef} />
                 </div>
                 {/* Input area */}
                 <div className="mt-4">

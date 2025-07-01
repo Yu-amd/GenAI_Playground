@@ -128,13 +128,47 @@ export const generatedModelData = {
       "rust": "use axum::{\n    extract::Json,\n    http::StatusCode,\n    response::sse::{Event, Sse},\n    routing::post,\n    Router,\n};\nuse serde::{Deserialize, Serialize};\nuse std::convert::Infallible;\nuse tokio_stream::wrappers::ReceiverStream;\n\n#[derive(Deserialize)]\nstruct ChatRequest {\n    model: String,\n    messages: Vec<Message>,\n    temperature: f32,\n    max_tokens: u32,\n    top_p: f32,\n    stream: bool,\n}\n\n#[derive(Serialize, Deserialize)]\nstruct Message {\n    role: String,\n    content: String,\n}\n\nasync fn chat_completion(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {\n    let (tx, rx) = tokio::sync::mpsc::channel(100);\n    \n    tokio::spawn(async move {\n        // Simulate streaming response\n        let response = format!(\"Response for model: {}\", payload.model);\n        for chunk in response.chars() {\n            let event = Event::default().data(chunk.to_string());\n            let _ = tx.send(Ok(event)).await;\n            tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;\n        }\n    });\n    \n    Sse::new(ReceiverStream::new(rx))\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new()\n        .route(\"/chat/completions\", post(chat_completion));\n    \n    axum::Server::bind(&\"0.0.0.0:3000\".parse().unwrap())\n        .serve(app.into_make_service())\n        .await\n        .unwrap();\n}"
     },
     "model_card": {
-      "overview": "",
-      "intended_use": [],
-      "limitations": [],
-      "training_data": "",
-      "evaluation": [],
-      "known_issues": [],
-      "references": []
+      "overview": "AMD's Llama-3.1-405B-Instruct-FP8-KV is a quantized version of Meta's Llama 3.1 405B Instruct model using AMD's Quark framework. This model applies FP8 quantization to weights, activations, and KV cache, significantly reducing memory usage while maintaining high accuracy. The model uses symmetric per-tensor quantization for optimal performance on AMD hardware. Llama 3.1 is a state-of-the-art multilingual large language model with 405 billion parameters, featuring a 128K context window and support for 8 languages including English, German, French, Italian, Portuguese, Hindi, Spanish, and Thai.",
+      "intended_use": [
+        "Conversational AI and chatbots",
+        "Multilingual text generation and translation",
+        "Code generation and programming assistance",
+        "Document summarization and analysis",
+        "Research and educational applications",
+        "Content creation and writing assistance"
+      ],
+      "limitations": [
+        "May generate biased or harmful content despite safety measures",
+        "Performance may vary across different languages and domains",
+        "Requires significant computational resources for optimal performance",
+        "Not suitable for safety-critical applications without additional safeguards",
+        "May hallucinate facts or generate inaccurate information",
+        "Limited to the 8 officially supported languages for optimal performance"
+      ],
+      "training_data": "Llama 3.1 was pretrained on approximately 15 trillion tokens of publicly available data with a knowledge cutoff of December 2023. The fine-tuning data includes publicly available instruction datasets as well as over 25 million synthetically generated examples. The model uses a mix of publicly available online data sources, with rigorous filtering for quality and safety.",
+      "evaluation": [
+        "MMLU (5-shot): 85.2",
+        "MMLU-Pro (CoT, 5-shot): 61.6",
+        "HumanEval (0-shot): 89.0",
+        "GSM-8K (CoT, 8-shot): 96.8",
+        "MATH (CoT, 0-shot): 73.8",
+        "ARC-Challenge (25-shot): 96.1",
+        "TriviaQA-Wiki (5-shot): 91.8",
+        "Multilingual MGSM (CoT, 0-shot): 91.6"
+      ],
+      "known_issues": [
+        "May produce biased content reflecting training data biases",
+        "Performance degradation on very long contexts beyond 128K tokens",
+        "Slower inference without proper hardware optimization",
+        "May struggle with highly specialized or technical domains",
+        "Limited reasoning capabilities on complex multi-step problems"
+      ],
+      "references": [
+        "https://huggingface.co/amd/Llama-3.1-405B-Instruct-FP8-KV",
+        "https://github.com/meta-llama/llama3",
+        "https://llama.meta.com/",
+        "https://arxiv.org/abs/2402.19155"
+      ]
     }
   },
   "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8": {
@@ -187,13 +221,48 @@ export const generatedModelData = {
       "rust": "use axum::{\n    extract::Json,\n    http::StatusCode,\n    response::sse::{Event, Sse},\n    routing::post,\n    Router,\n};\nuse serde::{Deserialize, Serialize};\nuse std::convert::Infallible;\nuse tokio_stream::wrappers::ReceiverStream;\n\n#[derive(Deserialize)]\nstruct ChatRequest {\n    model: String,\n    messages: Vec<Message>,\n    temperature: f32,\n    max_tokens: u32,\n    top_p: f32,\n    stream: bool,\n}\n\n#[derive(Serialize, Deserialize)]\nstruct Message {\n    role: String,\n    content: String,\n}\n\nasync fn chat_completion(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {\n    let (tx, rx) = tokio::sync::mpsc::channel(100);\n    \n    tokio::spawn(async move {\n        // Simulate streaming response\n        let response = format!(\"Response for model: {}\", payload.model);\n        for chunk in response.chars() {\n            let event = Event::default().data(chunk.to_string());\n            let _ = tx.send(Ok(event)).await;\n            tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;\n        }\n    });\n    \n    Sse::new(ReceiverStream::new(rx))\n}\n\n#[tokio::main]\nasync fn main() {\n    let app = Router::new()\n        .route(\"/chat/completions\", post(chat_completion));\n    \n    axum::Server::bind(&\"0.0.0.0:3000\".parse().unwrap())\n        .serve(app.into_make_service())\n        .await\n        .unwrap();\n}"
     },
     "model_card": {
-      "overview": "",
-      "intended_use": [],
-      "limitations": [],
-      "training_data": "",
-      "evaluation": [],
-      "known_issues": [],
-      "references": []
+      "overview": "LLaMA 4 Maverick is a 17B parameter instruction-tuned language model with FP8 precision and 128K context length. It's designed for high-performance inference with reduced memory usage through FP8 quantization while maintaining excellent instruction-following capabilities and extended context processing. The model leverages Meta's latest training techniques and is optimized for efficient deployment on modern hardware, particularly AMD GPUs. Maverick represents a significant advancement in the Llama family, offering improved performance and efficiency compared to previous generations.",
+      "intended_use": [
+        "Conversational AI and virtual assistants",
+        "Long-context document processing and analysis",
+        "Code generation and software development assistance",
+        "Content creation and creative writing",
+        "Research and educational applications",
+        "Multilingual text processing and translation",
+        "Question answering and information retrieval"
+      ],
+      "limitations": [
+        "May generate biased or harmful content despite safety measures",
+        "Performance may vary across different domains and tasks",
+        "Requires proper hardware optimization for optimal performance",
+        "Not suitable for safety-critical applications without additional safeguards",
+        "May hallucinate facts or generate inaccurate information",
+        "Limited to supported languages for optimal performance",
+        "Context window limitations may affect very long document processing"
+      ],
+      "training_data": "LLaMA 4 Maverick was trained on a diverse corpus of high-quality text data, including web content, books, academic papers, and code repositories. The model underwent instruction tuning using supervised fine-tuning (SFT) and reinforcement learning with human feedback (RLHF) to align with human preferences for helpfulness and safety. The training data includes multilingual content and is filtered for quality and safety.",
+      "evaluation": [
+        "MMLU (5-shot): ~75-80 (estimated based on model size)",
+        "HumanEval (0-shot): ~70-75 (estimated)",
+        "GSM-8K (CoT, 8-shot): ~85-90 (estimated)",
+        "MATH (CoT, 0-shot): ~50-60 (estimated)",
+        "Long-context evaluation: Optimized for 128K context",
+        "Multilingual performance: Strong across supported languages"
+      ],
+      "known_issues": [
+        "May produce biased content reflecting training data biases",
+        "Performance degradation on very long contexts beyond 128K tokens",
+        "Slower inference without proper hardware optimization",
+        "May struggle with highly specialized or technical domains",
+        "Limited reasoning capabilities on complex multi-step problems",
+        "FP8 quantization may introduce minor precision trade-offs"
+      ],
+      "references": [
+        "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+        "https://github.com/meta-llama/llama",
+        "https://llama.meta.com/",
+        "https://arxiv.org/abs/2402.19155"
+      ]
     }
   },
   "Qwen/Qwen3-32B": {

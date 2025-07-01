@@ -5,12 +5,12 @@ import PlaygroundLogo from '../components/PlaygroundLogo';
 
 import bp_chatqna from '../assets/blueprints/bp_chatqna.png';
 import bp_agentqna from '../assets/blueprints/bp_agentqna.png';
-import bp_codegen from '../assets/blueprints/bp_codegen.png';
+// import bp_codegen from '../assets/blueprints/bp_codegen.png';
 import bp_codeTrans from '../assets/blueprints/bp_codeTrans.png';
-import bp_searchQna from '../assets/blueprints/bp_searchQna.png';
+// import bp_searchQna from '../assets/blueprints/bp_searchQna.png';
 import bp_docsum from '../assets/blueprints/bp_docsum.png';
-import bp_translation from '../assets/blueprints/bp_translation.png';
-import bp_avatarchatbot from '../assets/blueprints/bp_avatarchatbot.png';
+// import bp_translation from '../assets/blueprints/bp_translation.png';
+// import bp_avatarchatbot from '../assets/blueprints/bp_avatarchatbot.png';
 
 interface Blueprint {
   id: string;

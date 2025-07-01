@@ -12,6 +12,7 @@ import {
   PencilIcon
 } from '@heroicons/react/24/outline';
 import DeploymentGuideEditor from './DeploymentGuideEditor';
+import { isDeploymentGuideEditorEnabled } from '../utils/environment';
 
 interface DeploymentGuideProps {
   isOpen: boolean;
@@ -1817,14 +1818,16 @@ print(f'GPU Memory Cached: {torch.cuda.memory_reserved()/1024**3:.2f} GB')
                 Deploy {modelInfo.name} ({modelInfo.size}) on AMD Instinct GPUs
               </p>
             </div>
-            <button
-              onClick={() => setIsEditorOpen(true)}
-              className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all text-sm"
-              title="Edit Content"
-            >
-              <PencilIcon className="w-4 h-4" />
-              Edit Content
-            </button>
+            {isDeploymentGuideEditorEnabled() && (
+              <button
+                onClick={() => setIsEditorOpen(true)}
+                className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all text-sm"
+                title="Edit Content"
+              >
+                <PencilIcon className="w-4 h-4" />
+                Edit Content
+              </button>
+            )}
           </div>
         </div>
         {/* Model Info */}
@@ -1924,12 +1927,14 @@ print(f'GPU Memory Cached: {torch.cuda.memory_reserved()/1024**3:.2f} GB')
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsEditorOpen(true)}
-                className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all text-sm"
-              >
-                Edit Content
-              </button>
+              {isDeploymentGuideEditorEnabled() && (
+                <button
+                  onClick={() => setIsEditorOpen(true)}
+                  className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all text-sm"
+                >
+                  Edit Content
+                </button>
+              )}
               <button
                 onClick={onClose}
                 className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all"
@@ -1941,15 +1946,17 @@ print(f'GPU Memory Cached: {torch.cuda.memory_reserved()/1024**3:.2f} GB')
         </div>
       </div>
       
-      {/* Content Editor */}
-      <DeploymentGuideEditor
-        isOpen={isEditorOpen}
-        onClose={() => setIsEditorOpen(false)}
-        onSave={(content) => {
-          console.log('Content saved:', content);
-          // In a real implementation, this would trigger a reload of the deployment guide
-        }}
-      />
+      {/* Content Editor - Only rendered in development */}
+      {isDeploymentGuideEditorEnabled() && (
+        <DeploymentGuideEditor
+          isOpen={isEditorOpen}
+          onClose={() => setIsEditorOpen(false)}
+          onSave={(content) => {
+            console.log('Content saved:', content);
+            // In a real implementation, this would trigger a reload of the deployment guide
+          }}
+        />
+      )}
     </div>
   );
 };

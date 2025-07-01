@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import BlueprintDetail from '../pages/BlueprintDetail';
-import userEvent from '@testing-library/user-event';
+// import userEvent from '@testing-library/user-event';
 
 // Mock scrollIntoView for jsdom environment
 window.HTMLElement.prototype.scrollIntoView = function() {};
@@ -47,64 +47,64 @@ vi.mock('prism-react-renderer', () => ({
   }
 }));
 
-const mockBlueprintData = {
-  blueprint_id: 'test-blueprint',
-  name: 'Test Blueprint',
-  category: 'Conversational AI',
-  complexity: 'Intermediate',
-  description: 'A test blueprint for unit testing',
-  shortDescription: 'Test blueprint for unit testing',
-  logo: 'test-logo.png',
-  readiness_level: 'Production-Ready',
-  status_badges: ['Featured', 'Production-Ready'] as const,
-  tags: ['RAG', 'Chatbot', 'Knowledge Base'] as const,
-  status: 'Production Ready',
-  endpoint: 'https://api.inference-hub.com/v1/blueprints/test-blueprint',
-  demo_assets: {
-    notebook: 'test-notebook.ipynb',
-    demo_link: 'https://test-demo.com'
-  },
-  aim_recipes: [
-    {
-      name: 'Test Recipe',
-      hardware: 'MI300X',
-      precision: 'FP16',
-      recipe_file: 'test-recipe.yaml'
-    }
-  ] as const,
-  api_examples: {
-    python: 'print("Hello World")',
-    typescript: 'console.log("Hello World")',
-    shell: 'echo "Hello World"',
-    rust: 'println!("Hello World")',
-    go: 'fmt.Println("Hello World")'
-  },
-  blueprint_card: {
-    overview: 'Test blueprint overview',
-    intended_use: ['Chatbot', 'Q&A system'] as const,
-    limitations: ['Limited context window'] as const,
-    architecture: 'RAG pipeline with vector database',
-    evaluation: ['Test evaluation metrics'] as const,
-    known_issues: ['Test known issues'] as const,
-    references: ['Test references'] as const
-  },
-  microservices: {
-    models: [
-      {
-        name: 'Test Model',
-        logo: '/src/assets/models/test-model.png',
-        tags: ['Text Generation', 'RAG'] as const
-      }
-    ] as const,
-    functional: [
-      {
-        name: 'Test Service',
-        description: 'Test functional service',
-        tags: ['RAG', 'Vector Search'] as const
-      }
-    ] as const
-  }
-};
+// const mockBlueprintData = {
+//   blueprint_id: 'test-blueprint',
+//   name: 'Test Blueprint',
+//   category: 'Conversational AI',
+//   complexity: 'Intermediate',
+//   description: 'A test blueprint for unit testing',
+//   shortDescription: 'Test blueprint for unit testing',
+//   logo: 'test-logo.png',
+//   readiness_level: 'Production-Ready',
+//   status_badges: ['Featured', 'Production-Ready'] as const,
+//   tags: ['RAG', 'Chatbot', 'Knowledge Base'] as const,
+//   status: 'Production Ready',
+//   endpoint: 'https://api.inference-hub.com/v1/blueprints/test-blueprint',
+//   demo_assets: {
+//     notebook: 'test-notebook.ipynb',
+//     demo_link: 'https://test-demo.com'
+//   },
+//   aim_recipes: [
+//     {
+//       name: 'Test Recipe',
+//       hardware: 'MI300X',
+//       precision: 'FP16',
+//       recipe_file: 'test-recipe.yaml'
+//     }
+//   ] as const,
+//   api_examples: {
+//     python: 'print("Hello World")',
+//     typescript: 'console.log("Hello World")',
+//     shell: 'echo "Hello World"',
+//     rust: 'println!("Hello World")',
+//     go: 'fmt.Println("Hello World")'
+//   },
+//   blueprint_card: {
+//     overview: 'Test blueprint overview',
+//     intended_use: ['Chatbot', 'Q&A system'] as const,
+//     limitations: ['Limited context window'] as const,
+//     architecture: 'RAG pipeline with vector database',
+//     evaluation: ['Test evaluation metrics'] as const,
+//     known_issues: ['Test known issues'] as const,
+//     references: ['Test references'] as const
+//   },
+//   microservices: {
+//     models: [
+//       {
+//         name: 'Test Model',
+//         logo: '/src/assets/models/test-model.png',
+//         tags: ['Text Generation', 'RAG'] as const
+//       }
+//     ] as const,
+//     functional: [
+//       {
+//         name: 'Test Service',
+//         description: 'Test functional service',
+//         tags: ['RAG', 'Vector Search'] as const
+//       }
+//     ] as const
+//   }
+// };
 
 const renderWithRouter = (component: React.ReactElement) => {
   return render(

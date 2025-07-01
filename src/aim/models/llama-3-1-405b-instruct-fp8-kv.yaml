@@ -83,10 +83,55 @@ api_examples:
     \        .serve(app.into_make_service())\n        .await\n        .unwrap();\n\
     }"
 model_card:
-  overview: ''
-  intended_use: []
-  limitations: []
-  training_data: ''
-  evaluation: []
-  known_issues: []
-  references: []
+  overview: >
+    AMD's Llama-3.1-405B-Instruct-FP8-KV is a quantized version of Meta's Llama 3.1 405B Instruct model 
+    using AMD's Quark framework. This model applies FP8 quantization to weights, activations, and KV cache, 
+    significantly reducing memory usage while maintaining high accuracy. The model uses symmetric per-tensor 
+    quantization for optimal performance on AMD hardware. Llama 3.1 is a state-of-the-art multilingual 
+    large language model with 405 billion parameters, featuring a 128K context window and support for 
+    8 languages including English, German, French, Italian, Portuguese, Hindi, Spanish, and Thai.
+
+  intended_use:
+    - Conversational AI and chatbots
+    - Multilingual text generation and translation
+    - Code generation and programming assistance
+    - Document summarization and analysis
+    - Research and educational applications
+    - Content creation and writing assistance
+
+  limitations:
+    - May generate biased or harmful content despite safety measures
+    - Performance may vary across different languages and domains
+    - Requires significant computational resources for optimal performance
+    - Not suitable for safety-critical applications without additional safeguards
+    - May hallucinate facts or generate inaccurate information
+    - Limited to the 8 officially supported languages for optimal performance
+
+  training_data: >
+    Llama 3.1 was pretrained on approximately 15 trillion tokens of publicly available data with a 
+    knowledge cutoff of December 2023. The fine-tuning data includes publicly available instruction 
+    datasets as well as over 25 million synthetically generated examples. The model uses a mix of 
+    publicly available online data sources, with rigorous filtering for quality and safety.
+
+  evaluation:
+    - MMLU (5-shot): 85.2
+    - MMLU-Pro (CoT, 5-shot): 61.6
+    - HumanEval (0-shot): 89.0
+    - GSM-8K (CoT, 8-shot): 96.8
+    - MATH (CoT, 0-shot): 73.8
+    - ARC-Challenge (25-shot): 96.1
+    - TriviaQA-Wiki (5-shot): 91.8
+    - Multilingual MGSM (CoT, 0-shot): 91.6
+
+  known_issues:
+    - May produce biased content reflecting training data biases
+    - Performance degradation on very long contexts beyond 128K tokens
+    - Slower inference without proper hardware optimization
+    - May struggle with highly specialized or technical domains
+    - Limited reasoning capabilities on complex multi-step problems
+
+  references:
+    - https://huggingface.co/amd/Llama-3.1-405B-Instruct-FP8-KV
+    - https://github.com/meta-llama/llama3
+    - https://llama.meta.com/
+    - https://arxiv.org/abs/2402.19155

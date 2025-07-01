@@ -4,16 +4,16 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { PaperAirplaneIcon, Cog6ToothIcon, DocumentTextIcon, CircleStackIcon, ChatBubbleLeftRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import { Highlight, themes } from 'prism-react-renderer';
+// import { Highlight, themes } from 'prism-react-renderer';
 import bannerWave from '../assets/banner_wave.png';
 import bp_chatqna from '../assets/blueprints/bp_chatqna.png';
 import bp_agentqna from '../assets/blueprints/bp_agentqna.png';
-import bp_codegen from '../assets/blueprints/bp_codegen.png';
+// import bp_codegen from '../assets/blueprints/bp_codegen.png';
 import bp_codeTrans from '../assets/blueprints/bp_codeTrans.png';
-import bp_searchQna from '../assets/blueprints/bp_searchQna.png';
+// import bp_searchQna from '../assets/blueprints/bp_searchQna.png';
 import bp_docsum from '../assets/blueprints/bp_docsum.png';
-import bp_translation from '../assets/blueprints/bp_translation.png';
-import bp_avatarchatbot from '../assets/blueprints/bp_avatarchatbot.png';
+// import bp_translation from '../assets/blueprints/bp_translation.png';
+// import bp_avatarchatbot from '../assets/blueprints/bp_avatarchatbot.png';
 import functionalRetriever from '../../graphics/logos/functional/functional_retriever.png';
 import functionalReranking from '../../graphics/logos/functional/functional_reranking.png';
 import functionalGuardrails from '../../graphics/logos/functional/functional_guardrails.png';
@@ -97,29 +97,29 @@ const BlueprintDetail: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'interact' | 'aims'>('interact');
   const [markdownContent, setMarkdownContent] = useState<string>('');
   
-  // CodeGen specific state
-  const [selectedLanguage, setSelectedLanguage] = useState('python');
-  const [generatedCode, setGeneratedCode] = useState('');
+  // CodeTrans specific state
+  // const [selectedLanguage, setSelectedLanguage] = useState('python');
+  // const [generatedCode, setGeneratedCode] = useState('');
   const [inputLanguage, setInputLanguage] = useState('python');
   const [outputLanguage, setOutputLanguage] = useState('javascript');
   const [inputCode, setInputCode] = useState('');
   const [translatedCode, setTranslatedCode] = useState('');
-  const [codePrompt, setCodePrompt] = useState('');
+  // const [codePrompt, setCodePrompt] = useState('');
   const [isGeneratingCode, setIsGeneratingCode] = useState(false);
-  const [codeHistory, setCodeHistory] = useState<Array<{
+  const [codeHistory] = useState<Array<{
     id: string;
     prompt: string;
     code: string;
     language: string;
     timestamp: Date;
   }>>([]);
-  const [generationSettings, setGenerationSettings] = useState({
-    temperature: 0.7,
-    maxTokens: 1000,
-    topP: 0.9,
-    frequencyPenalty: 0.0,
-    presencePenalty: 0.0
-  });
+  // const [generationSettings] = useState({
+  //   temperature: 0.7,
+  //   maxTokens: 1000,
+  //   topP: 0.9,
+  //   frequencyPenalty: 0.0,
+  //   presencePenalty: 0.0
+  // });
   
   // DocSum specific state
   const [documentText, setDocumentText] = useState('');
@@ -355,38 +355,38 @@ Emergency hotline: +1-555-OPEA-911
   };
 
   // CodeGen specific functions
-  const handleGenerateCode = async () => {
-    if (!codePrompt.trim() || isGeneratingCode) return;
+  // const handleGenerateCode = async () => {
+  //   if (!codePrompt.trim() || isGeneratingCode) return;
     
-    setIsGeneratingCode(true);
-    try {
-      // Simulate code generation with streaming
-      const sampleCode = getSampleCode(codePrompt, selectedLanguage);
-      let generatedCodeStream = '';
+  //   setIsGeneratingCode(true);
+  //   try {
+  //     // Simulate code generation with streaming
+  //     const sampleCode = getSampleCode(codePrompt, selectedLanguage);
+  //     let generatedCodeStream = '';
       
-      for (let i = 0; i < sampleCode.length; i++) {
-        generatedCodeStream += sampleCode[i];
-        setGeneratedCode(generatedCodeStream);
-        await new Promise(resolve => setTimeout(resolve, 20));
-      }
+  //     for (let i = 0; i < sampleCode.length; i++) {
+  //       generatedCodeStream += sampleCode[i];
+  //       setGeneratedCode(generatedCodeStream);
+  //       await new Promise(resolve => setTimeout(resolve, 20));
+  //     }
       
-      // Add to history
-      const newEntry = {
-        id: Date.now().toString(),
-        prompt: codePrompt,
-        code: sampleCode,
-        language: selectedLanguage,
-        timestamp: new Date()
-      };
-      setCodeHistory(prev => [newEntry, ...prev.slice(0, 9)]); // Keep last 10
+  //     // Add to history
+  //     const newEntry = {
+  //       id: Date.now().toString(),
+  //       prompt: codePrompt,
+  //       code: sampleCode,
+  //       language: selectedLanguage,
+  //       timestamp: new Date()
+  //     };
+  //     setCodeHistory(prev => [newEntry, ...prev.slice(0, 9)]); // Keep last 10
       
-    } catch (error) {
-      console.error('Error generating code:', error);
-      setGeneratedCode('// Error generating code. Please try again.');
-    } finally {
-      setIsGeneratingCode(false);
-    }
-  };
+  //   } catch (error) {
+  //     console.error('Error generating code:', error);
+  //     setGeneratedCode('// Error generating code. Please try again.');
+  //   } finally {
+  //     setIsGeneratingCode(false);
+  //   }
+  // };
 
   const handleTranslateCode = async () => {
     if (!inputCode.trim() || isGeneratingCode) return;
@@ -402,104 +402,6 @@ Emergency hotline: +1-555-OPEA-911
     } finally {
       setIsGeneratingCode(false);
     }
-  };
-
-  const getSampleCode = (prompt: string, language: string): string => {
-    const samples: Record<string, Record<string, string>> = {
-      python: {
-        'function': `def ${prompt.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')}():
-    """
-    ${prompt}
-    """
-    # TODO: Implement function logic
-    pass`,
-        'class': `class ${prompt.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')}:
-    """
-    ${prompt}
-    """
-    def __init__(self):
-        pass`,
-        'api': `import requests
-import json
-
-def ${prompt.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')}_api():
-    """
-    ${prompt}
-    """
-    url = "https://api.example.com/endpoint"
-    headers = {"Content-Type": "application/json"}
-    
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException as e:
-        print(f"Error: {e}")
-        return None`,
-        'default': `# ${prompt}
-def main():
-    """
-    Main function for ${prompt}
-    """
-    print("Hello, World!")
-    
-if __name__ == "__main__":
-    main()`
-      },
-      javascript: {
-        'function': `function ${prompt.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')}() {
-    /**
-     * ${prompt}
-     */
-    // TODO: Implement function logic
-}
-
-module.exports = { ${prompt.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')} };`,
-        'class': `class ${prompt.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} {
-    /**
-     * ${prompt}
-     */
-    constructor() {
-        // Initialize class
-    }
-}
-
-module.exports = ${prompt.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')};`,
-        'api': `const axios = require('axios');
-
-async function ${prompt.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')}_api() {
-    /**
-     * ${prompt}
-     */
-    try {
-        const response = await axios.get('https://api.example.com/endpoint', {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error:', error.message);
-        return null;
-    }
-}
-
-module.exports = { ${prompt.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')}_api };`,
-        'default': `// ${prompt}
-function main() {
-    /**
-     * Main function for ${prompt}
-     */
-    console.log("Hello, World!");
-}
-
-main();`
-      }
-    };
-
-    const languageSamples = samples[language] || samples.python;
-    const key = Object.keys(languageSamples).find(k => prompt.toLowerCase().includes(k)) || 'default';
-    return languageSamples[key];
   };
 
   const translateCodeSample = (code: string, fromLang: string, toLang: string): string => {
@@ -954,7 +856,7 @@ main();`
       case 'abstractive':
         // Generate a concise abstractive summary
         const wordCount = words.length;
-        const summaryLength = Math.max(50, Math.min(200, wordCount / 4));
+        // const summaryLength = Math.max(50, Math.min(200, wordCount / 4));
         const keyWords = words.filter(word => word.length > 4).slice(0, 10);
         
         return `This document contains approximately ${wordCount} words and covers topics including ${keyWords.slice(0, 5).join(', ')}. The content appears to be ${wordCount > 500 ? 'comprehensive' : 'concise'} in nature, providing ${wordCount > 1000 ? 'detailed' : 'overview'} information on the subject matter.`;
@@ -1129,7 +1031,216 @@ main();`
 
           {/* Tab Content */}
           {activeTab === 'interact' && (
-            ['codegen', 'codetrans', 'docsum'].includes(blueprint?.id || '') ? (
+            blueprint?.id === 'codetrans' ? (
+              <div className="flex flex-col lg:flex-row gap-8 h-[900px]">
+                {/* Left Panel - Code Translation */}
+                <div className="flex-1 h-full min-h-0 flex flex-col space-y-6">
+                  <div className="bg-neutral-900 rounded-lg p-6 border border-neutral-800 shadow flex flex-col flex-1 h-full space-y-6">
+                    {/* Code Input Section */}
+                    <div className="flex flex-col flex-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-white">Source Code</h3>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-400">From:</span>
+                          <select
+                            className="bg-neutral-800 text-white border border-neutral-700 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={inputLanguage}
+                            onChange={(e) => setInputLanguage(e.target.value)}
+                          >
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="typescript">TypeScript</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                            <option value="rust">Rust</option>
+                            <option value="go">Go</option>
+                          </select>
+                        </div>
+                      </div>
+                      <textarea
+                        className="flex-1 bg-neutral-800 text-white rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-neutral-700 font-mono text-sm"
+                        placeholder="Paste your source code here to translate..."
+                        value={inputCode}
+                        onChange={(e) => setInputCode(e.target.value)}
+                        disabled={isGeneratingCode}
+                      />
+                    </div>
+                    {/* Translation Button */}
+                    <div className="flex justify-center">
+                      <button
+                        onClick={handleTranslateCode}
+                        disabled={isGeneratingCode || !inputCode.trim()}
+                        className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                          isGeneratingCode || !inputCode.trim()
+                            ? 'bg-neutral-700 text-gray-400 cursor-not-allowed'
+                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
+                      >
+                        {isGeneratingCode ? (
+                          <div className="flex items-center space-x-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <span>Translating Code...</span>
+                          </div>
+                        ) : (
+                          'Translate Code'
+                        )}
+                      </button>
+                    </div>
+                    {/* Translated Code Section */}
+                    <div className="flex flex-col flex-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-white">Translated Code</h3>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-400">To:</span>
+                          <select
+                            className="bg-neutral-800 text-white border border-neutral-700 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={outputLanguage}
+                            onChange={(e) => setOutputLanguage(e.target.value)}
+                          >
+                            <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                            <option value="typescript">TypeScript</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                            <option value="rust">Rust</option>
+                            <option value="go">Go</option>
+                          </select>
+                          {translatedCode && (
+                            <button
+                              onClick={() => copyToClipboard(translatedCode)}
+                              className="px-3 py-1 bg-neutral-700 text-white rounded text-sm hover:bg-neutral-600"
+                            >
+                              Copy Code
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex-1 min-h-0 bg-neutral-800 rounded-lg border border-neutral-700 overflow-auto p-4">
+                        <pre className="text-white font-mono text-sm whitespace-pre-wrap">
+                          {translatedCode ? (
+                            translatedCode
+                          ) : (
+                            <div className="text-gray-400 italic">
+                              Translated code will appear here...
+                            </div>
+                          )}
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Right Panel - History & Examples for CodeTrans */}
+                <div className="w-full lg:w-80 h-full min-h-0 flex flex-col space-y-4">
+                  {/* Collapsible Sections */}
+                  <div className="bg-neutral-900 rounded-lg border border-neutral-800 shadow">
+                    {/* Recent Translations - Overlay Trigger */}
+                    {codeHistory.length > 0 && (
+                      <div className="border-b border-neutral-800">
+                        <button
+                          onClick={() => setShowSummaryHistory(!showSummaryHistory)}
+                          className="w-full p-4 text-left flex items-center justify-between hover:bg-neutral-800 transition-colors"
+                        >
+                          <h3 className="text-lg font-semibold text-white">Recent Translations</h3>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs text-gray-400">{codeHistory.length} items</span>
+                            <ChevronDownIcon className={`w-5 h-5 text-gray-400 transition-transform ${showSummaryHistory ? 'rotate-180' : ''}`} />
+                          </div>
+                        </button>
+                      </div>
+                    )}
+                    {/* Try Examples - Collapsible */}
+                    <div>
+                      <button
+                        onClick={() => setShowExamples(!showExamples)}
+                        className="w-full p-4 text-left flex items-center justify-between hover:bg-neutral-800 transition-colors"
+                      >
+                        <h3 className="text-lg font-semibold text-white">Try Examples</h3>
+                        <ChevronDownIcon className={`w-5 h-5 text-gray-400 transition-transform ${showExamples ? 'rotate-180' : ''}`} />
+                      </button>
+                      {showExamples && (
+                        <div className="p-4 space-y-2">
+                          {[
+                            `def fibonacci(n):
+    """Calculate the nth Fibonacci number."""
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+# Test the function
+for i in range(10):
+    print(f"F({i}) = {fibonacci(i)}")`,
+                            `function calculateFactorial(n) {
+    if (n <= 1) return 1;
+    return n * calculateFactorial(n - 1);
+}
+
+// Test the function
+for (let i = 0; i < 10; i++) {
+    console.log('Factorial(' + i + ') = ' + calculateFactorial(i));
+}`,
+                            `class UserManager {
+    constructor() {
+        this.users = [];
+    }
+    
+    addUser(user) {
+        this.users.push(user);
+        return this.users.length;
+    }
+    
+    getUserById(id) {
+        return this.users.find(user => user.id === id);
+    }
+    
+    getAllUsers() {
+        return this.users;
+    }
+}`,
+                            `async function fetchData(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(\`HTTP error! status: \${response.status}\`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        throw error;
+    }
+}`,
+                            `def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)`
+                          ].map((example, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setInputCode(example)}
+                              className="w-full text-left text-sm text-gray-300 hover:text-white p-2 rounded bg-neutral-800 hover:bg-neutral-700 transition-colors"
+                            >
+                              {index === 0 ? 'Python Fibonacci → JavaScript' :
+                               index === 1 ? 'JavaScript Factorial → Python' :
+                               index === 2 ? 'JavaScript Class → Python' :
+                               index === 3 ? 'JavaScript Async → Python' :
+                               'Python Quicksort → JavaScript'}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Microservice Status - Fixed at bottom */}
+                  <div className="flex-1">
+                    {renderMicroserviceStatus()}
+                  </div>
+                </div>
+              </div>
+            ) : ['codegen', 'docsum'].includes(blueprint?.id || '') ? (
               <div className="flex flex-col lg:flex-row gap-8 h-[900px]">
                 {/* Left Panel - Document Summarization */}
                 <div className="flex-1 h-full min-h-0 flex flex-col space-y-6">
@@ -1257,7 +1368,77 @@ main();`
                       </button>
                       {showExamples && (
                         <div className="p-4 space-y-2">
-                          {[
+                          {blueprint?.id === 'codetrans' ? [
+                            `def fibonacci(n):
+    """Calculate the nth Fibonacci number."""
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+# Test the function
+for i in range(10):
+    print(f"F({i}) = {fibonacci(i)}")`,
+                            `function calculateFactorial(n) {
+    if (n <= 1) return 1;
+    return n * calculateFactorial(n - 1);
+}
+
+// Test the function
+for (let i = 0; i < 10; i++) {
+    console.log('Factorial(' + i + ') = ' + calculateFactorial(i));
+}`,
+                            `class UserManager {
+    constructor() {
+        this.users = [];
+    }
+    
+    addUser(user) {
+        this.users.push(user);
+        return this.users.length;
+    }
+    
+    getUserById(id) {
+        return this.users.find(user => user.id === id);
+    }
+    
+    getAllUsers() {
+        return this.users;
+    }
+}`,
+                            `async function fetchData(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(\`HTTP error! status: \${response.status}\`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        throw error;
+    }
+}`,
+                            `def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)`
+                          ].map((example, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setInputMessage(`Translate this code to ${index % 2 === 0 ? 'JavaScript' : 'Python'}:\n\n${example}`)}
+                              className="w-full text-left text-sm text-gray-300 hover:text-white p-2 rounded bg-neutral-800 hover:bg-neutral-700 transition-colors"
+                            >
+                              {index === 0 ? 'Python Fibonacci → JavaScript' :
+                               index === 1 ? 'JavaScript Factorial → Python' :
+                               index === 2 ? 'JavaScript Class → Python' :
+                               index === 3 ? 'JavaScript Async → Python' :
+                               'Python Quicksort → JavaScript'}
+                            </button>
+                          )) : [
                             `# API Reference\n\n## POST /v1/users\nCreate a new user in the system.\n\n**Request Body:**\n- name: string\n- email: string\n\n**Response:**\n- 201 Created: User object\n- 400 Bad Request: Validation error`,
                             `# Changelog\n\n## [1.2.0] - 2024-06-01\n### Added\n- Support for multi-factor authentication.\n- New API endpoint for password reset.\n\n### Fixed\n- Minor bug fixes in user profile module.`,
                             `# README\n\nThis project provides a RESTful API for managing tasks.\n\n## Features\n- Create, update, delete tasks\n- Assign tasks to users\n- Track task status and deadlines`,

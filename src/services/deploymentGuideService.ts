@@ -55,11 +55,11 @@ class DeploymentGuideService {
     // console.log('Service content loaded:', this.content);
     
     // Debug code blocks in loaded content
-    this.content.categories.forEach((category, catIndex) => {
-      category.tabs.forEach((tab, tabIndex) => {
-        tab.sections.forEach((section, sectionIndex) => {
+    this.content.categories.forEach((category) => {
+      category.tabs.forEach((tab) => {
+        tab.sections.forEach((section) => {
           if (section.type === 'code-block') {
-            // console.log(`Service: Code block at category ${catIndex}, tab ${tabIndex}, section ${sectionIndex}:`, section);
+            // console.log(`Service: Code block:`, section);
             // console.log('Service: Code content:', section.code);
             // console.log('Service: Subsections:', section.subsections);
           }
