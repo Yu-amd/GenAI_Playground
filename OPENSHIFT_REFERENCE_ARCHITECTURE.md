@@ -76,7 +76,7 @@ This reference architecture provides a production-ready deployment strategy for 
 | **Monitoring** | Prometheus + Grafana | Metrics and alerting |
 | **Logging** | Elasticsearch + Fluentd + Kibana | Centralized logging |
 | **Tracing** | Jaeger | Distributed tracing |
-| **GPU Compute** | AMD Instinct MI355X | High-performance AI inference |
+| **GPU Compute** | AMD Instinct MI355X (8x per node) | High-performance AI inference |
 | **CI/CD** | OpenShift Pipelines (Tekton) | Automated deployment |
 
 ## Infrastructure Design
@@ -111,8 +111,8 @@ This reference architecture provides a production-ready deployment strategy for 
 ├─────────────────────────────────────────────────────────────────┤
 │  GPU Nodes (2+ nodes)                                          │
 │  ┌─────────────┐  ┌─────────────┐                            │
-│  │ GPU 1       │  │ GPU 2       │                            │
-│  │ (MI355X)    │  │ (MI355X)    │                            │
+│  │ GPU Node 1  │  │ GPU Node 2  │                            │
+│  │ (8xMI355X)  │  │ (8xMI355X)  │                            │
 │  └─────────────┘  └─────────────┘                            │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -138,11 +138,11 @@ This reference architecture provides a production-ready deployment strategy for 
 - **Network**: 25Gbps
 
 #### GPU Nodes
-- **CPU**: 32+ cores
-- **Memory**: 256GB+ RAM
-- **GPU**: 4x AMD Instinct MI355X
-- **Storage**: 2TB+ NVMe SSD
-- **Network**: 100Gbps
+- **CPU**: 64+ cores
+- **Memory**: 512GB+ RAM
+- **GPU**: 8x AMD Instinct MI355X (fixed form factor)
+- **Storage**: 4TB+ NVMe SSD
+- **Network**: 200Gbps
 
 ## OpenShift Project Structure
 
@@ -331,7 +331,7 @@ metadata:
   name: genai-gpu-worker
   namespace: genai-workers
 spec:
-  replicas: 4
+  replicas: 16
   selector:
     matchLabels:
       app: genai-gpu-worker
@@ -348,15 +348,15 @@ spec:
         resources:
           requests:
             amd.com/gpu: 1
-            memory: "8Gi"
-            cpu: "4"
-          limits:
-            amd.com/gpu: 1
             memory: "16Gi"
             cpu: "8"
+          limits:
+            amd.com/gpu: 1
+            memory: "32Gi"
+            cpu: "16"
         env:
         - name: HIP_VISIBLE_DEVICES
-          value: "0"
+          value: "0,1,2,3,4,5,6,7"
         - name: MODEL_CACHE_DIR
           value: "/models"
         volumeMounts:
@@ -1130,8 +1130,8 @@ spec:
     requests.memory: 256Gi
     limits.cpu: "128"
     limits.memory: 512Gi
-    requests.amd.com/gpu: "4"
-    limits.amd.com/gpu: "8"
+    requests.amd.com/gpu: "16"
+    limits.amd.com/gpu: "32"
 ```
 
 ### Spot Instance Usage
@@ -1156,7 +1156,7 @@ spec:
       - name: gpu-worker
         resources:
           requests:
-            amd.com/gpu: 1
+            amd.com/gpu: 8
 ```
 
 ## Compliance & Governance
