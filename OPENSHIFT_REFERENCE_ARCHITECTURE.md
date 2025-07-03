@@ -76,7 +76,8 @@ This reference architecture provides a production-ready deployment strategy for 
 | **Monitoring** | Prometheus + Grafana | Metrics and alerting |
 | **Logging** | Elasticsearch + Fluentd + Kibana | Centralized logging |
 | **Tracing** | Jaeger | Distributed tracing |
-| **GPU Compute** | AMD Instinct MI355X (8x per node) | High-performance AI inference |
+| **GPU Compute - Inference** | AMD Instinct MI355X (8x per node) | High-performance AI inference |
+| **GPU Compute - Blueprints** | AMD Instinct MI300X (8x per node) | Blueprint development and training |
 | **CI/CD** | OpenShift Pipelines (Tekton) | Automated deployment |
 
 ## Infrastructure Design
@@ -109,11 +110,11 @@ This reference architecture provides a production-ready deployment strategy for 
 │  │ (Zone B)    │  │ (Zone C)    │  │ (Zone C)    │            │
 │  └─────────────┘  └─────────────┘  └─────────────┘            │
 ├─────────────────────────────────────────────────────────────────┤
-│  GPU Nodes (2+ nodes)                                          │
-│  ┌─────────────┐  ┌─────────────┐                            │
-│  │ GPU Node 1  │  │ GPU Node 2  │                            │
-│  │ (8xMI355X)  │  │ (8xMI355X)  │                            │
-│  └─────────────┘  └─────────────┘                            │
+│  GPU Nodes (4+ nodes)                                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
+│  │ GPU Node 1  │  │ GPU Node 2  │  │ GPU Node 3  │  │ GPU Node 4  │ │
+│  │ (8xMI355X)  │  │ (8xMI355X)  │  │ (8xMI300X)  │  │ (8xMI300X)  │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -137,12 +138,21 @@ This reference architecture provides a production-ready deployment strategy for 
 - **Storage**: 1TB+ NVMe SSD
 - **Network**: 25Gbps
 
-#### GPU Nodes
+#### GPU Nodes - MI355X (AI Inference)
 - **CPU**: 64+ cores
 - **Memory**: 512GB+ RAM
 - **GPU**: 8x AMD Instinct MI355X (fixed form factor)
 - **Storage**: 4TB+ NVMe SSD
 - **Network**: 200Gbps
+- **Purpose**: High-performance AI model inference
+
+#### GPU Nodes - MI300X (Blueprint Workloads)
+- **CPU**: 64+ cores
+- **Memory**: 512GB+ RAM
+- **GPU**: 8x AMD Instinct MI300X (fixed form factor)
+- **Storage**: 4TB+ NVMe SSD
+- **Network**: 200Gbps
+- **Purpose**: Blueprint development and training workloads
 
 ## OpenShift Project Structure
 
@@ -217,6 +227,29 @@ spec:
 ```
 
 ## Application Deployment
+
+### GPU Workload Separation
+
+```yaml
+# Node Labels for GPU Type Separation
+apiVersion: v1
+kind: Node
+metadata:
+  name: gpu-node-mi355x-1
+  labels:
+    amd.com/gpu: "true"
+    gpu-type: "mi355x"
+    workload-type: "inference"
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: gpu-node-mi300x-1
+  labels:
+    amd.com/gpu: "true"
+    gpu-type: "mi300x"
+    workload-type: "blueprint"
+```
 
 ### Frontend Deployment
 
@@ -363,6 +396,61 @@ spec:
         - name: model-storage
           mountPath: /models
       volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-storage-pvc
+```
+
+### Blueprint GPU Worker Deployment
+
+```yaml
+# Blueprint GPU Worker Deployment (MI300X)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genai-blueprint-worker
+  namespace: genai-workers
+spec:
+  replicas: 16
+  selector:
+    matchLabels:
+      app: genai-blueprint-worker
+  template:
+    metadata:
+      labels:
+        app: genai-blueprint-worker
+    spec:
+      nodeSelector:
+        amd.com/gpu: "true"
+        gpu-type: "mi300x"
+      containers:
+      - name: blueprint-worker
+        image: genai/blueprint-worker:latest
+        resources:
+          requests:
+            amd.com/gpu: 8
+            memory: "32Gi"
+            cpu: "16"
+          limits:
+            amd.com/gpu: 8
+            memory: "64Gi"
+            cpu: "32"
+        env:
+        - name: HIP_VISIBLE_DEVICES
+          value: "0,1,2,3,4,5,6,7"
+        - name: BLUEPRINT_CACHE_DIR
+          value: "/blueprints"
+        - name: WORKLOAD_TYPE
+          value: "blueprint"
+        volumeMounts:
+        - name: blueprint-storage
+          mountPath: /blueprints
+        - name: model-storage
+          mountPath: /models
+      volumes:
+      - name: blueprint-storage
+        persistentVolumeClaim:
+          claimName: blueprint-storage-pvc
       - name: model-storage
         persistentVolumeClaim:
           claimName: model-storage-pvc
@@ -743,6 +831,12 @@ data:
           - targets: ['genai-gpu-worker:8000']
         metrics_path: /metrics
         scrape_interval: 5s
+      
+      - job_name: 'blueprint-workers'
+        static_configs:
+          - targets: ['genai-blueprint-worker:8000']
+        metrics_path: /metrics
+        scrape_interval: 5s
 ```
 
 ### Grafana Dashboards
@@ -815,6 +909,15 @@ spec:
       annotations:
         summary: "GPU worker is down"
         description: "GPU worker {{ $labels.instance }} is not responding"
+    
+    - alert: BlueprintWorkerDown
+      expr: up{job="blueprint-workers"} == 0
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Blueprint worker is down"
+        description: "Blueprint worker {{ $labels.instance }} is not responding"
 ```
 
 ## High Availability & Disaster Recovery
@@ -953,6 +1056,30 @@ spec:
       maxAllowed:
         cpu: 8
         memory: 16Gi
+      controlledResources: ["cpu", "memory"]
+---
+# VPA for Blueprint Workers
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: genai-blueprint-worker-vpa
+  namespace: genai-workers
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: genai-blueprint-worker
+  updatePolicy:
+    updateMode: "Auto"
+  resourcePolicy:
+    containerPolicies:
+    - containerName: '*'
+      minAllowed:
+        cpu: 100m
+        memory: 50Mi
+      maxAllowed:
+        cpu: 32
+        memory: 64Gi
       controlledResources: ["cpu", "memory"]
 ```
 
@@ -1130,8 +1257,8 @@ spec:
     requests.memory: 256Gi
     limits.cpu: "128"
     limits.memory: 512Gi
-    requests.amd.com/gpu: "16"
-    limits.amd.com/gpu: "32"
+    requests.amd.com/gpu: "32"
+    limits.amd.com/gpu: "64"
 ```
 
 ### Spot Instance Usage
