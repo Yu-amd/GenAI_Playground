@@ -76,6 +76,7 @@ This reference architecture provides a production-ready deployment strategy for 
 | **Monitoring** | Prometheus + Grafana | Metrics and alerting |
 | **Logging** | Elasticsearch + Fluentd + Kibana | Centralized logging |
 | **Tracing** | Jaeger | Distributed tracing |
+| **GPU Compute** | AMD Instinct MI355X | High-performance AI inference |
 | **CI/CD** | OpenShift Pipelines (Tekton) | Automated deployment |
 
 ## Infrastructure Design
@@ -111,7 +112,7 @@ This reference architecture provides a production-ready deployment strategy for 
 │  GPU Nodes (2+ nodes)                                          │
 │  ┌─────────────┐  ┌─────────────┐                            │
 │  │ GPU 1       │  │ GPU 2       │                            │
-│  │ (A100/V100) │  │ (A100/V100) │                            │
+│  │ (MI355X)    │  │ (MI355X)    │                            │
 │  └─────────────┘  └─────────────┘                            │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -139,7 +140,7 @@ This reference architecture provides a production-ready deployment strategy for 
 #### GPU Nodes
 - **CPU**: 32+ cores
 - **Memory**: 256GB+ RAM
-- **GPU**: 4x NVIDIA A100 or V100
+- **GPU**: 4x AMD Instinct MI355X
 - **Storage**: 2TB+ NVMe SSD
 - **Network**: 100Gbps
 
@@ -340,21 +341,21 @@ spec:
         app: genai-gpu-worker
     spec:
       nodeSelector:
-        nvidia.com/gpu: "true"
+        amd.com/gpu: "true"
       containers:
       - name: gpu-worker
         image: genai/gpu-worker:latest
         resources:
           requests:
-            nvidia.com/gpu: 1
+            amd.com/gpu: 1
             memory: "8Gi"
             cpu: "4"
           limits:
-            nvidia.com/gpu: 1
+            amd.com/gpu: 1
             memory: "16Gi"
             cpu: "8"
         env:
-        - name: CUDA_VISIBLE_DEVICES
+        - name: HIP_VISIBLE_DEVICES
           value: "0"
         - name: MODEL_CACHE_DIR
           value: "/models"
@@ -774,7 +775,7 @@ data:
             "type": "graph",
             "targets": [
               {
-                "expr": "nvidia_gpu_utilization",
+                "expr": "amd_gpu_utilization",
                 "legendFormat": "GPU {{gpu}}"
               }
             ]
@@ -1049,7 +1050,7 @@ data:
     mc admin info myminio
     
     # Check GPU availability
-    nvidia-smi
+    rocm-smi
     
     # Check API endpoints
     curl -f http://localhost:8080/health
@@ -1129,8 +1130,8 @@ spec:
     requests.memory: 256Gi
     limits.cpu: "128"
     limits.memory: 512Gi
-    requests.nvidia.com/gpu: "4"
-    limits.nvidia.com/gpu: "8"
+    requests.amd.com/gpu: "4"
+    limits.amd.com/gpu: "8"
 ```
 
 ### Spot Instance Usage
@@ -1155,7 +1156,7 @@ spec:
       - name: gpu-worker
         resources:
           requests:
-            nvidia.com/gpu: 1
+            amd.com/gpu: 1
 ```
 
 ## Compliance & Governance
