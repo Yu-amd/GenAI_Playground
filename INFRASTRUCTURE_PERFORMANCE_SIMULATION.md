@@ -48,7 +48,7 @@ These line charts show the growth in average daily RPS and total monthly cost ov
 
 ![Cost per Request](cost_per_request.png)
 
-This bar chart compares the cost per request for different workload types, including chat, inference, blueprint execution, and training.
+This bar chart compares the cost per request for different workload types, including chat, inference, and blueprint execution.
 
 ---
 

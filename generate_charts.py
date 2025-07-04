@@ -167,9 +167,9 @@ def create_growth_trend_chart():
 
 def create_cost_per_request_chart():
     """Create cost per request type chart"""
-    request_types = ['Chat', 'Model\nInference', 'Blueprint\nExecution', 'Training', 'Inference\n(Heavy)']
-    costs = [0.08, 0.12, 0.15, 0.45, 0.25]
-    colors = ['#059669', '#2563eb', '#d97706', '#dc2626', '#7c3aed']
+    request_types = ['Chat', 'Model\nInference', 'Blueprint\nExecution', 'Inference\n(Heavy)']
+    costs = [0.08, 0.12, 0.15, 0.25]
+    colors = ['#059669', '#2563eb', '#d97706', '#7c3aed']
     
     fig, ax = plt.subplots(figsize=(10, 6))
     

@@ -81,7 +81,6 @@
 | Chat | 0.08 | 2,500,000 | 2,000 |
 | Model Inference | 0.12 | 1,800,000 | 2,160 |
 | Blueprint Execution | 0.15 | 1,200,000 | 1,800 |
-| Training | 0.45 | 200,000 | 900 |
 | Inference (Heavy) | 0.25 | 500,000 | 1,250 |
 
 ## Performance Metrics Summary
