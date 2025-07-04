@@ -3,6 +3,7 @@ import LandingPage from './pages/LandingPage';
 import ModelsCatalog from './pages/ModelsCatalog';
 import BlueprintsCatalog from './pages/BlueprintsCatalog';
 import GPUCloud from './pages/GPUCloud';
+import CloudDeployment from './pages/CloudDeployment';
 import ModelDetail from './pages/ModelDetail';
 import BlueprintDetail from './pages/BlueprintDetail';
 import FunctionalServiceDetail from './pages/FunctionalServiceDetail';
@@ -22,6 +23,7 @@ function App() {
           element={<FunctionalServiceDetail />}
         />
         <Route path='/gpu-cloud' element={<GPUCloud />} />
+        <Route path='/gpu-cloud/:cloudId' element={<CloudDeployment />} />
         <Route path='/content-editor' element={<ContentEditorDemo />} />
       </Routes>
     </Router>
