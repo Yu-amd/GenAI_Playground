@@ -3,7 +3,6 @@ import {
   FaPlay, 
   FaStop, 
   FaTrash, 
-  FaPlus, 
   FaChartLine, 
   FaDollarSign, 
   FaServer, 
@@ -22,7 +21,7 @@ export const GPUCloudManager: React.FC<GPUCloudManagerProps> = ({
   const [instances, setInstances] = useState<GPUInstance[]>([]);
   const [providers, setProviders] = useState<CloudProvider[]>([]);
   const [costAnalysis, setCostAnalysis] = useState<CostAnalysis | null>(null);
-  const [isCreatingInstance, setIsCreatingInstance] = useState(false);
+
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,24 +53,7 @@ export const GPUCloudManager: React.FC<GPUCloudManagerProps> = ({
     return () => clearInterval(interval);
   }, [loadData]);
 
-  const handleCreateInstance = async (config: {
-    name: string;
-    provider: string;
-    gpuType: string;
-    region: string;
-    tags?: string[];
-  }) => {
-    try {
-      setLoading(true);
-      await gpuCloudService.createInstance(config);
-      await loadData();
-      setIsCreatingInstance(false);
-    } catch (err) {
-      setError(`Failed to create instance: ${err instanceof Error ? err.message : 'Unknown error'}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const handleStartInstance = async (id: string) => {
     try {
@@ -151,13 +133,6 @@ export const GPUCloudManager: React.FC<GPUCloudManagerProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-white">GPU Cloud Management</h2>
-        <button
-          onClick={() => setIsCreatingInstance(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
-        >
-          <FaPlus className="w-4 h-4" />
-          <span>Create Instance</span>
-        </button>
       </div>
 
       {/* Error Display */}
@@ -225,12 +200,7 @@ export const GPUCloudManager: React.FC<GPUCloudManagerProps> = ({
           <div className="text-center py-12">
             <FaServer className="w-12 h-12 text-gray-600 mx-auto mb-4" />
             <p className="text-gray-400 mb-4">No GPU instances found</p>
-            <button
-              onClick={() => setIsCreatingInstance(true)}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
-            >
-              Create Your First Instance
-            </button>
+            <p className="text-sm text-gray-500">Use the Deploy Instances tab to create new GPU instances</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -317,170 +287,6 @@ export const GPUCloudManager: React.FC<GPUCloudManagerProps> = ({
         )}
       </div>
 
-      {/* Create Instance Modal */}
-      {isCreatingInstance && (
-        <CreateInstanceModal
-          providers={providers}
-          onCreate={handleCreateInstance}
-          onCancel={() => setIsCreatingInstance(false)}
-        />
-      )}
-    </div>
-  );
-};
-
-// Create Instance Modal Component
-interface CreateInstanceModalProps {
-  providers: CloudProvider[];
-  onCreate: (config: {
-    name: string;
-    provider: string;
-    gpuType: string;
-    region: string;
-    tags?: string[];
-  }) => void;
-  onCancel: () => void;
-}
-
-const CreateInstanceModal: React.FC<CreateInstanceModalProps> = ({
-  providers,
-  onCreate,
-  onCancel,
-}) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    provider: '',
-    gpuType: '',
-    region: '',
-    tags: '',
-  });
-
-  const selectedProvider = providers.find(p => p.id === formData.provider);
-  const availableGPUs = selectedProvider?.supportedGPUs || [];
-  const availableRegions = selectedProvider?.regions || [];
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onCreate({
-      name: formData.name,
-      provider: formData.provider,
-      gpuType: formData.gpuType,
-      region: formData.region,
-      tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : undefined,
-    });
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 rounded-xl p-6 w-full max-w-md">
-        <h3 className="text-lg font-semibold text-white mb-4">Create GPU Instance</h3>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Instance Name
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
-              placeholder="my-gpu-instance"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Cloud Provider
-            </label>
-            <select
-              value={formData.provider}
-              onChange={(e) => setFormData({ ...formData, provider: e.target.value, gpuType: '', region: '' })}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
-              required
-            >
-              <option value="">Select Provider</option>
-              {providers.map((provider) => (
-                <option key={provider.id} value={provider.id}>
-                  {provider.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {selectedProvider && (
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                GPU Type
-              </label>
-              <select
-                value={formData.gpuType}
-                onChange={(e) => setFormData({ ...formData, gpuType: e.target.value })}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
-                required
-              >
-                <option value="">Select GPU</option>
-                {availableGPUs.map((gpu) => (
-                  <option key={gpu} value={gpu}>
-                    {gpu} - ${selectedProvider.pricing[gpu]}/hour
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {selectedProvider && (
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Region
-              </label>
-              <select
-                value={formData.region}
-                onChange={(e) => setFormData({ ...formData, region: e.target.value })}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
-                required
-              >
-                <option value="">Select Region</option>
-                {availableRegions.map((region) => (
-                  <option key={region} value={region}>
-                    {region}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Tags (comma-separated)
-            </label>
-            <input
-              type="text"
-              value={formData.tags}
-              onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
-              placeholder="production, ai-training, gpu"
-            />
-          </div>
-
-          <div className="flex space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-            >
-              Create Instance
-            </button>
-          </div>
-        </form>
-      </div>
     </div>
   );
 }; 

@@ -369,14 +369,14 @@ export const ModelDeploymentManager: React.FC<ModelDeploymentManagerProps> = ({
             className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
           >
             <FaRocket className="w-4 h-4" />
-            <span>Deploy Model</span>
+            <span>deploy model</span>
           </button>
           <button
             onClick={() => setSelectedDeployment({ type: 'blueprint' } as any)}
             className="flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all"
           >
             <FaServer className="w-4 h-4" />
-            <span>Deploy Blueprint</span>
+            <span>deploy blueprint</span>
           </button>
         </div>
       </div>
