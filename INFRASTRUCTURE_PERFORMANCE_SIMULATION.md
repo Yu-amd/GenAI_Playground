@@ -190,263 +190,107 @@ This simulation analyzes the performance characteristics of the GenAI Playground
 
 ### Daily Traffic Distribution (30 Days)
 
-```
-Hourly Traffic Pattern (Average Day)
-┌─────────────────────────────────────────────────────────────────┐
-│                    Daily Traffic Distribution                   │
-├─────────────────────────────────────────────────────────────────┤
-│  Traffic (RPS)                                                  │
-│  300 ┤                                                          │
-│  250 ┤                                                          │
-│  200 ┤                                                          │
-│  150 ┤                                                          │
-│  100 ┤                                                          │
-│   50 ┤                                                          │
-│    0 ┼                                                          │
-│      0  2  4  6  8 10 12 14 16 18 20 22 24                     │
-│                    Hour of Day                                  │
-│                                                                  │
-│  Data Points:                                                    │
-│  00:00: 15 RPS   06:00: 25 RPS   12:00: 180 RPS  18:00: 120 RPS │
-│  01:00: 12 RPS   07:00: 45 RPS   13:00: 220 RPS  19:00: 95 RPS  │
-│  02:00: 8 RPS    08:00: 80 RPS   14:00: 280 RPS  20:00: 75 RPS  │
-│  03:00: 5 RPS    09:00: 120 RPS  15:00: 250 RPS  21:00: 60 RPS  │
-│  04:00: 3 RPS    10:00: 150 RPS  16:00: 200 RPS  22:00: 45 RPS  │
-│  05:00: 18 RPS   11:00: 170 RPS  17:00: 160 RPS  23:00: 30 RPS  │
-└─────────────────────────────────────────────────────────────────┘
-```
+**Key Data Points:**
+- 00:00: 15 RPS   06:00: 25 RPS   12:00: 180 RPS  18:00: 120 RPS
+- 01:00: 12 RPS   07:00: 45 RPS   13:00: 220 RPS  19:00: 95 RPS
+- 02:00: 8 RPS    08:00: 80 RPS   14:00: 280 RPS  20:00: 75 RPS
+- 03:00: 5 RPS    09:00: 120 RPS  15:00: 250 RPS  21:00: 60 RPS
+- 04:00: 3 RPS    10:00: 150 RPS  16:00: 200 RPS  22:00: 45 RPS
+- 05:00: 18 RPS   11:00: 170 RPS  17:00: 160 RPS  23:00: 30 RPS
 
 ### Weekly Traffic Pattern
 
-```
-Weekly Traffic Pattern (30 Days)
-┌─────────────────────────────────────────────────────────────────┐
-│                    Weekly Traffic Distribution                  │
-├─────────────────────────────────────────────────────────────────┤
-│  Average RPS                                                    │
-│  200 ┤                                                          │
-│  180 ┤                                                          │
-│  160 ┤                                                          │
-│  140 ┤                                                          │
-│  120 ┤                                                          │
-│  100 ┤                                                          │
-│   80 ┤                                                          │
-│   60 ┤                                                          │
-│   40 ┤                                                          │
-│   20 ┤                                                          │
-│    0 ┼                                                          │
-│       Mon  Tue  Wed  Thu  Fri  Sat  Sun                         │
-│                    Day of Week                                  │
-│                                                                  │
-│  Data Points:                                                    │
-│  Monday: 145 RPS    Tuesday: 152 RPS   Wednesday: 158 RPS        │
-│  Thursday: 165 RPS  Friday: 172 RPS    Saturday: 98 RPS          │
-│  Sunday: 85 RPS                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+**Data Points:**
+- Monday: 145 RPS    Tuesday: 152 RPS   Wednesday: 158 RPS
+- Thursday: 165 RPS  Friday: 172 RPS    Saturday: 98 RPS
+- Sunday: 85 RPS
 
 ### Monthly Growth Trend
 
-```
-Monthly Traffic Growth (30 Days)
-┌─────────────────────────────────────────────────────────────────┐
-│                    Monthly Traffic Growth                       │
-├─────────────────────────────────────────────────────────────────┤
-│  Average Daily RPS                                              │
-│  180 ┤                                                          │
-│  170 ┤                                                          │
-│  160 ┤                                                          │
-│  150 ┤                                                          │
-│  140 ┤                                                          │
-│  130 ┤                                                          │
-│  120 ┤                                                          │
-│  110 ┤                                                          │
-│  100 ┤                                                          │
-│   90 ┤                                                          │
-│   80 ┼                                                          │
-│      1   5   10  15  20  25  30                                │
-│                    Day of Month                                 │
-│                                                                  │
-│  Data Points (Weekly Averages):                                 │
-│  Week 1: 95 RPS    Week 2: 108 RPS   Week 3: 125 RPS            │
-│  Week 4: 142 RPS   Week 5: 158 RPS                              │
-│                                                                  │
-│  Growth Trend: +15% weekly average                              │
-└─────────────────────────────────────────────────────────────────┘
-```
+**Data Points (Weekly Averages):**
+- Week 1: 95 RPS    Week 2: 108 RPS   Week 3: 125 RPS
+- Week 4: 142 RPS   Week 5: 158 RPS
+
+**Growth Trend:** +15% weekly average
 
 ## Performance Analysis
 
 ### Response Time Analysis
 
 #### Normal Load (1,000-3,000 users)
-```
-Response Time Distribution
-┌─────────────────────────────────────────────────────────────────┐
-│                    Response Time Analysis                       │
-├─────────────────────────────────────────────────────────────────┤
-│  Time (seconds)                                                 │
-│  3.0 ┤                                                          │
-│  2.5 ┤                                                          │
-│  2.0 ┤                                                          │
-│  1.5 ┤                                                          │
-│  1.0 ┤                                                          │
-│  0.5 ┤                                                          │
-│  0.0 ┼                                                          │
-│       P50   P75   P90   P95   P99   P99.9                      │
-│                    Percentile                                   │
-│                                                                  │
-│  Data Points:                                                    │
-│  P50: 0.8s    P75: 1.1s    P90: 1.4s    P95: 1.6s    P99: 2.2s  │
-│  P99.9: 3.1s                                                    │
-│                                                                  │
-│  Results:                                                        │
-│  - P50: 0.8s                                                    │
-│  - P95: 1.6s                                                    │
-│  - P99: 2.2s                                                    │
-│  - P99.9: 3.1s                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+
+**Data Points:**
+- P50: 0.8s    P75: 1.1s    P90: 1.4s    P95: 1.6s    P99: 2.2s
+- P99.9: 3.1s
+
+**Results:**
+- P50: 0.8s
+- P95: 1.6s
+- P99: 2.2s
+- P99.9: 3.1s
 
 #### Peak Load (3,000-5,000 users)
-```
-Response Time Distribution (Peak)
-┌─────────────────────────────────────────────────────────────────┐
-│                    Peak Load Response Times                     │
-├─────────────────────────────────────────────────────────────────┤
-│  Time (seconds)                                                 │
-│  4.0 ┤                                                          │
-│  3.5 ┤                                                          │
-│  3.0 ┤                                                          │
-│  2.5 ┤                                                          │
-│  2.0 ┤                                                          │
-│  1.5 ┤                                                          │
-│  1.0 ┤                                                          │
-│  0.5 ┼                                                          │
-│       P50   P75   P90   P95   P99   P99.9                      │
-│                    Percentile                                   │
-│                                                                  │
-│  Data Points:                                                    │
-│  P50: 1.2s    P75: 1.8s    P90: 2.3s    P95: 2.8s    P99: 4.1s  │
-│  P99.9: 6.2s                                                    │
-│                                                                  │
-│  Results:                                                        │
-│  - P50: 1.2s                                                    │
-│  - P95: 2.8s                                                    │
-│  - P99: 4.1s                                                    │
-│  - P99.9: 6.2s                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+
+**Data Points:**
+- P50: 1.2s    P75: 1.8s    P90: 2.3s    P95: 2.8s    P99: 4.1s
+- P99.9: 6.2s
+
+**Results:**
+- P50: 1.2s
+- P95: 2.8s
+- P99: 4.1s
+- P99.9: 6.2s
 
 ### GPU Utilization Analysis
 
 #### MI355X Nodes (Inference)
-```
-GPU Utilization - MI355X Nodes
-┌─────────────────────────────────────────────────────────────────┐
-│                    MI355X GPU Utilization                       │
-├─────────────────────────────────────────────────────────────────┤
-│  Utilization (%)                                                │
-│  100 ┤                                                          │
-│   90 ┤                                                          │
-│   80 ┤                                                          │
-│   70 ┤                                                          │
-│   60 ┤                                                          │
-│   50 ┤                                                          │
-│   40 ┤                                                          │
-│   30 ┤                                                          │
-│   20 ┤                                                          │
-│   10 ┤                                                          │
-│    0 ┼                                                          │
-│      0  2  4  6  8 10 12 14 16 18 20 22 24                     │
-│                    Hour of Day                                  │
-│                                                                  │
-│  Data Points:                                                    │
-│  00:00: 15%   06:00: 25%   12:00: 75%   18:00: 65%             │
-│  01:00: 12%   07:00: 35%   13:00: 85%   19:00: 55%             │
-│  02:00: 8%    08:00: 45%   14:00: 92%   20:00: 45%             │
-│  03:00: 5%    09:00: 55%   15:00: 88%   21:00: 35%             │
-│  04:00: 3%    10:00: 65%   16:00: 78%   22:00: 25%             │
-│  05:00: 18%   11:00: 72%   17:00: 70%   23:00: 18%             │
-│                                                                  │
-│  Average Utilization:                                            │
-│  - Peak Hours (2-4 PM): 85-95%                                  │
-│  - Business Hours (9-5 PM): 60-80%                              │
-│  - Off-Peak Hours: 30-50%                                       │
-│  - Night Hours: 10-20%                                          │
-└─────────────────────────────────────────────────────────────────┘
-```
+
+**Data Points:**
+- 00:00: 15%   06:00: 25%   12:00: 75%   18:00: 65%
+- 01:00: 12%   07:00: 35%   13:00: 85%   19:00: 55%
+- 02:00: 8%    08:00: 45%   14:00: 92%   20:00: 45%
+- 03:00: 5%    09:00: 55%   15:00: 88%   21:00: 35%
+- 04:00: 3%    10:00: 65%   16:00: 78%   22:00: 25%
+- 05:00: 18%   11:00: 72%   17:00: 70%   23:00: 18%
+
+**Average Utilization:**
+- Peak Hours (2-4 PM): 85-95%
+- Business Hours (9-5 PM): 60-80%
+- Off-Peak Hours: 30-50%
+- Night Hours: 10-20%
 
 #### MI300X Nodes (Blueprint)
-```
-GPU Utilization - MI300X Nodes
-┌─────────────────────────────────────────────────────────────────┐
-│                    MI300X GPU Utilization                       │
-├─────────────────────────────────────────────────────────────────┤
-│  Utilization (%)                                                │
-│  100 ┤                                                          │
-│   90 ┤                                                          │
-│   80 ┤                                                          │
-│   70 ┤                                                          │
-│   60 ┤                                                          │
-│   50 ┤                                                          │
-│   40 ┤                                                          │
-│   30 ┤                                                          │
-│   20 ┤                                                          │
-│   10 ┤                                                          │
-│    0 ┼                                                          │
-│      0  2  4  6  8 10 12 14 16 18 20 22 24                     │
-│                    Hour of Day                                  │
-│                                                                  │
-│  Data Points:                                                    │
-│  00:00: 8%    06:00: 15%   12:00: 55%   18:00: 35%             │
-│  01:00: 5%    07:00: 20%   13:00: 65%   19:00: 25%             │
-│  02:00: 3%    08:00: 25%   14:00: 75%   20:00: 20%             │
-│  03:00: 2%    09:00: 30%   15:00: 70%   21:00: 15%             │
-│  04:00: 1%    10:00: 45%   16:00: 60%   22:00: 12%             │
-│  05:00: 12%   11:00: 50%   17:00: 45%   23:00: 10%             │
-│                                                                  │
-│  Average Utilization:                                            │
-│  - Development Hours (10-2 PM): 40-70%                          │
-│  - Training Sessions: 80-95%                                    │
-│  - Idle Time: 10-30%                                            │
-│  - Weekend: 20-50%                                              │
-└─────────────────────────────────────────────────────────────────┘
-```
+
+**Data Points:**
+- 00:00: 8%    06:00: 15%   12:00: 55%   18:00: 35%
+- 01:00: 5%    07:00: 20%   13:00: 65%   19:00: 25%
+- 02:00: 3%    08:00: 25%   14:00: 75%   20:00: 20%
+- 03:00: 2%    09:00: 30%   15:00: 70%   21:00: 15%
+- 04:00: 1%    10:00: 45%   16:00: 60%   22:00: 12%
+- 05:00: 12%   11:00: 50%   17:00: 45%   23:00: 10%
+
+**Average Utilization:**
+- Development Hours (10-2 PM): 40-70%
+- Idle Time: 10-30%
+- Weekend: 20-50%
 
 ### Auto-scaling Analysis
 
 #### Horizontal Pod Autoscaler Performance
-```
-Auto-scaling Response
-┌─────────────────────────────────────────────────────────────────┐
-│                    Auto-scaling Performance                     │
-├─────────────────────────────────────────────────────────────────┤
-│  Replicas                                                       │
-│  25 ┤                                                          │
-│  20 ┤                                                          │
-│  15 ┤                                                          │
-│  10 ┤                                                          │
-│   5 ┤                                                          │
-│   0 ┼                                                          │
-│      0  2  4  6  8 10 12 14 16 18 20 22 24                     │
-│                    Hour of Day                                  │
-│                                                                  │
-│  Data Points (Backend Replicas):                                │
-│  00:00: 3      06:00: 4      12:00: 12     18:00: 8            │
-│  01:00: 3      07:00: 6      13:00: 15     19:00: 7            │
-│  02:00: 3      08:00: 8      14:00: 18     20:00: 6            │
-│  03:00: 3      09:00: 10     15:00: 16     21:00: 5            │
-│  04:00: 3      10:00: 11     16:00: 14     22:00: 4            │
-│  05:00: 3      11:00: 13     17:00: 12     23:00: 3            │
-│                                                                  │
-│  Scaling Metrics:                                                │
-│  - Scale-up Time: 2-3 minutes                                   │
-│  - Scale-down Time: 5-10 minutes                                │
-│  - Maximum Replicas: 20 (backend), 32 (GPU workers)            │
-│  - Minimum Replicas: 3 (backend), 16 (GPU workers)             │
-└─────────────────────────────────────────────────────────────────┘
-```
+
+**Data Points (Backend Replicas):**
+- 00:00: 3      06:00: 4      12:00: 12     18:00: 8
+- 01:00: 3      07:00: 6      13:00: 15     19:00: 7
+- 02:00: 3      08:00: 8      14:00: 18     20:00: 6
+- 03:00: 3      09:00: 10     15:00: 16     21:00: 5
+- 04:00: 3      10:00: 11     16:00: 14     22:00: 4
+- 05:00: 3      11:00: 13     17:00: 12     23:00: 3
+
+**Scaling Metrics:**
+- Scale-up Time: 2-3 minutes
+- Scale-down Time: 5-10 minutes
+- Maximum Replicas: 20 (backend), 32 (GPU workers)
+- Minimum Replicas: 3 (backend), 16 (GPU workers)
 
 ## Capacity Planning
 
@@ -499,23 +343,8 @@ Auto-scaling Response
 ### Monthly Infrastructure Costs
 
 #### Current Deployment Costs
-```
-Monthly Cost Breakdown
-┌─────────────────────────────────────────────────────────────────┐
-│                    Monthly Cost Analysis                        │
-├─────────────────────────────────────────────────────────────────┤
-│  Cost ($)                                                       │
-│  50K ┤                                                          │
-│  40K ┤                                                          │
-│  30K ┤                                                          │
-│  20K ┤                                                          │
-│  10K ┤                                                          │
-│   0K ┼                                                          │
-│      GPU  CPU   Storage Network Monitoring Support              │
-│                    Cost Category                                │
-└─────────────────────────────────────────────────────────────────┘
 
-Cost Breakdown:
+**Cost Breakdown:**
 - GPU Compute (MI355X): $28,000/month
 - GPU Compute (MI300X): $16,000/month
 - CPU/Memory: $3,500/month
@@ -524,42 +353,25 @@ Cost Breakdown:
 - Monitoring: $500/month
 - Total: $50,000/month
 
-Data Points:
+**Data Points:**
 - GPU (MI355X): $28,000 (56% of total)
 - GPU (MI300X): $16,000 (32% of total)
 - CPU/Memory: $3,500 (7% of total)
 - Storage: $1,200 (2.4% of total)
 - Network: $800 (1.6% of total)
 - Monitoring: $500 (1% of total)
-```
 
 #### Cost per Request Analysis
-```
-Cost Efficiency Metrics
-┌─────────────────────────────────────────────────────────────────┐
-│                    Cost per Request                             │
-├─────────────────────────────────────────────────────────────────┤
-│  Cost (cents)                                                   │
-│  0.8 ┤                                                          │
-│  0.6 ┤                                                          │
-│  0.4 ┤                                                          │
-│  0.2 ┤                                                          │
-│  0.0 ┼                                                          │
-│      Chat  Model  Blueprint Training Inference                  │
-│                    Request Type                                 │
-└─────────────────────────────────────────────────────────────────┘
 
-Cost per Request:
+**Cost per Request:**
 - Chat Request: $0.02 (2 cents)
 - Model Inference: $0.15 (15 cents)
 - Blueprint Creation: $0.45 (45 cents)
-- Model Training: $2.50 (250 cents)
 - Average: $0.08 (8 cents)
 
-Data Points:
+**Data Points:**
 - Chat: 2 cents    Model: 15 cents    Blueprint: 45 cents
-- Training: 250 cents    Inference: 15 cents    Average: 8 cents
-```
+- Average: 8 cents
 
 ### Cost Optimization Opportunities
 
