@@ -155,6 +155,17 @@ const Deploy: React.FC = () => {
         </div>
         {/* Main Content */}
         <div className='w-full max-w-[1400px] mx-auto py-12 px-8 flex-1'>
+          {/* Homing nav link */}
+          <div className='mb-6'>
+            <Link
+              to='/gpu-cloud'
+              className='inline-flex items-center p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-blue-400 hover:text-blue-300'
+              title='Back to GPU Clouds'
+            >
+              <FaArrowLeft className='text-xl mr-2' />
+              <span className='font-medium'>Back to GPU Clouds</span>
+            </Link>
+          </div>
           <div className='text-center mb-12'>
             <h1 className='text-4xl font-bold text-white mb-4'>Deploy to Cloud Provider</h1>
             <p className='text-lg text-gray-300 mb-8'>Choose a cloud provider to deploy your AMD Instinct™ GPU workloads</p>
@@ -199,13 +210,6 @@ const Deploy: React.FC = () => {
               )}
             </div>
           </div>
-          {/* Back to GPU Cloud */}
-          <div className='text-center mt-12'>
-            <Link to='/gpu-cloud' className='inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors'>
-              <FaArrowLeft className='mr-2' />
-              Back to GPU Cloud Overview
-            </Link>
-          </div>
         </div>
       </>
     );
@@ -239,9 +243,13 @@ const Deploy: React.FC = () => {
           <div className='mb-8'>
             <div className='flex items-center justify-between mb-6'>
               <div className='flex items-center'>
-                <button onClick={() => setSelectedProvider('')} className='mr-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors'>
-                  <FaArrowLeft className='text-xl' />
-                </button>
+                <Link
+                  to='/gpu-cloud'
+                  className='mr-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors'
+                  title='Back to GPU Clouds'
+                >
+                  <FaArrowLeft className='text-xl text-gray-400' />
+                </Link>
                 <div className={`w-16 h-16 ${selectedConfig.bgColor} rounded-lg flex items-center justify-center mr-4`}>
                   <ProviderIcon className={`text-2xl ${selectedConfig.color}`} />
                 </div>

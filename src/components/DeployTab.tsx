@@ -9,6 +9,10 @@ interface DeployTabProps {
   customFooter?: React.ReactNode;
 }
 
+function isCloudProviderCapabilities(obj: any): obj is CloudProviderCapabilities {
+  return obj && typeof obj === 'object' && Object.keys(obj).length > 0;
+}
+
 export const DeployTab: React.FC<DeployTabProps> = ({ providerId, customHeader, customFooter }) => {
   const [capabilities, setCapabilities] = useState<CloudProviderCapabilities | null>(null);
   const [instances, setInstances] = useState<Instance[]>([]);
@@ -23,7 +27,7 @@ export const DeployTab: React.FC<DeployTabProps> = ({ providerId, customHeader, 
     setSuccess(null);
     // Fetch provider capabilities
     const caps = centralDeploymentController.getProviderCapabilities(providerId);
-    setCapabilities(caps || null);
+    setCapabilities(isCloudProviderCapabilities(caps) ? caps : null);
     // Fetch instances
     centralDeploymentController.getInstances(providerId).then(setInstances);
   }, [providerId]);
@@ -122,10 +126,11 @@ export const DeployTab: React.FC<DeployTabProps> = ({ providerId, customHeader, 
             
             <button 
               type="submit" 
-              disabled={deploying}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={true}
+              className="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 opacity-70 cursor-not-allowed flex items-center justify-center gap-2 relative"
             >
-              {deploying ? 'Deploying...' : 'Deploy'}
+              <span>{deploying ? 'Deploying...' : 'Deploy'}</span>
+              <span className="ml-2 px-2 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded shadow-sm">Coming Soon</span>
             </button>
           </form>
         ) : (

@@ -537,10 +537,14 @@ const CloudDeployment: React.FC = () => {
               {/* Deploy Button */}
               <Link
                 to={`/deploy/${cloudId}`}
-                className='inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl text-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl'
+                className='inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl text-lg font-semibold transition-all duration-200 shadow-lg gap-2 opacity-70 cursor-not-allowed relative'
+                tabIndex={-1}
+                aria-disabled="true"
+                onClick={e => e.preventDefault()}
               >
                 <FaRocket className='mr-2' />
-                Deploy
+                <span>Deploy</span>
+                <span className='ml-3 px-2 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded shadow-sm'>Coming Soon</span>
               </Link>
             </div>
           </div>
