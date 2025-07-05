@@ -37,7 +37,14 @@ A modern web application for exploring and interacting with AI models and bluepr
 - **GPU Cloud Integration**: Cloud computing resources for AI workloads
 - **Real-time Interaction**: Chat interfaces and code generation tools
 
-## Screenshots
+## Screenshots & Demo
+
+### Demo Video
+🎥 **[Watch the GenAI Playground Demo](public/videos/GenAI_Playground_Demo_July5.webm)**
+
+*Comprehensive overview demo showcasing the GenAI Playground features and capabilities*
+
+### Screenshots
 
 ### Landing Page
 ![Playground Landing Page](screenshots/playground_landing.png)
