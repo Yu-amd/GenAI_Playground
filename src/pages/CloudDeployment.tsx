@@ -6,22 +6,14 @@ import {
   FaCog, 
   FaChartLine, 
   FaCheckCircle,
-  FaArrowLeft,
   FaPlay,
-  FaStop,
-  FaTrash,
-  FaCopy,
-  FaDollarSign,
-  FaInfoCircle,
-  FaPlus,
-  FaDownload
+  FaMicrochip,
+  FaShieldAlt,
+  FaArrowLeft
 } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import PlaygroundLogo from '../components/PlaygroundLogo';
 import bannerWave from '../assets/banner_wave.png';
-import { GPUCloudManager } from '../components/GPUCloudManager';
-import { ModelDeploymentManager } from '../components/ModelDeploymentManager';
-import CombinedCloudManager from '../components/CombinedCloudManager';
 
 // Cloud provider deployment configurations
 const cloudDeployments = {
@@ -36,71 +28,76 @@ const cloudDeployments = {
       '24/7 Developer Support',
       'Global Data Center Locations'
     ],
+    handsOnExperience: {
+      title: 'Hands-on ROCm Experience',
+      description: 'Get practical experience with the ROCm software stack on AMD Instinct™ MI300X accelerators.',
+      benefits: [
+        'Direct access to latest AMD hardware',
+        'Pre-configured ROCm development environment',
+        'Real-world workload testing',
+        'Performance optimization practice',
+        'Cost-effective learning platform'
+      ]
+    },
     deploymentSteps: [
       {
-        title: '1. Hands-on ROCm Experience Setup',
-        description: 'Start your hands-on journey with the ROCm software stack on AMD Developer Cloud.',
+        title: '1. Account Setup',
+        description: 'Create and configure your AMD Developer Cloud account.',
         details: [
-          'Access pre-configured ROCm development environments',
-          'Choose MI300X (192GB VRAM) or MI250X (128GB VRAM)',
-          'Select from US East, US West, Europe, or Asia Pacific',
-          'Configure instance size based on your workload requirements'
+          'Sign up at developer.amd.com',
+          'Verify email and complete profile',
+          'Set up SSH key authentication',
+          'Configure billing and quotas',
+          'Access ROCm documentation'
         ]
       },
       {
-        title: '2. Model Deployment',
-        description: 'Deploy your AI model with optimized ROCm containers.',
+        title: '2. Instance Provisioning',
+        description: 'Provision AMD Instinct™ MI300X instances with ROCm.',
         details: [
-          'Use pre-built ROCm containers for popular frameworks',
-          'Support for PyTorch, TensorFlow, and ONNX models',
-          'Automatic model optimization for AMD GPUs'
+          'Select MI300X instance type',
+          'Choose region and availability zone',
+          'Configure networking and security',
+          'Launch instance with ROCm image',
+          'Connect via SSH or web console'
         ]
       },
       {
-        title: '3. Endpoint Configuration',
-        description: 'Set up REST API endpoints for model inference.',
+        title: '3. Development Environment',
+        description: 'Set up your development environment and tools.',
         details: [
-          'Configure load balancing and auto-scaling',
-          'Set up monitoring and logging',
-          'Configure security and access controls'
+          'Install development tools and SDKs',
+          'Configure PyTorch/TensorFlow with ROCm',
+          'Set up version control and CI/CD',
+          'Configure monitoring and logging',
+          'Test with sample workloads'
         ]
       }
     ],
-    handsOnExperience: {
-      title: 'Hands-on ROCm Software Stack Experience',
-      description: 'Developers can gain practical experience with the complete ROCm ecosystem at highly competitive pricing.',
-      benefits: [
-        'Access to latest ROCm software stack versions',
-        'Pre-configured development environments',
-        'Real-world workload testing capabilities',
-        'Cost-effective learning and experimentation',
-        'Direct access to AMD technical resources'
-      ]
-    },
     blueprints: [
       {
-        name: 'PyTorch LLM Deployment',
-        description: 'Deploy large language models with PyTorch on MI300X',
+        name: 'PyTorch LLM Training',
+        description: 'Train large language models with PyTorch on MI300X',
         framework: 'PyTorch',
         gpu: 'MI300X',
         complexity: 'Medium',
-        estimatedTime: '15-20 minutes'
+        estimatedTime: '20-30 minutes'
       },
       {
         name: 'TensorFlow Computer Vision',
-        description: 'Deploy computer vision models with TensorFlow',
+        description: 'Train computer vision models with TensorFlow',
         framework: 'TensorFlow',
-        gpu: 'MI250X',
-        complexity: 'Easy',
-        estimatedTime: '10-15 minutes'
-      },
-      {
-        name: 'ONNX Model Server',
-        description: 'Deploy ONNX models with optimized inference',
-        framework: 'ONNX',
         gpu: 'MI300X',
         complexity: 'Easy',
-        estimatedTime: '8-12 minutes'
+        estimatedTime: '15-20 minutes'
+      },
+      {
+        name: 'Custom Model Development',
+        description: 'Develop and test custom AI models',
+        framework: 'Custom',
+        gpu: 'MI300X',
+        complexity: 'Hard',
+        estimatedTime: '30-45 minutes'
       }
     ],
     pricing: {
@@ -242,7 +239,7 @@ const cloudDeployments = {
     name: 'Microsoft Azure',
     description: 'Deploy on Azure\'s AMD Instinct MI210-series virtual machines for HPC and AI workloads.',
     features: [
-              'MI210 Series VM Instances',
+      'MI210 Series VM Instances',
       'Azure Integration & Services',
       'Enterprise Features',
       'Global Azure Network',
@@ -429,78 +426,56 @@ const cloudDeployments = {
   }
 };
 
+// Mock tutorial videos for AMD Developer Cloud
 const amdTutorialVideos = [
   {
-    title: 'Running Models from Hugging Face on AMD GPUs',
-    description: 'How to use Hugging Face Transformers for NLP inference on ROCm.',
-    thumbnail: 'https://img.youtube.com/vi/placeholder1/0.jpg',
-    url: 'https://rocm.docs.amd.com/en/latest/how-to/rocm-for-ai/inference/index.html',
+    title: 'Getting Started with ROCm on AMD Developer Cloud',
+    description: 'Learn how to set up your first AMD Instinct instance and run your first ROCm workload.',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzc0MTUxIi8+PC9zdmc+',
+    url: 'https://www.youtube.com/watch?v=example1',
+    duration: '8:45'
   },
   {
-    title: 'LLM Inference Frameworks on MI300X',
-    description: 'Using vLLM and other frameworks for large language model inference.',
-    thumbnail: 'https://img.youtube.com/vi/placeholder2/0.jpg',
-    url: 'https://rocm.docs.amd.com/en/latest/how-to/rocm-for-ai/inference/index.html',
+    title: 'PyTorch Training on MI300X: Best Practices',
+    description: 'Optimize your PyTorch training workflows for maximum performance on AMD Instinct MI300X.',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzc0MTUxIi8+PC9zdmc+',
+    url: 'https://www.youtube.com/watch?v=example2',
+    duration: '12:30'
   },
   {
-    title: 'PyTorch Inference Performance Testing',
-    description: 'Benchmarking and optimizing PyTorch inference on AMD Instinct GPUs.',
-    thumbnail: 'https://img.youtube.com/vi/placeholder3/0.jpg',
-    url: 'https://rocm.docs.amd.com/en/latest/how-to/rocm-for-ai/inference/index.html',
+    title: 'TensorFlow with ROCm: From Setup to Production',
+    description: 'Complete guide to deploying TensorFlow models on AMD Developer Cloud with ROCm.',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzc0MTUxIi8+PC9zdmc+',
+    url: 'https://www.youtube.com/watch?v=example3',
+    duration: '15:20'
   },
   {
-    title: 'Deploying Your Model on AMD Developer Cloud',
-    description: 'Step-by-step guide to deploying trained models in production.',
-    thumbnail: 'https://img.youtube.com/vi/placeholder4/0.jpg',
-    url: 'https://rocm.docs.amd.com/en/latest/how-to/rocm-for-ai/inference/index.html',
+    title: 'Large Language Model Training on MI300X',
+    description: 'Scale your LLM training to multiple MI300X instances with distributed training.',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzc0MTUxIi8+PC9zdmc+',
+    url: 'https://www.youtube.com/watch?v=example4',
+    duration: '18:15'
   },
   {
-    title: 'Model Quantization Techniques',
-    description: 'How to use quantization to optimize models for inference.',
-    thumbnail: 'https://img.youtube.com/vi/placeholder5/0.jpg',
-    url: 'https://rocm.docs.amd.com/en/latest/how-to/rocm-for-ai/inference-optimization/index.html',
+    title: 'Computer Vision with AMD Instinct GPUs',
+    description: 'Build and deploy computer vision models using AMD Instinct accelerators.',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzc0MTUxIi8+PC9zdmc+',
+    url: 'https://www.youtube.com/watch?v=example5',
+    duration: '10:45'
   },
   {
-    title: 'Profiling and Debugging with ROCm Tools',
-    description: 'Using ROCProfiler and ROCm Compute Profiler for performance analysis.',
-    thumbnail: 'https://img.youtube.com/vi/placeholder6/0.jpg',
-    url: 'https://rocm.docs.amd.com/en/latest/how-to/rocm-for-ai/inference-optimization/index.html',
-  },
-  {
-    title: 'Fine-tuning LLMs on AMD GPUs',
-    description: 'How to fine-tune large language models using ROCm.',
-    thumbnail: 'https://img.youtube.com/vi/placeholder7/0.jpg',
-    url: 'https://rocm.docs.amd.com/en/latest/how-to/rocm-for-ai/training/index.html',
-  },
-  {
-    title: 'Optimizing Model Inference with vLLM',
-    description: 'Tuning vLLM for best performance on MI300X.',
-    thumbnail: 'https://img.youtube.com/vi/placeholder8/0.jpg',
-    url: 'https://rocm.docs.amd.com/en/latest/how-to/rocm-for-ai/inference-optimization/index.html',
-  },
-  {
-    title: 'Auto-tuning with PyTorch TunableOp',
-    description: 'Using PyTorch\'s TunableOp for automatic kernel optimization.',
-    thumbnail: 'https://img.youtube.com/vi/placeholder9/0.jpg',
-    url: 'https://rocm.docs.amd.com/en/latest/how-to/rocm-for-ai/inference-optimization/index.html',
-  },
-  {
-    title: 'HIP Performance Optimization',
-    description: 'Best practices for memory and parallel execution in HIP.',
-    thumbnail: 'https://img.youtube.com/vi/placeholder10/0.jpg',
-    url: 'https://rocm.docs.amd.com/en/latest/how-to/rocm-for-ai/inference-optimization/index.html',
-  },
+    title: 'Performance Optimization for AMD GPU Workloads',
+    description: 'Advanced techniques for optimizing performance on AMD Instinct GPU instances.',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzc0MTUxIi8+PC9zdmc+',
+    url: 'https://www.youtube.com/watch?v=example6',
+    duration: '14:30'
+  }
 ];
 
 const CloudDeployment: React.FC = () => {
   const { cloudId } = useParams<{ cloudId: string }>();
 
-  const [selectedBlueprint, setSelectedBlueprint] = useState<string>('');
-  const [deploymentStatuses, setDeploymentStatuses] = useState<Record<string, 'idle' | 'deploying' | 'deployed' | 'error'>>({});
-  const [deploymentLogs, setDeploymentLogs] = useState<Record<string, string[]>>({});
-  const [showAccessCommands, setShowAccessCommands] = useState(false);
-  const [gettingStartedTab, setGettingStartedTab] = useState<'setup' | 'tutorials' | 'deploy'>('setup');
-  const [instanceTab, setInstanceTab] = useState<'mi300x' | 'mi250x'>('mi300x');
+  const [gettingStartedTab, setGettingStartedTab] = useState<'setup' | 'tutorials'>('setup');
 
   const cloudConfig = cloudDeployments[cloudId as keyof typeof cloudDeployments];
 
@@ -517,75 +492,6 @@ const CloudDeployment: React.FC = () => {
     );
   }
 
-  const handleOneClickDeploy = async (blueprintName: string) => {
-    setSelectedBlueprint(blueprintName);
-    setDeploymentStatuses(prev => ({ ...prev, [blueprintName]: 'deploying' }));
-    setDeploymentLogs(prev => ({ ...prev, [blueprintName]: [] }));
-    setShowAccessCommands(false);
-
-    // Simulate deployment process
-    const logs = [
-      `Starting deployment of ${blueprintName}...`,
-      'Provisioning cloud resources...',
-      'Configuring GPU instances...',
-      'Deploying model containers...',
-      'Setting up load balancers...',
-      'Configuring monitoring...',
-      'Deployment completed successfully!'
-    ];
-
-    for (let i = 0; i < logs.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setDeploymentLogs(prev => ({
-        ...prev,
-        [blueprintName]: [...(prev[blueprintName] || []), logs[i]]
-      }));
-    }
-
-    setDeploymentStatuses(prev => ({ ...prev, [blueprintName]: 'deployed' }));
-  };
-
-  const handleStopDeployment = () => {
-    if (selectedBlueprint) {
-      setDeploymentStatuses(prev => ({ ...prev, [selectedBlueprint]: 'idle' }));
-      setDeploymentLogs(prev => ({ ...prev, [selectedBlueprint]: [] }));
-    }
-    setShowAccessCommands(false);
-  };
-
-  const handleDeleteDeployment = () => {
-    if (selectedBlueprint) {
-      setDeploymentStatuses(prev => ({ ...prev, [selectedBlueprint]: 'idle' }));
-      setDeploymentLogs(prev => ({ ...prev, [selectedBlueprint]: [] }));
-    }
-    setSelectedBlueprint('');
-    setShowAccessCommands(false);
-  };
-
-  const handleAccessInstance = () => {
-    setShowAccessCommands(true);
-  };
-
-  const handleDeployInstance = (instanceType: string) => {
-    // Simulate instance deployment
-    console.log(`Deploying ${instanceType} instance...`);
-    // Here you would integrate with the actual AMD Developer Cloud API
-    alert(`Deploying ${instanceType} instance. This would connect to AMD Developer Cloud API.`);
-  };
-
-  const getAccessCommands = () => {
-    const instanceId = `inst-${Date.now().toString(36)}`;
-    const region = cloudConfig.regions[0];
-    
-    return {
-      ssh: `ssh -i ~/.ssh/your-key.pem ubuntu@${instanceId}.${cloudId}.${region}.cloud.com`,
-      scp: `scp -i ~/.ssh/your-key.pem -r ./your-model ubuntu@${instanceId}.${cloudId}.${region}.cloud.com:/home/ubuntu/`,
-      api: `curl -X POST https://${instanceId}.${cloudId}.${region}.cloud.com/predict -H "Content-Type: application/json" -d '{"input": "Hello, world!"}'`,
-      jupyter: `ssh -i ~/.ssh/your-key.pem -L 8888:localhost:8888 ubuntu@${instanceId}.${cloudId}.${region}.cloud.com`,
-      monitoring: `https://${instanceId}.${cloudId}.${region}.cloud.com:3000`
-    };
-  };
-
   return (
     <IconContext.Provider value={{ size: '1em', className: 'inline-block ml-2' }}>
       <div className='min-h-screen bg-neutral-900 text-white font-sans flex flex-col'>
@@ -599,24 +505,9 @@ const CloudDeployment: React.FC = () => {
           <nav className='absolute top-0 left-0 w-full flex justify-between items-center pt-8 px-8 z-10'>
             <PlaygroundLogo />
             <div className='flex gap-16'>
-              <Link
-                to='/models'
-                className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full"
-              >
-                Models
-              </Link>
-              <Link
-                to='/blueprints'
-                className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full"
-              >
-                Blueprints
-              </Link>
-              <Link
-                to='/gpu-cloud'
-                className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full"
-              >
-                GPU Clouds
-              </Link>
+              <Link to='/models' className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Models</Link>
+              <Link to='/blueprints' className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">Blueprints</Link>
+              <Link to='/gpu-cloud' className="text-2xl font-bold transition relative px-2 opacity-80 hover:opacity-100 after:content-[''] after:block after:h-1 after:rounded after:mt-1 after:w-0 after:bg-red-500 hover:after:w-full">GPU Clouds</Link>
             </div>
           </nav>
         </div>
@@ -625,18 +516,34 @@ const CloudDeployment: React.FC = () => {
         <div className='w-full max-w-[1400px] mx-auto py-12 px-8 flex-1'>
           {/* Header */}
           <div className='mb-8'>
-            <div className='flex items-center mb-6'>
-              <div className='w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center mr-4'>
-                <FaServer className='text-2xl text-blue-400' />
+            <div className='flex items-center justify-between mb-6'>
+              <div className='flex items-center'>
+                <Link
+                  to='/gpu-cloud'
+                  className='mr-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors'
+                  title='Back to GPU Cloud'
+                >
+                  <FaArrowLeft className='text-xl text-gray-400' />
+                </Link>
+                <div className='w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center mr-4'>
+                  <FaServer className='text-2xl text-blue-400' />
+                </div>
+                <div>
+                  <h1 className='text-4xl font-bold text-white'>{cloudConfig.name}</h1>
+                  <p className='text-lg text-gray-300'>{cloudConfig.description}</p>
+                </div>
               </div>
-              <div>
-                <h1 className='text-4xl font-bold text-white'>{cloudConfig.name}</h1>
-                <p className='text-lg text-gray-300'>{cloudConfig.description}</p>
-              </div>
+              
+              {/* Deploy Button */}
+              <Link
+                to={`/deploy/${cloudId}`}
+                className='inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl text-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl'
+              >
+                <FaRocket className='mr-2' />
+                Deploy
+              </Link>
             </div>
           </div>
-
-
 
           {/* Main Content */}
           {cloudId === 'amd-developer-cloud' && (
@@ -645,30 +552,22 @@ const CloudDeployment: React.FC = () => {
               <div className='lg:col-span-2'>
                 {/* Tabbed Box */}
                 <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-0'>
-                                      <div className='flex border-b border-white/10'>
-                      <button
-                        className={`flex-1 py-4 px-6 rounded-tl-2xl text-sm font-semibold transition-colors ${gettingStartedTab === 'setup' ? 'bg-blue-700/30 text-white' : 'text-gray-300 hover:text-white'}`}
-                        onClick={() => setGettingStartedTab('setup')}
-                      >
-                        <FaServer className="inline mr-2" />
-                        AMD Developer Cloud Setup
-                      </button>
-                      <button
-                        className={`flex-1 py-4 px-6 text-sm font-semibold transition-colors ${gettingStartedTab === 'tutorials' ? 'bg-blue-700/30 text-white' : 'text-gray-300 hover:text-white'}`}
-                        onClick={() => setGettingStartedTab('tutorials')}
-                      >
-                        <FaPlay className="inline mr-2" />
-                        Developer Tutorial Videos
-                      </button>
-                      <button
-                        className={`flex-1 py-4 px-6 rounded-tr-2xl text-sm font-semibold transition-colors ${gettingStartedTab === 'deploy' ? 'bg-blue-700/30 text-white' : 'text-gray-300 hover:text-white'}`}
-                        onClick={() => setGettingStartedTab('deploy')}
-                      >
-                        <FaRocket className="inline mr-2" />
-                        Deploy
-                        <span className='ml-2 px-2 py-0.5 rounded-full bg-yellow-400 text-xs font-semibold text-gray-900 align-middle'>Coming Soon</span>
-                      </button>
-                    </div>
+                  <div className='flex border-b border-white/10'>
+                    <button
+                      className={`flex-1 py-4 px-6 rounded-tl-2xl text-sm font-semibold transition-colors ${gettingStartedTab === 'setup' ? 'bg-blue-700/30 text-white' : 'text-gray-300 hover:text-white'}`}
+                      onClick={() => setGettingStartedTab('setup')}
+                    >
+                      <FaServer className="inline mr-2" />
+                      AMD Developer Cloud Setup
+                    </button>
+                    <button
+                      className={`flex-1 py-4 px-6 rounded-tr-2xl text-sm font-semibold transition-colors ${gettingStartedTab === 'tutorials' ? 'bg-blue-700/30 text-white' : 'text-gray-300 hover:text-white'}`}
+                      onClick={() => setGettingStartedTab('tutorials')}
+                    >
+                      <FaPlay className="inline mr-2" />
+                      Developer Tutorial Videos
+                    </button>
+                  </div>
                   <div className='p-8'>
                     {gettingStartedTab === 'setup' && (
                       <div>
@@ -752,10 +651,15 @@ const CloudDeployment: React.FC = () => {
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                           {amdTutorialVideos.slice(0, 6).map((video, idx) => (
                             <div key={idx} className='bg-gray-900/60 rounded-lg p-3 border border-gray-700 flex flex-col'>
-                              <div className='aspect-w-16 aspect-h-9 mb-2 rounded overflow-hidden bg-black'>
+                              <div className='aspect-w-16 aspect-h-9 mb-2 rounded overflow-hidden bg-black relative'>
                                 <img src={video.thumbnail} alt={video.title} className='object-cover w-full h-full'/>
+                                <div className='absolute inset-0 flex items-center justify-center'>
+                                  <div className='bg-red-600/80 rounded-full p-2'>
+                                    <FaPlay className='text-white text-sm' />
+                                  </div>
+                                </div>
                               </div>
-                              <h4 className='text-white font-semibold text-sm mb-1 line-clamp-2'>{video.title}</h4>
+                              <span className='text-white text-base font-medium mb-1'>{video.title}</span>
                               <p className='text-gray-400 text-xs mb-2 line-clamp-2'>{video.description}</p>
                               <a href={video.url} target='_blank' rel='noopener noreferrer' className='mt-auto inline-block bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded text-xs font-medium text-center'>
                                 Watch Video
@@ -774,199 +678,15 @@ const CloudDeployment: React.FC = () => {
                             View All Tutorials →
                           </a>
                         </div>
-                                              </div>
-                      )}
-                      
-                      {gettingStartedTab === 'deploy' && (
-                        <div>
-                          <h3 className='text-xl font-bold text-white mb-4'>Quickstart Blueprints</h3>
-                          <p className='text-sm text-gray-400 mb-6'>Deploy pre-configured AMD GPU instances with popular frameworks</p>
-                          
-                          {/* Instance Deployment Tabs */}
-                          <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-0'>
-                            <div className='flex border-b border-gray-700'>
-                              <button
-                                className={`flex-1 py-3 px-4 text-sm font-semibold transition-colors ${instanceTab === 'mi300x' ? 'bg-blue-700/30 text-white' : 'text-gray-300 hover:text-white'}`}
-                                onClick={() => setInstanceTab('mi300x')}
-                              >
-                                <FaServer className="inline mr-2" />
-                                MI300X Instance
-                              </button>
-                              <button
-                                className={`flex-1 py-3 px-4 text-sm font-semibold transition-colors ${instanceTab === 'mi250x' ? 'bg-blue-700/30 text-white' : 'text-gray-300 hover:text-white'}`}
-                                onClick={() => setInstanceTab('mi250x')}
-                              >
-                                <FaServer className="inline mr-2" />
-                                MI250X Instance
-                              </button>
-                            </div>
-                            <div className='p-6'>
-                              {instanceTab === 'mi300x' && (
-                                <div>
-                                  <div className='flex items-center justify-between mb-4'>
-                                    <div>
-                                      <h4 className='text-lg font-bold text-white'>AMD Instinct™ MI300X</h4>
-                                      <p className='text-sm text-gray-400'>192GB HBM3 Memory • Latest ROCm Support</p>
-                                    </div>
-                                    <div className='text-right'>
-                                      <div className='text-xl font-bold text-white'>$2.50/hour</div>
-                                      <div className='text-sm text-gray-400'>Highly Available</div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
-                                    <div className='bg-gray-800/50 rounded-lg p-3'>
-                                      <h5 className='text-sm font-semibold text-white mb-2'>Specifications</h5>
-                                      <div className='space-y-1 text-xs text-gray-300'>
-                                        <div className='flex justify-between'>
-                                          <span>GPU Memory:</span>
-                                          <span className='text-white'>192GB HBM3</span>
-                                        </div>
-                                        <div className='flex justify-between'>
-                                          <span>Memory Bandwidth:</span>
-                                          <span className='text-white'>5.3 TB/s</span>
-                                        </div>
-                                        <div className='flex justify-between'>
-                                          <span>FP16 Performance:</span>
-                                          <span className='text-white'>383 TFLOPS</span>
-                                        </div>
-                                        <div className='flex justify-between'>
-                                          <span>ROCm Version:</span>
-                                          <span className='text-white'>6.0+</span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    
-                                    <div className='bg-gray-800/50 rounded-lg p-3'>
-                                      <h5 className='text-sm font-semibold text-white mb-2'>Pre-configured Environments</h5>
-                                      <div className='space-y-1 text-xs'>
-                                        <div className='flex items-center text-gray-300'>
-                                          <FaCheckCircle className='text-green-400 mr-2' />
-                                          PyTorch 2.1+ with ROCm
-                                        </div>
-                                        <div className='flex items-center text-gray-300'>
-                                          <FaCheckCircle className='text-green-400 mr-2' />
-                                          TensorFlow 2.15+ with ROCm
-                                        </div>
-                                        <div className='flex items-center text-gray-300'>
-                                          <FaCheckCircle className='text-green-400 mr-2' />
-                                          JAX with ROCm
-                                        </div>
-                                        <div className='flex items-center text-gray-300'>
-                                          <FaCheckCircle className='text-green-400 mr-2' />
-                                          ONNX Runtime
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className='flex gap-3'>
-                                    <button
-                                      onClick={() => handleDeployInstance('mi300x')}
-                                      className='flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-sm font-semibold transition-colors flex items-center justify-center'
-                                    >
-                                      <FaRocket className="mr-2" />
-                                      Deploy MI300X Instance
-                                    </button>
-                                    <button className='bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded text-sm font-semibold transition-colors'>
-                                      View Pricing
-                                    </button>
-                                  </div>
-                                </div>
-                              )}
-                              
-                              {instanceTab === 'mi250x' && (
-                                <div>
-                                  <div className='flex items-center justify-between mb-4'>
-                                    <div>
-                                      <h4 className='text-lg font-bold text-white'>AMD Instinct™ MI250X</h4>
-                                      <p className='text-sm text-gray-400'>128GB HBM2e Memory • Cost-Effective Option</p>
-                                    </div>
-                                    <div className='text-right'>
-                                      <div className='text-xl font-bold text-white'>$1.80/hour</div>
-                                      <div className='text-sm text-gray-400'>Available</div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
-                                    <div className='bg-gray-800/50 rounded-lg p-3'>
-                                      <h5 className='text-sm font-semibold text-white mb-2'>Specifications</h5>
-                                      <div className='space-y-1 text-xs text-gray-300'>
-                                        <div className='flex justify-between'>
-                                          <span>GPU Memory:</span>
-                                          <span className='text-white'>128GB HBM2e</span>
-                                        </div>
-                                        <div className='flex justify-between'>
-                                          <span>Memory Bandwidth:</span>
-                                          <span className='text-white'>3.2 TB/s</span>
-                                        </div>
-                                        <div className='flex justify-between'>
-                                          <span>FP16 Performance:</span>
-                                          <span className='text-white'>383 TFLOPS</span>
-                                        </div>
-                                        <div className='flex justify-between'>
-                                          <span>ROCm Version:</span>
-                                          <span className='text-white'>5.7+</span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    
-                                    <div className='bg-gray-800/50 rounded-lg p-3'>
-                                      <h5 className='text-sm font-semibold text-white mb-2'>Pre-configured Environments</h5>
-                                      <div className='space-y-1 text-xs'>
-                                        <div className='flex items-center text-gray-300'>
-                                          <FaCheckCircle className='text-green-400 mr-2' />
-                                          PyTorch 2.0+ with ROCm
-                                        </div>
-                                        <div className='flex items-center text-gray-300'>
-                                          <FaCheckCircle className='text-green-400 mr-2' />
-                                          TensorFlow 2.13+ with ROCm
-                                        </div>
-                                        <div className='flex items-center text-gray-300'>
-                                          <FaCheckCircle className='text-green-400 mr-2' />
-                                          JAX with ROCm
-                                        </div>
-                                        <div className='flex items-center text-gray-300'>
-                                          <FaCheckCircle className='text-green-400 mr-2' />
-                                          ONNX Runtime
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className='flex gap-3'>
-                                    <button
-                                      onClick={() => handleDeployInstance('mi250x')}
-                                      className='flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-sm font-semibold transition-colors flex items-center justify-center'
-                                    >
-                                      <FaRocket className="mr-2" />
-                                      Deploy MI250X Instance
-                                    </button>
-                                    <button className='bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded text-sm font-semibold transition-colors'>
-                                      View Pricing
-                                    </button>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Model & Blueprint Deployments - Only show when Deploy tab is active */}
-                      {gettingStartedTab === 'deploy' && (
-                        <div className='mt-8'>
-                          <CombinedCloudManager />
-                        </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
+              </div>
 
-            {/* Right Column - Info & Pricing */}
-            <div className='space-y-8'>
-              {/* Cloud Info - Only show when Deploy tab is NOT active */}
-              {gettingStartedTab !== 'deploy' && (
+              {/* Right Column - Info & Pricing */}
+              <div className='space-y-8'>
+                {/* Cloud Info */}
                 <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6'>
                   <h3 className='text-lg font-semibold text-white mb-4'>Cloud Provider</h3>
                   <div className='space-y-3'>
@@ -990,10 +710,8 @@ const CloudDeployment: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              )}
 
-              {/* Key Features - Only show when Deploy tab is NOT active */}
-              {gettingStartedTab !== 'deploy' && (
+                {/* Key Features */}
                 <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6'>
                   <h3 className='text-lg font-semibold text-white mb-4'>Key Features</h3>
                   <div className='space-y-3'>
@@ -1005,38 +723,166 @@ const CloudDeployment: React.FC = () => {
                     ))}
                   </div>
                 </div>
-              )}
 
-              {/* Availability Legend - Only show when Deploy tab is active */}
-              {gettingStartedTab === 'deploy' && (
+                {/* Pricing */}
                 <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6'>
-                  <h3 className='text-sm font-semibold text-white mb-3'>Availability</h3>
-                  <div className='space-y-2 text-xs'>
-                    <div className='flex items-center'>
-                      <span className='w-2 h-2 bg-green-600/20 rounded-full mr-2'></span>
-                      <span className='text-green-400 font-medium'>High</span>
-                      <span className='text-gray-400 ml-1'>- Readily available</span>
+                  <h3 className='text-lg font-semibold text-white mb-4'>Pricing</h3>
+                  <div className='space-y-3'>
+                    {Object.entries(cloudConfig.pricing).map(([gpu, price]) => (
+                      <div key={gpu} className='flex justify-between items-center'>
+                        <span className='text-gray-300 text-sm'>{gpu.toUpperCase()}</span>
+                        <span className='text-white font-medium'>{price}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Blueprints */}
+                <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6'>
+                  <h3 className='text-lg font-semibold text-white mb-4'>Available Blueprints</h3>
+                  <div className='space-y-3'>
+                    {cloudConfig.blueprints.map((blueprint, index) => (
+                      <div key={index} className='bg-gray-800/50 rounded-lg p-3 border border-gray-700'>
+                        <h4 className='text-white font-medium text-sm mb-1'>{blueprint.name}</h4>
+                        <p className='text-gray-400 text-xs mb-2'>{blueprint.description}</p>
+                        <div className='flex justify-between text-xs text-gray-500'>
+                          <span>{blueprint.framework}</span>
+                          <span>{blueprint.complexity}</span>
+                          <span>{blueprint.estimatedTime}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* For other cloud providers, show a simplified layout */}
+          {cloudId !== 'amd-developer-cloud' && (
+            <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+              {/* Left Column - Getting Started Content */}
+              <div className='lg:col-span-2'>
+                <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-8'>
+                  <h3 className='text-xl font-bold text-white mb-4'>Getting Started with {cloudConfig.name}</h3>
+                  <p className='text-sm text-gray-400 mb-6'>Learn how to deploy and run workloads on {cloudConfig.name}</p>
+                  
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                    {cloudConfig.deploymentSteps?.map((step, index) => (
+                      <div key={index} className='bg-gray-800/50 rounded-lg p-6 border border-gray-700'>
+                        <h4 className='text-lg font-semibold text-white mb-3'>{step.title}</h4>
+                        <p className='text-gray-300 text-sm mb-4'>{step.description}</p>
+                        
+                        {/* Video Tutorial Section */}
+                        <div className='mb-4'>
+                          <div className='bg-black/30 rounded-lg p-4 border border-white/10'>
+                            <div className='flex items-center justify-between mb-3'>
+                              <h5 className='text-sm font-semibold text-white'>Video Tutorial</h5>
+                              <span className='text-xs text-gray-400'>8:45</span>
+                            </div>
+                            <div className='relative bg-gray-800 rounded-lg overflow-hidden aspect-video'>
+                              <div className='absolute inset-0 flex items-center justify-center'>
+                                <div className='bg-blue-600/20 rounded-full p-3'>
+                                  <FaPlay className='text-blue-400 text-lg' />
+                                </div>
+                              </div>
+                              <div className='absolute bottom-2 left-2 bg-black/70 rounded px-2 py-1'>
+                                <span className='text-xs text-white'>{step.title}</span>
+                              </div>
+                            </div>
+                            <p className='text-xs text-gray-400 mt-2'>
+                              Complete walkthrough of {step.title.toLowerCase()} on {cloudConfig.name}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <ul className='space-y-2'>
+                          {step.details.map((detail, detailIndex) => (
+                            <li key={detailIndex} className='flex items-start text-sm text-gray-400'>
+                              <FaCheckCircle className='text-green-400 mr-2 mt-0.5 flex-shrink-0' />
+                              {detail}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column - Info & Pricing */}
+              <div className='space-y-8'>
+                {/* Cloud Info */}
+                <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6'>
+                  <h3 className='text-lg font-semibold text-white mb-4'>Cloud Provider</h3>
+                  <div className='space-y-3'>
+                    <div>
+                      <span className='text-sm text-gray-400'>Name:</span>
+                      <div className='text-white font-medium'>{cloudConfig.name}</div>
                     </div>
-                    <div className='flex items-center'>
-                      <span className='w-2 h-2 bg-yellow-600/20 rounded-full mr-2'></span>
-                      <span className='text-yellow-400 font-medium'>Medium</span>
-                      <span className='text-gray-400 ml-1'>- Limited availability</span>
+                    <div>
+                      <span className='text-sm text-gray-400'>Description:</span>
+                      <div className='text-gray-300 text-sm mt-1'>{cloudConfig.description}</div>
                     </div>
-                    <div className='flex items-center'>
-                      <span className='w-2 h-2 bg-red-600/20 rounded-full mr-2'></span>
-                      <span className='text-red-400 font-medium'>Low</span>
-                      <span className='text-gray-400 ml-1'>- Waitlist or restricted</span>
+                    <div>
+                      <span className='text-sm text-gray-400'>Available Regions:</span>
+                      <div className='flex flex-wrap gap-1 mt-1'>
+                        {cloudConfig.regions.map((region, index) => (
+                          <span key={index} className='px-2 py-1 bg-gray-700 rounded text-xs text-gray-300'>
+                            {region}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
-              )}
+
+                {/* Key Features */}
+                <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6'>
+                  <h3 className='text-lg font-semibold text-white mb-4'>Key Features</h3>
+                  <div className='space-y-3'>
+                    {cloudConfig.features.map((feature, index) => (
+                      <div key={index} className='flex items-center text-gray-300'>
+                        <FaCheckCircle className='text-green-400 mr-3' />
+                        {feature}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Pricing */}
+                <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6'>
+                  <h3 className='text-lg font-semibold text-white mb-4'>Pricing</h3>
+                  <div className='space-y-3'>
+                    {Object.entries(cloudConfig.pricing).map(([gpu, price]) => (
+                      <div key={gpu} className='flex justify-between items-center'>
+                        <span className='text-gray-300 text-sm'>{gpu.toUpperCase()}</span>
+                        <span className='text-white font-medium'>{price}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Blueprints */}
+                <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6'>
+                  <h3 className='text-lg font-semibold text-white mb-4'>Available Blueprints</h3>
+                  <div className='space-y-3'>
+                    {cloudConfig.blueprints?.map((blueprint, index) => (
+                      <div key={index} className='bg-gray-800/50 rounded-lg p-3 border border-gray-700'>
+                        <h4 className='text-white font-medium text-sm mb-1'>{blueprint.name}</h4>
+                        <p className='text-gray-400 text-xs mb-2'>{blueprint.description}</p>
+                        <div className='flex justify-between text-xs text-gray-500'>
+                          <span>{blueprint.framework}</span>
+                          <span>{blueprint.complexity}</span>
+                          <span>{blueprint.estimatedTime}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
           )}
-
-
-
-
         </div>
       </div>
     </IconContext.Provider>

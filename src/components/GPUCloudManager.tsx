@@ -9,19 +9,15 @@ import {
   FaMemory,
   FaMicrochip
 } from 'react-icons/fa';
-import { gpuCloudService, type GPUInstance, type CloudProvider, type CostAnalysis } from '../services/gpuCloudService';
+import { gpuCloudService, type GPUInstance, type CostAnalysis } from '../services/gpuCloudService';
 
 interface GPUCloudManagerProps {
-  onInstanceChange?: (instances: GPUInstance[]) => void;
+  // Props can be added here if needed in the future
 }
 
-export const GPUCloudManager: React.FC<GPUCloudManagerProps> = ({
-  onInstanceChange,
-}) => {
+export const GPUCloudManager: React.FC<GPUCloudManagerProps> = () => {
   const [instances, setInstances] = useState<GPUInstance[]>([]);
-  const [providers, setProviders] = useState<CloudProvider[]>([]);
   const [costAnalysis, setCostAnalysis] = useState<CostAnalysis | null>(null);
-
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,20 +26,17 @@ export const GPUCloudManager: React.FC<GPUCloudManagerProps> = ({
     setLoading(true);
     try {
       const instancesData = gpuCloudService.getInstances();
-      const providersData = gpuCloudService.getProviders();
       const costData = gpuCloudService.getCostAnalysis();
 
       setInstances(instancesData);
-      setProviders(providersData);
       setCostAnalysis(costData);
-      onInstanceChange?.(instancesData);
     } catch (err) {
       setError('Failed to load GPU cloud data');
       console.error('Failed to load data:', err);
     } finally {
       setLoading(false);
     }
-  }, [onInstanceChange]);
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -52,8 +45,6 @@ export const GPUCloudManager: React.FC<GPUCloudManagerProps> = ({
     const interval = setInterval(loadData, 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
   }, [loadData]);
-
-
 
   const handleStartInstance = async (id: string) => {
     try {

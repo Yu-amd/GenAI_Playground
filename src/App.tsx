@@ -4,10 +4,14 @@ import ModelsCatalog from './pages/ModelsCatalog';
 import BlueprintsCatalog from './pages/BlueprintsCatalog';
 import GPUCloud from './pages/GPUCloud';
 import CloudDeployment from './pages/CloudDeployment';
+import Deploy from './pages/Deploy';
 import ModelDetail from './pages/ModelDetail';
 import BlueprintDetail from './pages/BlueprintDetail';
 import FunctionalServiceDetail from './pages/FunctionalServiceDetail';
 import ContentEditorDemo from './pages/ContentEditorDemo';
+
+// Import services to register cloud provider adapters
+import './services';
 
 function App() {
   return (
@@ -24,6 +28,8 @@ function App() {
         />
         <Route path='/gpu-cloud' element={<GPUCloud />} />
         <Route path='/gpu-cloud/:cloudId' element={<CloudDeployment />} />
+        <Route path='/deploy' element={<Deploy />} />
+        <Route path='/deploy/:providerId' element={<Deploy />} />
         <Route path='/content-editor' element={<ContentEditorDemo />} />
       </Routes>
     </Router>

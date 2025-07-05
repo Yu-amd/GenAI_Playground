@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import bannerWave from '../assets/banner_wave.png';
 import { 
   FaServer, 
-  FaChartLine, 
-  FaCog, 
   FaRocket,
   FaCloud,
   FaShieldAlt
@@ -188,6 +186,20 @@ const GPUCloud: React.FC = () => {
             <p className='text-lg text-gray-300 mb-8'>
               From experimentation to enterprise deployment, we support your entire GenAI journey.
             </p>
+            
+            {/* Deploy Button */}
+            <div className='mb-8'>
+              <Link
+                to='/deploy'
+                className='inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl'
+              >
+                <FaRocket className='mr-3 text-xl' />
+                Deploy to Any Cloud Provider
+              </Link>
+              <p className='text-sm text-gray-400 mt-3'>
+                Unified deployment interface for all AMD Instinct™ GPU cloud providers
+              </p>
+            </div>
             
             {/* Path to Production */}
             <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-8 mb-12 text-left'>
