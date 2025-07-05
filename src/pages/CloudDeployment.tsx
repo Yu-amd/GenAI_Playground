@@ -3,12 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { 
   FaRocket, 
   FaServer, 
-  FaCog, 
-  FaChartLine, 
   FaCheckCircle,
   FaPlay,
-  FaMicrochip,
-  FaShieldAlt,
   FaArrowLeft
 } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
@@ -537,10 +533,7 @@ const CloudDeployment: React.FC = () => {
               {/* Deploy Button */}
               <Link
                 to={`/deploy/${cloudId}`}
-                className='inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl text-lg font-semibold transition-all duration-200 shadow-lg gap-2 opacity-70 cursor-not-allowed relative'
-                tabIndex={-1}
-                aria-disabled="true"
-                onClick={e => e.preventDefault()}
+                className='inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl text-lg font-semibold transition-all duration-200 shadow-lg gap-2 hover:from-blue-700 hover:to-purple-700 hover:scale-105 relative'
               >
                 <FaRocket className='mr-2' />
                 <span>Deploy</span>

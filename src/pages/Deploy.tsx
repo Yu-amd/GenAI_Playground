@@ -3,22 +3,20 @@ import { useParams, Link } from 'react-router-dom';
 import { 
   FaRocket, 
   FaServer, 
-  FaCog, 
-  FaChartLine, 
   FaCheckCircle,
-  FaPlay,
   FaMicrochip,
   FaShieldAlt,
   FaCloud,
   FaArrowLeft,
-  FaChevronDown
+  FaChevronDown,
+  FaChartLine
 } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import PlaygroundLogo from '../components/PlaygroundLogo';
 import bannerWave from '../assets/banner_wave.png';
 import { DeployTab } from '../components/DeployTab';
 import CombinedCloudManager from '../components/CombinedCloudManager';
-import { centralDeploymentController } from '../services/CentralDeploymentController';
+
 
 // Cloud provider configurations
 const cloudProviders = {

@@ -89,7 +89,7 @@ export class ToolService {
         return this.getMockWeather(location, unit);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
       const temp = data.main.temp;
       const description = data.weather[0].description;
       const humidity = data.main.humidity;
@@ -124,7 +124,7 @@ export class ToolService {
         return this.getMockSearchResults(query, num_results);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
 
       if (data.Abstract) {
         return `Search results for "${query}":\n\n${data.Abstract}\n\nSource: ${data.AbstractURL || 'DuckDuckGo'}`;
@@ -197,7 +197,7 @@ export class ToolService {
         return this.getMockTranslation(text, target_language, source_language);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
       const detectedLanguage =
         data.detected?.language || source_language || 'auto';
 
@@ -262,7 +262,7 @@ export class ToolService {
         return this.getMockStockPrice(symbol, include_currency);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
 
       if (data['Global Quote']) {
         const quote = data['Global Quote'];
@@ -363,18 +363,18 @@ export class ToolService {
         return `Error fetching historical data for ${symbol.toUpperCase()}. Please check the symbol and try again.`;
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
 
       if (
         data['Time Series (Daily)'] &&
         data['Time Series (Daily)'][formattedDate]
       ) {
         const dailyData = data['Time Series (Daily)'][formattedDate];
-        const open = parseFloat(dailyData['1. open']);
-        const high = parseFloat(dailyData['2. high']);
-        const low = parseFloat(dailyData['3. low']);
-        const close = parseFloat(dailyData['4. close']);
-        const volume = parseInt(dailyData['5. volume']);
+        const open = dailyData['1. open'];
+        const high = dailyData['2. high'];
+        const low = dailyData['3. low'];
+        const close = dailyData['4. close'];
+        const volume = dailyData['5. volume'];
 
         const dateObj = new Date(formattedDate);
         const formattedDisplayDate = dateObj.toLocaleDateString('en-US', {
@@ -384,11 +384,11 @@ export class ToolService {
           day: 'numeric',
         });
 
-        let resultText = `Historical Stock Price for ${symbol.toUpperCase()}:\n• Date: ${formattedDisplayDate}\n• Close Price: $${close.toFixed(2)} USD`;
-        resultText += `\n• Open: $${open.toFixed(2)}`;
-        resultText += `\n• High: $${high.toFixed(2)}`;
-        resultText += `\n• Low: $${low.toFixed(2)}`;
-        resultText += `\n• Volume: ${volume.toLocaleString()}`;
+        let resultText = `Historical Stock Price for ${symbol.toUpperCase()}:\n• Date: ${formattedDisplayDate}\n• Close Price: $${close} USD`;
+        resultText += `\n• Open: $${open}`;
+        resultText += `\n• High: $${high}`;
+        resultText += `\n• Low: $${low}`;
+        resultText += `\n• Volume: ${volume}`;
 
         return resultText;
       } else {
@@ -410,11 +410,11 @@ export class ToolService {
           }
 
           const dailyData = data['Time Series (Daily)'][closestDate];
-          const close = parseFloat(dailyData['4. close']);
-          const open = parseFloat(dailyData['1. open']);
-          const high = parseFloat(dailyData['2. high']);
-          const low = parseFloat(dailyData['3. low']);
-          const volume = parseInt(dailyData['5. volume']);
+          const close = dailyData['4. close'];
+          const open = dailyData['1. open'];
+          const high = dailyData['2. high'];
+          const low = dailyData['3. low'];
+          const volume = dailyData['5. volume'];
 
           const dateObj = new Date(closestDate);
           const formattedDisplayDate = dateObj.toLocaleDateString('en-US', {
@@ -424,11 +424,11 @@ export class ToolService {
             day: 'numeric',
           });
 
-          let resultText = `Historical Stock Price for ${symbol.toUpperCase()}:\n• Date: ${formattedDisplayDate} (closest available to ${targetDate})\n• Close Price: $${close.toFixed(2)} USD`;
-          resultText += `\n• Open: $${open.toFixed(2)}`;
-          resultText += `\n• High: $${high.toFixed(2)}`;
-          resultText += `\n• Low: $${low.toFixed(2)}`;
-          resultText += `\n• Volume: ${volume.toLocaleString()}`;
+          let resultText = `Historical Stock Price for ${symbol.toUpperCase()}:\n• Date: ${formattedDisplayDate} (closest available to ${targetDate})\n• Close Price: $${close} USD`;
+          resultText += `\n• Open: $${open}`;
+          resultText += `\n• High: $${high}`;
+          resultText += `\n• Low: $${low}`;
+          resultText += `\n• Volume: ${volume}`;
 
           return resultText;
         } else {

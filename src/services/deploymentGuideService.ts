@@ -251,11 +251,11 @@ class DeploymentGuideService {
     try {
       if (url) {
         const response = await fetch(url);
-        this.content = await response.json();
+        this.content = await response.json() as DeploymentGuideContent;
       } else {
         // Reload from the same source
         const response = await fetch('/src/data/deployment-guide-content.json');
-        this.content = await response.json();
+        this.content = await response.json() as DeploymentGuideContent;
       }
     } catch (error) {
       console.error('Failed to reload deployment guide content:', error);

@@ -87,8 +87,36 @@ A modern web application for exploring and interacting with AI models and bluepr
 ![Blueprint AIMs](screenshots/blueprint_AIMs.png)
 *AMD Inference Microservices architecture view*
 
-### GPU Cloud
-![GPU Cloud](screenshots/GPU_Cloud.png)
+### GPU Cloud Overview
+![GPU Cloud Overview](screenshots/GPU_Cloud_overview.png)
+*Main GPU cloud overview page with all available cloud providers*
+
+### GPU Cloud Overview (Alternative View)
+![GPU Cloud Overview Alternative](screenshots/GPU_Cloud_overview_1.png)
+*Alternative view of the GPU cloud overview page*
+
+### AMD Developer Cloud
+![AMD Developer Cloud](screenshots/GPU_Cloud_AMD_Dev_Cloud_Tutorial_Video.png)
+*AMD Developer Cloud page with tutorial video integration*
+
+### AMD Developer Cloud Setup
+![AMD Developer Cloud Setup](screenshots/GPU_Cloud_AMD_Dev_Cloud_setup_video.png)
+*AMD Developer Cloud setup page with video tutorials*
+
+### Oracle Cloud Infrastructure
+![Oracle Cloud Infrastructure](screenshots/GPU_Cloud_OCI.png)
+*Oracle Cloud Infrastructure deployment page*
+
+### Oracle Cloud Infrastructure Deployment
+![Oracle Cloud Infrastructure Deployment](screenshots/GPU_Cloud_Deploy_OCI_example.png)
+*Oracle Cloud Infrastructure deployment interface*
+
+### Oracle Cloud Infrastructure Management
+![Oracle Cloud Infrastructure Management](screenshots/GPU_Cloud_OCI_example_management.png)
+*Oracle Cloud Infrastructure management and monitoring interface*
+
+### GPU Cloud Integration
+![GPU Cloud Integration](screenshots/GPU_Cloud.png)
 *GPU cloud integration and resource management*
 
 ## Prerequisites

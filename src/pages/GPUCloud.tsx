@@ -200,17 +200,14 @@ const GPUCloud: React.FC = () => {
             
             {/* Deploy Button */}
             <div className='mb-8'>
-              <Link
-                to='/deploy'
-                className='inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-200 shadow-lg gap-2 opacity-70 cursor-not-allowed relative'
-                tabIndex={-1}
-                aria-disabled='true'
-                onClick={e => e.preventDefault()}
-              >
-                <FaRocket className='mr-3 text-xl' />
-                <span>Deploy to Any Cloud Provider</span>
-                <span className='ml-3 px-2 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded shadow-sm'>Coming Soon</span>
-              </Link>
+                          <Link
+              to='/deploy'
+              className='inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-200 shadow-lg gap-2 hover:from-blue-700 hover:to-purple-700 hover:scale-105 relative'
+            >
+              <FaRocket className='mr-3 text-xl' />
+              <span>Deploy to Any Cloud Provider</span>
+              <span className='ml-3 px-2 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded shadow-sm'>Coming Soon</span>
+            </Link>
               <p className='text-sm text-gray-400 mt-3'>
                 Unified deployment interface for all AMD Instinct™ GPU cloud providers
               </p>
