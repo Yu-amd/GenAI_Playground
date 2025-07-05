@@ -368,7 +368,7 @@ const LandingPage: React.FC = () => {
                 software in a pre-configured environment.
               </p>
               <Link
-                to='/gpu-cloud'
+                to='/gpu-cloud#amd-developer-cloud'
                 className='inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300'
               >
                 Learn More <FaArrowRight />

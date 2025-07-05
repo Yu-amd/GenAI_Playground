@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import bannerWave from '../assets/banner_wave.png';
 import { 
@@ -139,6 +139,17 @@ const publicClouds = [
 
 const GPUCloud: React.FC = () => {
 
+  useEffect(() => {
+    // Handle hash navigation immediately
+    const hash = window.location.hash;
+    if (hash === '#amd-developer-cloud') {
+      // Scroll immediately without smooth behavior to avoid the jarring effect
+      const amdSection = document.getElementById('amd-developer-cloud');
+      if (amdSection) {
+        amdSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    }
+  }, []);
 
   return (
     <IconContext.Provider
@@ -335,7 +346,7 @@ const GPUCloud: React.FC = () => {
               </div>
               
               {/* AMD Developer Cloud Section */}
-              <div className='mb-16 text-left' data-amd-developer-cloud tabIndex={-1}>
+              <div className='mb-16 text-left' id="amd-developer-cloud" data-amd-developer-cloud tabIndex={-1}>
                 <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-8'>
                   <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
                     <div className='flex flex-col'>
