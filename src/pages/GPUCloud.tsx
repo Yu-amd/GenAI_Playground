@@ -285,17 +285,26 @@ const GPUCloud: React.FC = () => {
                     <h3 className='text-lg font-semibold text-white'>On-Premises</h3>
                   </div>
                   <p className='text-gray-300 text-sm mb-4'>
-                    Deploy AMD Instinct GPUs in your own data center infrastructure.
+                    Reference architecture for AMD Instinct GPU clusters with bare-metal and virtualization stacks.
                   </p>
                   <ul className='text-sm text-gray-400 space-y-1 mb-4'>
-                    <li>• Hardware Requirements</li>
-                    <li>• ROCm Installation</li>
-                    <li>• Network Configuration</li>
-                    <li>• Security Setup</li>
+                    <li>• Cluster Architecture Design</li>
+                    <li>• Bare-metal & Virtualization</li>
+                    <li>• Software Stack Integration</li>
+                    <li>• Performance Optimization</li>
                   </ul>
                   <div className='mt-auto'>
-                    <button className='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition-colors'>
-                      View Guide
+                    <button 
+                      onClick={() => {
+                        const onPremisesSection = document.querySelector('[data-on-premises-deployment]') as HTMLElement;
+                        if (onPremisesSection) {
+                          onPremisesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          onPremisesSection.focus();
+                        }
+                      }}
+                      className='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition-colors'
+                    >
+                      Download Whitepaper
                     </button>
                   </div>
                 </div>
@@ -306,17 +315,26 @@ const GPUCloud: React.FC = () => {
                     <h3 className='text-lg font-semibold text-white'>Enterprise Production</h3>
                   </div>
                   <p className='text-gray-300 text-sm mb-4'>
-                    Production-ready deployment with enterprise security and compliance.
+                    Comprehensive guidance for production AI deployment and management.
                   </p>
                   <ul className='text-sm text-gray-400 space-y-1 mb-4'>
-                    <li>• Security Best Practices</li>
-                    <li>• Compliance (SOC2, GDPR)</li>
-                    <li>• High Availability</li>
-                    <li>• Disaster Recovery</li>
+                    <li>• Model Optimization & Performance</li>
+                    <li>• Deployment & Orchestration</li>
+                    <li>• Security & Compliance</li>
+                    <li>• Lifecycle & Governance</li>
                   </ul>
                   <div className='mt-auto'>
-                    <button className='bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors'>
-                      View Guide
+                    <button 
+                      onClick={() => {
+                        const enterpriseSection = document.querySelector('[data-enterprise-production]') as HTMLElement;
+                        if (enterpriseSection) {
+                          enterpriseSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          enterpriseSection.focus();
+                        }
+                      }}
+                      className='bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors'
+                    >
+                      Access Guidance
                     </button>
                   </div>
                 </div>
@@ -488,6 +506,228 @@ const GPUCloud: React.FC = () => {
                       </Link>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* On-premises Deployment Section */}
+              <div className='text-left' data-on-premises-deployment tabIndex={-1}>
+                <h2 className='text-3xl font-bold text-white mb-6 border-b-2 border-green-500 pb-2'>
+                  On-premises Deployment
+                </h2>
+                <p className='text-lg text-gray-300 mb-8'>
+                  Comprehensive reference architecture for deploying and managing GenAI workloads on AMD Instinct™ GPU clusters. Covers both bare-metal and virtualization infrastructure with proven software stacks for enterprise data centers.
+                </p>
+                
+                <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-8'>
+                  <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+                    <div className='flex flex-col'>
+                      <div className='flex justify-between items-start mb-4'>
+                        <h3 className='text-2xl font-bold text-green-400'>
+                          Reference architecture
+                        </h3>
+                      </div>
+                      <p className='text-gray-300 flex-grow mb-6'>
+                        Complete architectural guidance for building scalable AMD Instinct™ GPU clusters optimized for GenAI workloads. Includes bare-metal and virtualization deployment patterns with validated software stacks.
+                      </p>
+                      
+                      <div className='mb-6'>
+                        <div className='text-sm text-gray-400 mb-1'>Documentation</div>
+                        <div className='text-lg font-medium text-green-400'>AMD Instinct GPU Cluster Deployment Guide</div>
+                        <div className='text-xs text-gray-400 mt-1'>Comprehensive deployment guide</div>
+                      </div>
+                      
+                      <button className='mt-auto text-sm font-semibold text-green-400 hover:underline flex items-center'>
+                        Download Whitepaper <FaRocket className="ml-2" />
+                      </button>
+                    </div>
+                    
+                    <div>
+                      <h4 className='text-lg font-semibold text-white mb-4'>Architecture Components</h4>
+                      <ul className='space-y-2 mb-6'>
+                        <li className='flex items-center text-gray-300'>
+                          <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
+                          AMD Instinct™ GPU Cluster Design
+                        </li>
+                        <li className='flex items-center text-gray-300'>
+                          <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
+                          Bare-metal Infrastructure Stack
+                        </li>
+                        <li className='flex items-center text-gray-300'>
+                          <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
+                          Virtualization Layer (KVM/VMware)
+                        </li>
+                        <li className='flex items-center text-gray-300'>
+                          <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
+                          ROCm Software Stack Integration
+                        </li>
+                        <li className='flex items-center text-gray-300'>
+                          <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
+                          High-Performance Networking
+                        </li>
+                        <li className='flex items-center text-gray-300'>
+                          <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
+                          Storage & Data Management
+                        </li>
+                      </ul>
+                      
+                      <h4 className='text-lg font-semibold text-white mb-4'>Supported GPU Models</h4>
+                      <div className='flex flex-wrap gap-2'>
+                        <span className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>MI300X</span>
+                        <span className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>MI250X</span>
+                        <span className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>MI210</span>
+                        <span className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>MI100</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className='text-lg font-semibold text-white mb-4'>Whitepaper Contents</h4>
+                      <ul className='space-y-2 mb-6'>
+                        <li className='flex items-center text-gray-300'>
+                          <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
+                          Cluster Architecture Design
+                        </li>
+                        <li className='flex items-center text-gray-300'>
+                          <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
+                          Bare-metal vs Virtualization Comparison
+                        </li>
+                        <li className='flex items-center text-gray-300'>
+                          <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
+                          Software Stack Recommendations
+                        </li>
+                        <li className='flex items-center text-gray-300'>
+                          <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
+                          Performance Optimization Guide
+                        </li>
+                        <li className='flex items-center text-gray-300'>
+                          <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
+                          Operational Best Practices
+                        </li>
+                      </ul>
+                      
+                      <h4 className='text-lg font-semibold text-white mb-4'>Implementation Timeline</h4>
+                      <div className='text-gray-300 text-sm'>
+                        <div className='mb-2'>• Architecture Planning: 1-2 weeks</div>
+                        <div className='mb-2'>• Hardware Procurement: 4-8 weeks</div>
+                        <div className='mb-2'>• Cluster Deployment: 2-4 weeks</div>
+                        <div className='font-medium text-green-400'>Total: 7-14 weeks</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Enterprise Production Section */}
+              <div className='text-left' data-enterprise-production tabIndex={-1}>
+                <h2 className='text-3xl font-bold text-white mb-6 border-b-2 border-purple-500 pb-2'>
+                  Enterprise Production
+                </h2>
+                <p className='text-lg text-gray-300 mb-8'>
+                  Many large enterprises trust AMD Instinct™ clusters for their production workloads. We provide comprehensive support to help you do the same — with expert guidance on model optimization, deployment orchestration, security and compliance, lifecycle governance, and cost management.
+                </p>
+                
+                <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6'>
+                  <div className='grid grid-cols-1 lg:grid-cols-5 gap-4'>
+                    <div className='flex flex-col'>
+                      <div className='flex justify-between items-start mb-3'>
+                        <h3 className='text-xl font-bold text-purple-400'>
+                          Production Guidance
+                        </h3>
+                        <span className='px-2 py-1 rounded text-xs font-medium bg-purple-600/20 text-purple-400'>
+                          Enterprise
+                        </span>
+                      </div>
+                      <p className='text-gray-300 flex-grow mb-4 text-sm'>
+                        Expert guidance on deploying and managing production AI workloads with enterprise-grade optimization, security, compliance, and operational excellence.
+                      </p>
+                      
+                      <div className='mb-4'>
+                        <div className='text-xs text-gray-400'>Comprehensive enterprise coverage</div>
+                      </div>
+                      
+                      <button className='mt-auto text-sm font-semibold text-purple-400 hover:underline flex items-center'>
+                        Contact Enterprise Sales <FaRocket className="ml-2" />
+                      </button>
+                    </div>
+                    
+                    <div>
+                      <h4 className='text-base font-semibold text-white mb-3'>Model Optimization & Performance</h4>
+                      <ul className='space-y-1 mb-4'>
+                        <li className='flex items-center text-gray-300 text-sm'>
+                          <div className='w-1.5 h-1.5 bg-purple-500 rounded-full mr-2'></div>
+                          Model Quantization & Pruning
+                        </li>
+                        <li className='flex items-center text-gray-300 text-sm'>
+                          <div className='w-1.5 h-1.5 bg-purple-500 rounded-full mr-2'></div>
+                          AMD ROCm Performance Tuning
+                        </li>
+                        <li className='flex items-center text-gray-300 text-sm'>
+                          <div className='w-1.5 h-1.5 bg-purple-500 rounded-full mr-2'></div>
+                          Batch Processing Optimization
+                        </li>
+                        <li className='flex items-center text-gray-300 text-sm'>
+                          <div className='w-1.5 h-1.5 bg-purple-500 rounded-full mr-2'></div>
+                          Memory & GPU Utilization
+                        </li>
+                        <li className='flex items-center text-gray-300 text-sm'>
+                          <div className='w-1.5 h-1.5 bg-purple-500 rounded-full mr-2'></div>
+                          Inference Latency Optimization
+                        </li>
+                        <li className='flex items-center text-gray-300 text-sm'>
+                          <div className='w-1.5 h-1.5 bg-purple-500 rounded-full mr-2'></div>
+                          Throughput Maximization
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <h4 className='text-base font-semibold text-white mb-3'>Deployment & Orchestration</h4>
+                      <div className='flex flex-wrap gap-1.5'>
+                        <span className='px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300'>Kubernetes</span>
+                        <span className='px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300'>Docker</span>
+                        <span className='px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300'>CI/CD</span>
+                        <span className='px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300'>Auto-scaling</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className='text-base font-semibold text-white mb-3'>Security, Privacy & Compliance</h4>
+                      <div className='text-gray-300 text-sm'>
+                        Comprehensive security and compliance guidance for enterprise AI deployments.
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className='text-base font-semibold text-white mb-3'>Lifecycle & Governance</h4>
+                      <div className='text-gray-300 text-sm'>
+                        <div className='mb-1'>• Model Versioning & Tracking</div>
+                        <div className='mb-1'>• A/B Testing & Monitoring</div>
+                        <div className='mb-1'>• Cost Management</div>
+                        <div className='font-medium text-purple-400'>End-to-end governance</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Enterprise Logos Section */}
+                  <div className='mt-6 pt-6 border-t border-white/10'>
+                    <h4 className='text-base font-semibold text-white mb-3 text-center'>Enterprise Proven</h4>
+                    <div className='flex justify-center items-center space-x-6 opacity-70'>
+                      <div className='w-24 h-14 bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg flex items-center justify-center shadow-lg'>
+                        <span className='text-sm text-white font-bold'>MICROSOFT</span>
+                      </div>
+                      <div className='w-24 h-14 bg-gradient-to-r from-red-600 to-red-800 rounded-lg flex items-center justify-center shadow-lg'>
+                        <span className='text-sm text-white font-bold'>NETFLIX</span>
+                      </div>
+                      <div className='w-24 h-14 bg-gradient-to-r from-green-600 to-green-800 rounded-lg flex items-center justify-center shadow-lg'>
+                        <span className='text-sm text-white font-bold'>JPMORGAN</span>
+                      </div>
+                      <div className='w-24 h-14 bg-gradient-to-r from-purple-600 to-purple-800 rounded-lg flex items-center justify-center shadow-lg'>
+                        <span className='text-sm text-white font-bold'>PFIZER</span>
+                      </div>
+                      <div className='w-24 h-14 bg-gradient-to-r from-orange-600 to-orange-800 rounded-lg flex items-center justify-center shadow-lg'>
+                        <span className='text-sm text-white font-bold'>NASA</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
