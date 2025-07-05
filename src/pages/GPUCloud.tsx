@@ -217,7 +217,7 @@ const GPUCloud: React.FC = () => {
             <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-8 mb-12 text-left'>
               <h2 className='text-2xl font-bold text-white mb-6'>Path to Production</h2>
               <p className='text-gray-300 mb-8'>
-                Comprehensive guides for deploying AMD Instinct GPU workloads in production environments.
+                Enables developers to learn and validate Instinct™ performance in the cloud, with a seamless path to production on-premises and in the public cloud.
               </p>
               
               <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
