@@ -115,10 +115,6 @@ A modern web application for exploring and interacting with AI models and bluepr
 ![Oracle Cloud Infrastructure Management](screenshots/GPU_Cloud_OCI_example_management.png)
 *Oracle Cloud Infrastructure management and monitoring interface*
 
-### GPU Cloud Integration
-![GPU Cloud Integration](screenshots/GPU_Cloud.png)
-*GPU cloud integration and resource management*
-
 ## Prerequisites
 
 - Node.js (version 18 or higher)
