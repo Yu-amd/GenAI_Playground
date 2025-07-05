@@ -95,6 +95,10 @@ A modern web application for exploring and interacting with AI models and bluepr
 ![GPU Cloud Overview Alternative](screenshots/GPU_Cloud_overview_1.png)
 *Alternative view of the GPU cloud overview page*
 
+### GPU Cloud Overview (Updated Layout)
+![GPU Cloud Overview Updated](screenshots/GPU_Cloud_Overview_2.png)
+*Updated GPU cloud overview page with enhanced enterprise sections*
+
 ### AMD Developer Cloud
 ![AMD Developer Cloud](screenshots/GPU_Cloud_AMD_Dev_Cloud_Tutorial_Video.png)
 *AMD Developer Cloud page with tutorial video integration*
