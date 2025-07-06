@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { centralDeploymentController } from '../services/CentralDeploymentController';
-import type { DeploymentConfig, DeploymentResult, Instance } from '../services/CentralDeploymentController';
+import type {
+  DeploymentConfig,
+  DeploymentResult,
+  Instance,
+} from '../services/CentralDeploymentController';
 import type { CloudProviderCapabilities } from '../types/cloudProvider';
 
 interface DeployTabProps {
@@ -9,12 +13,24 @@ interface DeployTabProps {
   customFooter?: React.ReactNode;
 }
 
-function isCloudProviderCapabilities(obj: unknown): obj is CloudProviderCapabilities {
-  return Boolean(obj && typeof obj === 'object' && obj !== null && Object.keys(obj).length > 0);
+function isCloudProviderCapabilities(
+  obj: unknown
+): obj is CloudProviderCapabilities {
+  return Boolean(
+    obj &&
+      typeof obj === 'object' &&
+      obj !== null &&
+      Object.keys(obj).length > 0
+  );
 }
 
-export const DeployTab: React.FC<DeployTabProps> = ({ providerId, customHeader, customFooter }) => {
-  const [capabilities, setCapabilities] = useState<CloudProviderCapabilities | null>(null);
+export const DeployTab: React.FC<DeployTabProps> = ({
+  providerId,
+  customHeader,
+  customFooter,
+}) => {
+  const [capabilities, setCapabilities] =
+    useState<CloudProviderCapabilities | null>(null);
   const [instances, setInstances] = useState<Instance[]>([]);
   const [form, setForm] = useState<Partial<DeploymentConfig>>({ providerId });
   const [deploying, setDeploying] = useState(false);
@@ -26,13 +42,16 @@ export const DeployTab: React.FC<DeployTabProps> = ({ providerId, customHeader, 
     setError(null);
     setSuccess(null);
     // Fetch provider capabilities
-    const caps = centralDeploymentController.getProviderCapabilities(providerId);
+    const caps =
+      centralDeploymentController.getProviderCapabilities(providerId);
     setCapabilities(isCloudProviderCapabilities(caps) ? caps : null);
     // Fetch instances
     centralDeploymentController.getInstances(providerId).then(setInstances);
   }, [providerId]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -46,25 +65,30 @@ export const DeployTab: React.FC<DeployTabProps> = ({ providerId, customHeader, 
       region: form.region || '',
       blueprint: form.blueprint,
       modelConfig: form.modelConfig,
-      userConfig: form.userConfig
+      userConfig: form.userConfig,
     };
-    const validation = centralDeploymentController.validateDeploymentConfig(config);
+    const validation =
+      centralDeploymentController.validateDeploymentConfig(config);
     if (!validation.valid) {
       setError(validation.errors.join(', '));
       setDeploying(false);
       return;
     }
     try {
-      const result: DeploymentResult = await centralDeploymentController.deployToProvider(config);
+      const result: DeploymentResult =
+        await centralDeploymentController.deployToProvider(config);
       if (result.success) {
         setSuccess('Deployment started successfully!');
         // Refresh instances
-        setInstances(await centralDeploymentController.getInstances(providerId));
+        setInstances(
+          await centralDeploymentController.getInstances(providerId)
+        );
       } else {
         setError(result.error || 'Deployment failed');
       }
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Deployment error';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Deployment error';
       setError(errorMessage);
     } finally {
       setDeploying(false);
@@ -72,117 +96,150 @@ export const DeployTab: React.FC<DeployTabProps> = ({ providerId, customHeader, 
   };
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {customHeader}
-      
-      <div className="bg-white/5 backdrop-blur-md border border-white/20 rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">Deploy Instance</h2>
-        
+
+      <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-xl p-6'>
+        <h2 className='text-xl font-semibold text-white mb-4'>
+          Deploy Instance
+        </h2>
+
         {capabilities ? (
-          <form onSubmit={e => { e.preventDefault(); handleDeploy(); }} className="space-y-4">
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              handleDeploy();
+            }}
+            className='space-y-4'
+          >
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Instance Type:</label>
-              <select 
-                name="instanceType" 
-                value={form.instanceType || ''} 
-                onChange={handleChange} 
+              <label className='block text-sm font-medium text-gray-300 mb-2'>
+                Instance Type:
+              </label>
+              <select
+                name='instanceType'
+                value={form.instanceType || ''}
+                onChange={handleChange}
                 required
-                className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className='w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
               >
-                <option value="">Select...</option>
+                <option value=''>Select...</option>
                 {capabilities.supportedInstanceTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
                 ))}
               </select>
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Region:</label>
-              <select 
-                name="region" 
-                value={form.region || ''} 
-                onChange={handleChange} 
+              <label className='block text-sm font-medium text-gray-300 mb-2'>
+                Region:
+              </label>
+              <select
+                name='region'
+                value={form.region || ''}
+                onChange={handleChange}
                 required
-                className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className='w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
               >
-                <option value="">Select...</option>
+                <option value=''>Select...</option>
                 {capabilities.supportedRegions.map(region => (
-                  <option key={region} value={region}>{region}</option>
+                  <option key={region} value={region}>
+                    {region}
+                  </option>
                 ))}
               </select>
             </div>
-            
+
             {capabilities.supportsBlueprints && (
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Blueprint:</label>
-                <input 
-                  name="blueprint" 
-                  value={form.blueprint || ''} 
+                <label className='block text-sm font-medium text-gray-300 mb-2'>
+                  Blueprint:
+                </label>
+                <input
+                  name='blueprint'
+                  value={form.blueprint || ''}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Optional blueprint name"
+                  className='w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
+                  placeholder='Optional blueprint name'
                 />
               </div>
             )}
-            
-            <button 
-              type="submit" 
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center gap-2 relative"
-              onClick={(e) => {
+
+            <button
+              type='submit'
+              className='w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center gap-2 relative'
+              onClick={e => {
                 e.preventDefault();
                 // Demo functionality - show success message
-                setSuccess('Demo: Deployment interface is working! This would deploy to ' + providerId + ' in production.');
+                setSuccess(
+                  'Demo: Deployment interface is working! This would deploy to ' +
+                    providerId +
+                    ' in production.'
+                );
               }}
             >
               <span>{deploying ? 'Deploying...' : 'Deploy'}</span>
-              <span className="ml-2 px-2 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded shadow-sm">Coming Soon</span>
+              <span className='ml-2 px-2 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded shadow-sm'>
+                Coming Soon
+              </span>
             </button>
           </form>
         ) : (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Loading provider capabilities...</p>
+          <div className='text-center py-8'>
+            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4'></div>
+            <p className='text-gray-400'>Loading provider capabilities...</p>
           </div>
         )}
-        
+
         {error && (
-          <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-md">
-            <p className="text-red-400 text-sm">{error}</p>
+          <div className='mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-md'>
+            <p className='text-red-400 text-sm'>{error}</p>
           </div>
         )}
-        
+
         {success && (
-          <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-md">
-            <p className="text-green-400 text-sm">{success}</p>
+          <div className='mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-md'>
+            <p className='text-green-400 text-sm'>{success}</p>
           </div>
         )}
       </div>
 
-      <div className="bg-white/5 backdrop-blur-md border border-white/20 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">Current Instances</h3>
+      <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-xl p-6'>
+        <h3 className='text-lg font-semibold text-white mb-4'>
+          Current Instances
+        </h3>
         {instances.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-400 mb-2">No instances found.</p>
-            <p className="text-sm text-gray-500">Deploy your first instance to get started.</p>
+          <div className='text-center py-8'>
+            <p className='text-gray-400 mb-2'>No instances found.</p>
+            <p className='text-sm text-gray-500'>
+              Deploy your first instance to get started.
+            </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className='space-y-3'>
             {instances.map(inst => (
-              <div key={inst.id} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-                <div className="flex items-center justify-between">
+              <div
+                key={inst.id}
+                className='bg-gray-800/50 rounded-lg p-4 border border-gray-700'
+              >
+                <div className='flex items-center justify-between'>
                   <div>
-                    <h4 className="text-white font-medium">{inst.name}</h4>
-                    <p className="text-sm text-gray-400">
+                    <h4 className='text-white font-medium'>{inst.name}</h4>
+                    <p className='text-sm text-gray-400'>
                       {inst.instanceType} • {inst.region} • {inst.status}
                     </p>
-                    <p className="text-sm text-gray-400">
+                    <p className='text-sm text-gray-400'>
                       ${inst.costPerHour}/hr
                     </p>
                   </div>
                   {inst.endpoint && (
-                    <div className="text-right">
-                      <p className="text-xs text-gray-500 mb-1">Endpoint:</p>
-                      <p className="text-xs text-blue-400 break-all">{inst.endpoint}</p>
+                    <div className='text-right'>
+                      <p className='text-xs text-gray-500 mb-1'>Endpoint:</p>
+                      <p className='text-xs text-blue-400 break-all'>
+                        {inst.endpoint}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -191,8 +248,8 @@ export const DeployTab: React.FC<DeployTabProps> = ({ providerId, customHeader, 
           </div>
         )}
       </div>
-      
+
       {customFooter}
     </div>
   );
-}; 
+};

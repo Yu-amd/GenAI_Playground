@@ -59,7 +59,9 @@ describe('GPUCloud Component', () => {
         // Use getAllByText since there might be multiple instances
         const titles = screen.getAllByText('AMD Instinct™ GPU Cloud Access');
         expect(titles.length).toBeGreaterThan(0);
-        expect(screen.getByText(/From experimentation to enterprise deployment/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/From experimentation to enterprise deployment/)
+        ).toBeInTheDocument();
       });
     });
 
@@ -81,7 +83,9 @@ describe('GPUCloud Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Deploy to Any Cloud Provider')).toBeInTheDocument();
+        expect(
+          screen.getByText('Deploy to Any Cloud Provider')
+        ).toBeInTheDocument();
         expect(screen.getByText('Coming Soon')).toBeInTheDocument();
       });
     });
@@ -95,7 +99,9 @@ describe('GPUCloud Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Path to Production')).toBeInTheDocument();
-        expect(screen.getByText(/Enables developers to learn and validate/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Enables developers to learn and validate/)
+        ).toBeInTheDocument();
       });
     });
 
@@ -109,7 +115,9 @@ describe('GPUCloud Component', () => {
         expect(screen.getByText('Public Cloud')).toBeInTheDocument();
         expect(screen.getByText('On-Premises')).toBeInTheDocument();
         // Use getAllByText since there might be multiple instances
-        const enterpriseProductionElements = screen.getAllByText('Enterprise Production');
+        const enterpriseProductionElements = screen.getAllByText(
+          'Enterprise Production'
+        );
         expect(enterpriseProductionElements.length).toBeGreaterThan(0);
       });
     });
@@ -120,10 +128,18 @@ describe('GPUCloud Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Get hands-on experience with ROCm/)).toBeInTheDocument();
-        expect(screen.getByText(/Deploy to major cloud providers/)).toBeInTheDocument();
-        expect(screen.getByText(/Reference architecture for AMD Instinct/)).toBeInTheDocument();
-        expect(screen.getByText(/Comprehensive guidance for production/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Get hands-on experience with ROCm/)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/Deploy to major cloud providers/)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/Reference architecture for AMD Instinct/)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/Comprehensive guidance for production/)
+        ).toBeInTheDocument();
       });
     });
 
@@ -133,14 +149,26 @@ describe('GPUCloud Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('• MI300X & MI250X Instances')).toBeInTheDocument();
-        expect(screen.getByText('• Pre-configured ROCm Environment')).toBeInTheDocument();
+        expect(
+          screen.getByText('• MI300X & MI250X Instances')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('• Pre-configured ROCm Environment')
+        ).toBeInTheDocument();
         expect(screen.getByText('• Vultr MI300X/MI325X')).toBeInTheDocument();
         expect(screen.getByText('• Oracle Cloud MI300X')).toBeInTheDocument();
-        expect(screen.getByText('• Cluster Architecture Design')).toBeInTheDocument();
-        expect(screen.getByText('• Bare-metal & Virtualization')).toBeInTheDocument();
-        expect(screen.getByText('• Model Optimization & Performance')).toBeInTheDocument();
-        expect(screen.getByText('• Deployment & Orchestration')).toBeInTheDocument();
+        expect(
+          screen.getByText('• Cluster Architecture Design')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('• Bare-metal & Virtualization')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('• Model Optimization & Performance')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('• Deployment & Orchestration')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -161,7 +189,9 @@ describe('GPUCloud Component', () => {
         expect(lowElements.length).toBeGreaterThan(0);
         expect(screen.getByText('- Readily available')).toBeInTheDocument();
         expect(screen.getByText('- Limited availability')).toBeInTheDocument();
-        expect(screen.getByText('- Waitlist or restricted')).toBeInTheDocument();
+        expect(
+          screen.getByText('- Waitlist or restricted')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -174,7 +204,11 @@ describe('GPUCloud Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText('AMD Developer Cloud')).toBeInTheDocument();
-        expect(screen.getByText(/Gain hands-on experience with a variety of workloads/)).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            /Gain hands-on experience with a variety of workloads/
+          )
+        ).toBeInTheDocument();
       });
     });
 
@@ -184,13 +218,23 @@ describe('GPUCloud Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Hands-on ROCm Software Stack Experience')).toBeInTheDocument();
-        expect(screen.getByText('MI300X Instances Available')).toBeInTheDocument();
-        expect(screen.getByText('Pre-configured ROCm Environment')).toBeInTheDocument();
-        expect(screen.getByText('Highly Competitive Pricing')).toBeInTheDocument();
+        expect(
+          screen.getByText('Hands-on ROCm Software Stack Experience')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('MI300X Instances Available')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Pre-configured ROCm Environment')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Highly Competitive Pricing')
+        ).toBeInTheDocument();
         expect(screen.getByText('24/7 Developer Support')).toBeInTheDocument();
         // Use getAllByText since there might be multiple instances
-        const globalDataCentersElements = screen.getAllByText('Global Data Centers');
+        const globalDataCentersElements = screen.getAllByText(
+          'Global Data Centers'
+        );
         expect(globalDataCentersElements.length).toBeGreaterThan(0);
       });
     });
@@ -239,7 +283,9 @@ describe('GPUCloud Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Public Cloud Providers')).toBeInTheDocument();
-        expect(screen.getByText(/Deploy to major cloud providers/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Deploy to major cloud providers/)
+        ).toBeInTheDocument();
       });
     });
 
@@ -250,7 +296,9 @@ describe('GPUCloud Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Vultr')).toBeInTheDocument();
-        expect(screen.getByText(/Offers AMD Instinct™ MI325X and MI300X GPUs/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Offers AMD Instinct™ MI325X and MI300X GPUs/)
+        ).toBeInTheDocument();
       });
     });
 
@@ -260,8 +308,12 @@ describe('GPUCloud Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Oracle Cloud Infrastructure')).toBeInTheDocument();
-        expect(screen.getByText(/Provides AMD Instinct™ MI300X GPUs/)).toBeInTheDocument();
+        expect(
+          screen.getByText('Oracle Cloud Infrastructure')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/Provides AMD Instinct™ MI300X GPUs/)
+        ).toBeInTheDocument();
       });
     });
 
@@ -272,7 +324,9 @@ describe('GPUCloud Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Microsoft Azure')).toBeInTheDocument();
-        expect(screen.getByText(/Offers virtual machines featuring AMD Instinct/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Offers virtual machines featuring AMD Instinct/)
+        ).toBeInTheDocument();
       });
     });
 
@@ -283,7 +337,9 @@ describe('GPUCloud Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Hot Aisle')).toBeInTheDocument();
-        expect(screen.getByText(/A NeoCloud service provider offering/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/A NeoCloud service provider offering/)
+        ).toBeInTheDocument();
       });
     });
 
@@ -294,7 +350,9 @@ describe('GPUCloud Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText('TensorWave')).toBeInTheDocument();
-        expect(screen.getByText(/Leverages the next generation of AMD accelerators/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Leverages the next generation of AMD accelerators/)
+        ).toBeInTheDocument();
       });
     });
   });
@@ -307,7 +365,9 @@ describe('GPUCloud Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText('On-premises Deployment')).toBeInTheDocument();
-        expect(screen.getByText(/Comprehensive reference architecture for deploying/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Comprehensive reference architecture for deploying/)
+        ).toBeInTheDocument();
       });
     });
 
@@ -317,10 +377,18 @@ describe('GPUCloud Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('AMD Instinct™ GPU Cluster Design')).toBeInTheDocument();
-        expect(screen.getByText('Bare-metal Infrastructure Stack')).toBeInTheDocument();
-        expect(screen.getByText('Virtualization Layer (KVM/VMware)')).toBeInTheDocument();
-        expect(screen.getByText('ROCm Software Stack Integration')).toBeInTheDocument();
+        expect(
+          screen.getByText('AMD Instinct™ GPU Cluster Design')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Bare-metal Infrastructure Stack')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Virtualization Layer (KVM/VMware)')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('ROCm Software Stack Integration')
+        ).toBeInTheDocument();
       });
     });
 
@@ -343,10 +411,18 @@ describe('GPUCloud Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Cluster Architecture Design')).toBeInTheDocument();
-        expect(screen.getByText('Bare-metal vs Virtualization Comparison')).toBeInTheDocument();
-        expect(screen.getByText('Software Stack Recommendations')).toBeInTheDocument();
-        expect(screen.getByText('Performance Optimization Guide')).toBeInTheDocument();
+        expect(
+          screen.getByText('Cluster Architecture Design')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Bare-metal vs Virtualization Comparison')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Software Stack Recommendations')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Performance Optimization Guide')
+        ).toBeInTheDocument();
       });
     });
 
@@ -356,9 +432,15 @@ describe('GPUCloud Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('• Architecture Planning: 1-2 weeks')).toBeInTheDocument();
-        expect(screen.getByText('• Hardware Procurement: 4-8 weeks')).toBeInTheDocument();
-        expect(screen.getByText('• Cluster Deployment: 2-4 weeks')).toBeInTheDocument();
+        expect(
+          screen.getByText('• Architecture Planning: 1-2 weeks')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('• Hardware Procurement: 4-8 weeks')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('• Cluster Deployment: 2-4 weeks')
+        ).toBeInTheDocument();
         expect(screen.getByText('Total: 7-14 weeks')).toBeInTheDocument();
       });
     });
@@ -384,9 +466,15 @@ describe('GPUCloud Component', () => {
 
       await waitFor(() => {
         // Use getAllByText since there might be multiple instances
-        const enterpriseProductionElements = screen.getAllByText('Enterprise Production');
+        const enterpriseProductionElements = screen.getAllByText(
+          'Enterprise Production'
+        );
         expect(enterpriseProductionElements.length).toBeGreaterThan(0);
-        expect(screen.getByText(/Many large enterprises trust AMD Instinct™ clusters/)).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            /Many large enterprises trust AMD Instinct™ clusters/
+          )
+        ).toBeInTheDocument();
       });
     });
 
@@ -406,11 +494,21 @@ describe('GPUCloud Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Model Quantization & Pruning')).toBeInTheDocument();
-        expect(screen.getByText('AMD ROCm Performance Tuning')).toBeInTheDocument();
-        expect(screen.getByText('Batch Processing Optimization')).toBeInTheDocument();
-        expect(screen.getByText('Memory & GPU Utilization')).toBeInTheDocument();
-        expect(screen.getByText('Inference Latency Optimization')).toBeInTheDocument();
+        expect(
+          screen.getByText('Model Quantization & Pruning')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('AMD ROCm Performance Tuning')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Batch Processing Optimization')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Memory & GPU Utilization')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Inference Latency Optimization')
+        ).toBeInTheDocument();
         expect(screen.getByText('Throughput Maximization')).toBeInTheDocument();
       });
     });
@@ -434,7 +532,9 @@ describe('GPUCloud Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Comprehensive security and compliance guidance/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Comprehensive security and compliance guidance/)
+        ).toBeInTheDocument();
       });
     });
 
@@ -444,8 +544,12 @@ describe('GPUCloud Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('• Model Versioning & Tracking')).toBeInTheDocument();
-        expect(screen.getByText('• A/B Testing & Monitoring')).toBeInTheDocument();
+        expect(
+          screen.getByText('• Model Versioning & Tracking')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('• A/B Testing & Monitoring')
+        ).toBeInTheDocument();
         expect(screen.getByText('• Cost Management')).toBeInTheDocument();
         expect(screen.getByText('End-to-end governance')).toBeInTheDocument();
       });
@@ -481,7 +585,9 @@ describe('GPUCloud Component', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Contact Enterprise Sales')).toBeInTheDocument();
+        expect(
+          screen.getByText('Contact Enterprise Sales')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -498,8 +604,14 @@ describe('GPUCloud Component', () => {
         const gpuCloudsLink = screen.getByText('GPU Clouds');
 
         expect(modelsLink.closest('a')).toHaveAttribute('href', '/models');
-        expect(blueprintsLink.closest('a')).toHaveAttribute('href', '/blueprints');
-        expect(gpuCloudsLink.closest('a')).toHaveAttribute('href', '/gpu-cloud');
+        expect(blueprintsLink.closest('a')).toHaveAttribute(
+          'href',
+          '/blueprints'
+        );
+        expect(gpuCloudsLink.closest('a')).toHaveAttribute(
+          'href',
+          '/gpu-cloud'
+        );
       });
     });
 
@@ -639,4 +751,4 @@ describe('GPUCloud Component', () => {
       });
     });
   });
-}); 
+});

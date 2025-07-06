@@ -1,5 +1,12 @@
-import type { CloudProviderAdapter, CloudProviderCapabilities } from '../types/cloudProvider';
-import type { DeploymentConfig, DeploymentResult, Instance } from './CentralDeploymentController';
+import type {
+  CloudProviderAdapter,
+  CloudProviderCapabilities,
+} from '../types/cloudProvider';
+import type {
+  DeploymentConfig,
+  DeploymentResult,
+  Instance,
+} from './CentralDeploymentController';
 import { centralDeploymentController } from './CentralDeploymentController';
 
 const HOT_AISLE_CAPABILITIES: CloudProviderCapabilities = {
@@ -8,7 +15,12 @@ const HOT_AISLE_CAPABILITIES: CloudProviderCapabilities = {
   supportsBlueprints: true,
   supportsCustomModels: true,
   maxInstances: 4,
-  features: ['Bare Metal Provisioning', 'Direct Hardware Access', 'Custom Configurations', 'High Performance']
+  features: [
+    'Bare Metal Provisioning',
+    'Direct Hardware Access',
+    'Custom Configurations',
+    'High Performance',
+  ],
 };
 
 let mockInstances: Instance[] = [];
@@ -25,14 +37,14 @@ export const HotAisleCloudAdapter: CloudProviderAdapter = {
       region: config.region,
       endpoint: `https://hotaisle.example.com/instance/${id}`,
       createdAt: new Date(),
-      costPerHour: config.instanceType === 'mi300x' ? 2.90 : 2.00
+      costPerHour: config.instanceType === 'mi300x' ? 2.9 : 2.0,
     };
     mockInstances.push(instance);
     return {
       success: true,
       instanceId: id,
       endpoint: instance.endpoint,
-      logs: ['Hot Aisle instance deployed successfully.']
+      logs: ['Hot Aisle instance deployed successfully.'],
     };
   },
   async getInstances(): Promise<Instance[]> {
@@ -49,14 +61,19 @@ export const HotAisleCloudAdapter: CloudProviderAdapter = {
   getProviderInfo() {
     return {
       name: 'Hot Aisle',
-      description: 'Bare metal cloud provider with direct AMD GPU hardware access.',
+      description:
+        'Bare metal cloud provider with direct AMD GPU hardware access.',
       logo: '/assets/hotaisle-logo.svg',
-      website: 'https://www.hotaisle.com/'
+      website: 'https://www.hotaisle.com/',
     };
   },
   validateConfig(config: DeploymentConfig) {
     const errors: string[] = [];
-    if (!HOT_AISLE_CAPABILITIES.supportedInstanceTypes.includes(config.instanceType)) {
+    if (
+      !HOT_AISLE_CAPABILITIES.supportedInstanceTypes.includes(
+        config.instanceType
+      )
+    ) {
       errors.push('Unsupported instance type');
     }
     if (!HOT_AISLE_CAPABILITIES.supportedRegions.includes(config.region)) {
@@ -67,10 +84,10 @@ export const HotAisleCloudAdapter: CloudProviderAdapter = {
   getDefaultConfig() {
     return {
       instanceType: HOT_AISLE_CAPABILITIES.supportedInstanceTypes[0],
-      region: HOT_AISLE_CAPABILITIES.supportedRegions[0]
+      region: HOT_AISLE_CAPABILITIES.supportedRegions[0],
     };
-  }
+  },
 };
 
 // Register with the central controller
-centralDeploymentController.registerProvider('hot-aisle', HotAisleCloudAdapter); 
+centralDeploymentController.registerProvider('hot-aisle', HotAisleCloudAdapter);

@@ -1,5 +1,12 @@
-import type { CloudProviderAdapter, CloudProviderCapabilities } from '../types/cloudProvider';
-import type { DeploymentConfig, DeploymentResult, Instance } from './CentralDeploymentController';
+import type {
+  CloudProviderAdapter,
+  CloudProviderCapabilities,
+} from '../types/cloudProvider';
+import type {
+  DeploymentConfig,
+  DeploymentResult,
+  Instance,
+} from './CentralDeploymentController';
 import { centralDeploymentController } from './CentralDeploymentController';
 
 const AMD_CAPABILITIES: CloudProviderCapabilities = {
@@ -8,7 +15,7 @@ const AMD_CAPABILITIES: CloudProviderCapabilities = {
   supportsBlueprints: true,
   supportsCustomModels: true,
   maxInstances: 5,
-  features: ['ROCm', 'High Bandwidth Memory', 'AI-optimized']
+  features: ['ROCm', 'High Bandwidth Memory', 'AI-optimized'],
 };
 
 let mockInstances: Instance[] = [];
@@ -25,14 +32,14 @@ export const AmdDeveloperCloudAdapter: CloudProviderAdapter = {
       region: config.region,
       endpoint: `https://amdcloud.example.com/instance/${id}`,
       createdAt: new Date(),
-      costPerHour: 2.5
+      costPerHour: 2.5,
     };
     mockInstances.push(instance);
     return {
       success: true,
       instanceId: id,
       endpoint: instance.endpoint,
-      logs: ['Instance deployed successfully.']
+      logs: ['Instance deployed successfully.'],
     };
   },
   async getInstances(): Promise<Instance[]> {
@@ -52,12 +59,14 @@ export const AmdDeveloperCloudAdapter: CloudProviderAdapter = {
       name: 'AMD Developer Cloud',
       description: 'High-performance AMD GPU cloud for AI workloads.',
       logo: '/assets/amd-logo.svg',
-      website: 'https://developer.amd.com/cloud/'
+      website: 'https://developer.amd.com/cloud/',
     };
   },
   validateConfig(config: DeploymentConfig) {
     const errors: string[] = [];
-    if (!AMD_CAPABILITIES.supportedInstanceTypes.includes(config.instanceType)) {
+    if (
+      !AMD_CAPABILITIES.supportedInstanceTypes.includes(config.instanceType)
+    ) {
       errors.push('Unsupported instance type');
     }
     if (!AMD_CAPABILITIES.supportedRegions.includes(config.region)) {
@@ -68,10 +77,13 @@ export const AmdDeveloperCloudAdapter: CloudProviderAdapter = {
   getDefaultConfig() {
     return {
       instanceType: AMD_CAPABILITIES.supportedInstanceTypes[0],
-      region: AMD_CAPABILITIES.supportedRegions[0]
+      region: AMD_CAPABILITIES.supportedRegions[0],
     };
-  }
+  },
 };
 
 // Register with the central controller
-centralDeploymentController.registerProvider('amd-developer-cloud', AmdDeveloperCloudAdapter); 
+centralDeploymentController.registerProvider(
+  'amd-developer-cloud',
+  AmdDeveloperCloudAdapter
+);

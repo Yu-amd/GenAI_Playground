@@ -1,5 +1,12 @@
-import type { CloudProviderAdapter, CloudProviderCapabilities } from '../types/cloudProvider';
-import type { DeploymentConfig, DeploymentResult, Instance } from './CentralDeploymentController';
+import type {
+  CloudProviderAdapter,
+  CloudProviderCapabilities,
+} from '../types/cloudProvider';
+import type {
+  DeploymentConfig,
+  DeploymentResult,
+  Instance,
+} from './CentralDeploymentController';
 import { centralDeploymentController } from './CentralDeploymentController';
 
 const ORACLE_CAPABILITIES: CloudProviderCapabilities = {
@@ -8,7 +15,12 @@ const ORACLE_CAPABILITIES: CloudProviderCapabilities = {
   supportsBlueprints: true,
   supportsCustomModels: true,
   maxInstances: 10,
-  features: ['Bare Metal', 'Enterprise Security', 'High Performance Networking', 'Oracle Support']
+  features: [
+    'Bare Metal',
+    'Enterprise Security',
+    'High Performance Networking',
+    'Oracle Support',
+  ],
 };
 
 let mockInstances: Instance[] = [];
@@ -25,14 +37,14 @@ export const OracleCloudAdapter: CloudProviderAdapter = {
       region: config.region,
       endpoint: `https://oraclecloud.example.com/instance/${id}`,
       createdAt: new Date(),
-      costPerHour: config.instanceType === 'mi300x' ? 3.50 : 2.80
+      costPerHour: config.instanceType === 'mi300x' ? 3.5 : 2.8,
     };
     mockInstances.push(instance);
     return {
       success: true,
       instanceId: id,
       endpoint: instance.endpoint,
-      logs: ['Oracle Cloud instance deployed successfully.']
+      logs: ['Oracle Cloud instance deployed successfully.'],
     };
   },
   async getInstances(): Promise<Instance[]> {
@@ -49,14 +61,17 @@ export const OracleCloudAdapter: CloudProviderAdapter = {
   getProviderInfo() {
     return {
       name: 'Oracle Cloud Infrastructure',
-      description: 'Enterprise-grade cloud platform with bare metal AMD GPU instances.',
+      description:
+        'Enterprise-grade cloud platform with bare metal AMD GPU instances.',
       logo: '/assets/oracle-logo.svg',
-      website: 'https://www.oracle.com/cloud/'
+      website: 'https://www.oracle.com/cloud/',
     };
   },
   validateConfig(config: DeploymentConfig) {
     const errors: string[] = [];
-    if (!ORACLE_CAPABILITIES.supportedInstanceTypes.includes(config.instanceType)) {
+    if (
+      !ORACLE_CAPABILITIES.supportedInstanceTypes.includes(config.instanceType)
+    ) {
       errors.push('Unsupported instance type');
     }
     if (!ORACLE_CAPABILITIES.supportedRegions.includes(config.region)) {
@@ -67,10 +82,13 @@ export const OracleCloudAdapter: CloudProviderAdapter = {
   getDefaultConfig() {
     return {
       instanceType: ORACLE_CAPABILITIES.supportedInstanceTypes[0],
-      region: ORACLE_CAPABILITIES.supportedRegions[0]
+      region: ORACLE_CAPABILITIES.supportedRegions[0],
     };
-  }
+  },
 };
 
 // Register with the central controller
-centralDeploymentController.registerProvider('oracle-cloud-infrastructure', OracleCloudAdapter); 
+centralDeploymentController.registerProvider(
+  'oracle-cloud-infrastructure',
+  OracleCloudAdapter
+);

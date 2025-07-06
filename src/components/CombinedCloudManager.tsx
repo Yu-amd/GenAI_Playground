@@ -4,11 +4,11 @@ import { ModelDeploymentManager } from './ModelDeploymentManager';
 
 const CombinedCloudManager: React.FC = () => {
   return (
-    <div className="space-y-12">
+    <div className='space-y-12'>
       <GPUCloudManager />
       <ModelDeploymentManager />
     </div>
   );
 };
 
-export default CombinedCloudManager; 
+export default CombinedCloudManager;

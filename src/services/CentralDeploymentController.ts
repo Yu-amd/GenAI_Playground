@@ -61,21 +61,21 @@ class CentralDeploymentController {
     }
 
     const deploymentId = `${config.providerId}-${Date.now()}`;
-    
+
     // Initialize deployment status
     this.deploymentStatuses.set(deploymentId, {
       deploymentId,
       status: 'deploying',
       logs: [],
       progress: 0,
-      startTime: new Date()
+      startTime: new Date(),
     });
 
     try {
       // Update progress and logs
       this.updateDeploymentStatus(deploymentId, {
         logs: [`Starting deployment to ${config.providerId}...`],
-        progress: 10
+        progress: 10,
       });
 
       // Call provider-specific deployment
@@ -84,9 +84,12 @@ class CentralDeploymentController {
       // Update final status
       this.updateDeploymentStatus(deploymentId, {
         status: result.success ? 'deployed' : 'error',
-        logs: [...this.deploymentStatuses.get(deploymentId)!.logs, ...result.logs],
+        logs: [
+          ...this.deploymentStatuses.get(deploymentId)!.logs,
+          ...result.logs,
+        ],
         progress: 100,
-        endTime: new Date()
+        endTime: new Date(),
       });
 
       // If successful, add to instances
@@ -99,7 +102,10 @@ class CentralDeploymentController {
           region: config.region,
           endpoint: result.endpoint,
           createdAt: new Date(),
-          costPerHour: this.getCostPerHour(config.providerId, config.instanceType)
+          costPerHour: this.getCostPerHour(
+            config.providerId,
+            config.instanceType
+          ),
         };
 
         const providerInstances = this.instances.get(config.providerId) || [];
@@ -109,19 +115,23 @@ class CentralDeploymentController {
 
       return result;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
       this.updateDeploymentStatus(deploymentId, {
         status: 'error',
-        logs: [...this.deploymentStatuses.get(deploymentId)!.logs, `Error: ${errorMessage}`],
+        logs: [
+          ...this.deploymentStatuses.get(deploymentId)!.logs,
+          `Error: ${errorMessage}`,
+        ],
         progress: 100,
-        endTime: new Date()
+        endTime: new Date(),
       });
 
       return {
         success: false,
         logs: [`Error: ${errorMessage}`],
-        error: errorMessage
+        error: errorMessage,
       };
     }
   }
@@ -144,7 +154,10 @@ class CentralDeploymentController {
   }
 
   // Delete an instance
-  async deleteInstance(providerId: string, instanceId: string): Promise<boolean> {
+  async deleteInstance(
+    providerId: string,
+    instanceId: string
+  ): Promise<boolean> {
     const adapter = this.providers.get(providerId);
     if (!adapter) {
       throw new Error(`Provider ${providerId} not found`);
@@ -152,15 +165,20 @@ class CentralDeploymentController {
 
     try {
       await adapter.deleteInstance(instanceId);
-      
+
       // Remove from local cache
       const providerInstances = this.instances.get(providerId) || [];
-      const updatedInstances = providerInstances.filter(inst => inst.id !== instanceId);
+      const updatedInstances = providerInstances.filter(
+        inst => inst.id !== instanceId
+      );
       this.instances.set(providerId, updatedInstances);
-      
+
       return true;
     } catch (error) {
-      console.error(`Error deleting instance ${instanceId} from ${providerId}:`, error);
+      console.error(
+        `Error deleting instance ${instanceId} from ${providerId}:`,
+        error
+      );
       return false;
     }
   }
@@ -171,7 +189,10 @@ class CentralDeploymentController {
   }
 
   // Update deployment status
-  private updateDeploymentStatus(deploymentId: string, updates: Partial<DeploymentStatus>) {
+  private updateDeploymentStatus(
+    deploymentId: string,
+    updates: Partial<DeploymentStatus>
+  ) {
     const current = this.deploymentStatuses.get(deploymentId);
     if (current) {
       this.deploymentStatuses.set(deploymentId, { ...current, ...updates });
@@ -181,12 +202,12 @@ class CentralDeploymentController {
   // Get cost per hour for an instance type
   private getCostPerHour(providerId: string, instanceType: string): number {
     const pricing = {
-      'amd-developer-cloud': { mi300x: 2.50, mi250x: 1.80 },
-      'oracle-cloud-infrastructure': { mi300x: 3.50, mi250x: 2.80 },
-      'microsoft-azure': { mi250: 2.10, mi210: 1.60 },
-      'vultr': { mi325x: 3.20, mi300x: 2.80 },
-      'hot-aisle': { mi300x: 2.90, mi250x: 2.00 },
-      'tensorwave': { mi300x: 3.10, mi250x: 2.30 }
+      'amd-developer-cloud': { mi300x: 2.5, mi250x: 1.8 },
+      'oracle-cloud-infrastructure': { mi300x: 3.5, mi250x: 2.8 },
+      'microsoft-azure': { mi250: 2.1, mi210: 1.6 },
+      vultr: { mi325x: 3.2, mi300x: 2.8 },
+      'hot-aisle': { mi300x: 2.9, mi250x: 2.0 },
+      tensorwave: { mi300x: 3.1, mi250x: 2.3 },
     } as const;
 
     if (providerId in pricing) {
@@ -205,7 +226,10 @@ class CentralDeploymentController {
   }
 
   // Validate deployment config
-  validateDeploymentConfig(config: DeploymentConfig): { valid: boolean; errors: string[] } {
+  validateDeploymentConfig(config: DeploymentConfig): {
+    valid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
 
     if (!config.providerId) {
@@ -227,10 +251,10 @@ class CentralDeploymentController {
 
     return {
       valid: errors.length === 0,
-      errors
+      errors,
     };
   }
 }
 
 // Export singleton instance
-export const centralDeploymentController = new CentralDeploymentController(); 
+export const centralDeploymentController = new CentralDeploymentController();

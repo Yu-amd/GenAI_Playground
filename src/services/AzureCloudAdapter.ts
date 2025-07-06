@@ -1,5 +1,12 @@
-import type { CloudProviderAdapter, CloudProviderCapabilities } from '../types/cloudProvider';
-import type { DeploymentConfig, DeploymentResult, Instance } from './CentralDeploymentController';
+import type {
+  CloudProviderAdapter,
+  CloudProviderCapabilities,
+} from '../types/cloudProvider';
+import type {
+  DeploymentConfig,
+  DeploymentResult,
+  Instance,
+} from './CentralDeploymentController';
 import { centralDeploymentController } from './CentralDeploymentController';
 
 const AZURE_CAPABILITIES: CloudProviderCapabilities = {
@@ -8,7 +15,12 @@ const AZURE_CAPABILITIES: CloudProviderCapabilities = {
   supportsBlueprints: true,
   supportsCustomModels: true,
   maxInstances: 8,
-  features: ['Azure ML Integration', 'DevOps & CI/CD', 'Enterprise Features', 'Global Network']
+  features: [
+    'Azure ML Integration',
+    'DevOps & CI/CD',
+    'Enterprise Features',
+    'Global Network',
+  ],
 };
 
 let mockInstances: Instance[] = [];
@@ -25,14 +37,14 @@ export const AzureCloudAdapter: CloudProviderAdapter = {
       region: config.region,
       endpoint: `https://azure.example.com/instance/${id}`,
       createdAt: new Date(),
-      costPerHour: config.instanceType === 'mi250' ? 2.10 : 1.60
+      costPerHour: config.instanceType === 'mi250' ? 2.1 : 1.6,
     };
     mockInstances.push(instance);
     return {
       success: true,
       instanceId: id,
       endpoint: instance.endpoint,
-      logs: ['Azure instance deployed successfully.']
+      logs: ['Azure instance deployed successfully.'],
     };
   },
   async getInstances(): Promise<Instance[]> {
@@ -49,14 +61,17 @@ export const AzureCloudAdapter: CloudProviderAdapter = {
   getProviderInfo() {
     return {
       name: 'Microsoft Azure',
-      description: 'Enterprise cloud platform with AMD Instinct GPU instances and Azure ML integration.',
+      description:
+        'Enterprise cloud platform with AMD Instinct GPU instances and Azure ML integration.',
       logo: '/assets/azure-logo.svg',
-      website: 'https://azure.microsoft.com/'
+      website: 'https://azure.microsoft.com/',
     };
   },
   validateConfig(config: DeploymentConfig) {
     const errors: string[] = [];
-    if (!AZURE_CAPABILITIES.supportedInstanceTypes.includes(config.instanceType)) {
+    if (
+      !AZURE_CAPABILITIES.supportedInstanceTypes.includes(config.instanceType)
+    ) {
       errors.push('Unsupported instance type');
     }
     if (!AZURE_CAPABILITIES.supportedRegions.includes(config.region)) {
@@ -67,10 +82,13 @@ export const AzureCloudAdapter: CloudProviderAdapter = {
   getDefaultConfig() {
     return {
       instanceType: AZURE_CAPABILITIES.supportedInstanceTypes[0],
-      region: AZURE_CAPABILITIES.supportedRegions[0]
+      region: AZURE_CAPABILITIES.supportedRegions[0],
     };
-  }
+  },
 };
 
 // Register with the central controller
-centralDeploymentController.registerProvider('microsoft-azure', AzureCloudAdapter); 
+centralDeploymentController.registerProvider(
+  'microsoft-azure',
+  AzureCloudAdapter
+);

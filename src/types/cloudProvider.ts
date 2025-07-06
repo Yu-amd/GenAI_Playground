@@ -1,4 +1,8 @@
-import type { DeploymentConfig, DeploymentResult, Instance } from '../services/CentralDeploymentController';
+import type {
+  DeploymentConfig,
+  DeploymentResult,
+  Instance,
+} from '../services/CentralDeploymentController';
 
 export interface CloudProviderCapabilities {
   supportedInstanceTypes: string[];
@@ -14,7 +18,7 @@ export interface CloudProviderAdapter {
   deployInstance(config: DeploymentConfig): Promise<DeploymentResult>;
   getInstances(): Promise<Instance[]>;
   deleteInstance(instanceId: string): Promise<boolean>;
-  
+
   // Provider information
   getCapabilities(): CloudProviderCapabilities;
   getProviderInfo(): {
@@ -23,9 +27,12 @@ export interface CloudProviderAdapter {
     logo: string;
     website: string;
   };
-  
+
   // Configuration
-  validateConfig(config: DeploymentConfig): { valid: boolean; errors: string[] };
+  validateConfig(config: DeploymentConfig): {
+    valid: boolean;
+    errors: string[];
+  };
   getDefaultConfig(): Partial<DeploymentConfig>;
 }
 
@@ -34,4 +41,4 @@ export interface ProviderConfig {
   name: string;
   adapter: CloudProviderAdapter;
   enabled: boolean;
-} 
+}

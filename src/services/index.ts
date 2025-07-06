@@ -7,4 +7,4 @@ import './HotAisleCloudAdapter';
 import './TensorWaveCloudAdapter';
 
 // Export the central controller for use in components
-export { centralDeploymentController } from './CentralDeploymentController'; 
+export { centralDeploymentController } from './CentralDeploymentController';

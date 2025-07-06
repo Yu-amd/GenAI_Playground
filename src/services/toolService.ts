@@ -89,9 +89,11 @@ export class ToolService {
         return this.getMockWeather(location, unit);
       }
 
-      const data = await response.json() as Record<string, unknown>;
+      const data = (await response.json()) as Record<string, unknown>;
       const temp = (data.main as Record<string, unknown>).temp;
-      const description = ((data.weather as unknown[])[0] as Record<string, unknown>).description;
+      const description = (
+        (data.weather as unknown[])[0] as Record<string, unknown>
+      ).description;
       const humidity = (data.main as Record<string, unknown>).humidity;
       const windSpeed = (data.wind as Record<string, unknown>).speed;
 
@@ -124,7 +126,7 @@ export class ToolService {
         return this.getMockSearchResults(query, num_results);
       }
 
-      const data = await response.json() as Record<string, unknown>;
+      const data = (await response.json()) as Record<string, unknown>;
 
       if (data.Abstract) {
         return `Search results for "${query}":\n\n${data.Abstract}\n\nSource: ${data.AbstractURL || 'DuckDuckGo'}`;
@@ -197,9 +199,11 @@ export class ToolService {
         return this.getMockTranslation(text, target_language, source_language);
       }
 
-      const data = await response.json() as Record<string, unknown>;
+      const data = (await response.json()) as Record<string, unknown>;
       const detectedLanguage =
-        (data.detected as Record<string, unknown>)?.language as string || source_language || 'auto';
+        ((data.detected as Record<string, unknown>)?.language as string) ||
+        source_language ||
+        'auto';
 
       return `Translation:\n• Original (${detectedLanguage}): ${text}\n• Translated (${target_language}): ${data.translatedText as string}`;
     } catch {
@@ -262,7 +266,7 @@ export class ToolService {
         return this.getMockStockPrice(symbol, include_currency);
       }
 
-      const data = await response.json() as Record<string, unknown>;
+      const data = (await response.json()) as Record<string, unknown>;
 
       if (data['Global Quote']) {
         const quote = data['Global Quote'] as Record<string, unknown>;
@@ -363,13 +367,15 @@ export class ToolService {
         return `Error fetching historical data for ${symbol.toUpperCase()}. Please check the symbol and try again.`;
       }
 
-      const data = await response.json() as Record<string, unknown>;
+      const data = (await response.json()) as Record<string, unknown>;
 
       if (
         data['Time Series (Daily)'] &&
         (data['Time Series (Daily)'] as Record<string, unknown>)[formattedDate]
       ) {
-        const dailyData = (data['Time Series (Daily)'] as Record<string, unknown>)[formattedDate] as Record<string, unknown>;
+        const dailyData = (
+          data['Time Series (Daily)'] as Record<string, unknown>
+        )[formattedDate] as Record<string, unknown>;
         const open = dailyData['1. open'] as string;
         const high = dailyData['2. high'] as string;
         const low = dailyData['3. low'] as string;
@@ -409,7 +415,9 @@ export class ToolService {
             }
           }
 
-          const dailyData = (data['Time Series (Daily)'] as Record<string, unknown>)[closestDate] as Record<string, unknown>;
+          const dailyData = (
+            data['Time Series (Daily)'] as Record<string, unknown>
+          )[closestDate] as Record<string, unknown>;
           const close = dailyData['4. close'] as string;
           const open = dailyData['1. open'] as string;
           const high = dailyData['2. high'] as string;

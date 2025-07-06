@@ -1,15 +1,9 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import bannerWave from '../assets/banner_wave.png';
-import { 
-  FaServer, 
-  FaRocket,
-  FaCloud,
-  FaShieldAlt
-} from 'react-icons/fa';
+import { FaServer, FaRocket, FaCloud, FaShieldAlt } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import PlaygroundLogo from '../components/PlaygroundLogo';
-
 
 // Enhanced cloud provider data with more details
 const amdDeveloperCloud = {
@@ -23,15 +17,15 @@ const amdDeveloperCloud = {
     'Pre-configured ROCm Environment',
     'Highly Competitive Pricing',
     '24/7 Developer Support',
-    'Global Data Centers'
+    'Global Data Centers',
   ],
   pricing: {
     mi300x: '$2.50/hour',
     mi250x: '$1.80/hour',
-    mi100: '$0.95/hour'
+    mi100: '$0.95/hour',
   },
   availability: 'High',
-  regions: ['US East', 'US West', 'Europe', 'Asia Pacific']
+  regions: ['US East', 'US West', 'Europe', 'Asia Pacific'],
 };
 
 const publicClouds = [
@@ -45,14 +39,14 @@ const publicClouds = [
       'Global Data Centers',
       'Competitive Pricing',
       'Easy Setup',
-      'API Access'
+      'API Access',
     ],
     pricing: {
       mi325x: '$3.20/hour',
-      mi300x: '$2.80/hour'
+      mi300x: '$2.80/hour',
     } as Record<string, string>,
     availability: 'Medium',
-    regions: ['US East', 'US West', 'Europe', 'Asia']
+    regions: ['US East', 'US West', 'Europe', 'Asia'],
   },
   {
     name: 'Oracle Cloud Infrastructure',
@@ -64,33 +58,33 @@ const publicClouds = [
       'Enterprise Security',
       'High Performance',
       'Oracle Support',
-      'Hybrid Cloud'
+      'Hybrid Cloud',
     ],
     pricing: {
       mi300x: '$3.50/hour',
-      mi250x: '$2.20/hour'
+      mi250x: '$2.20/hour',
     },
     availability: 'High',
-    regions: ['US East', 'US West', 'Europe', 'Asia Pacific']
+    regions: ['US East', 'US West', 'Europe', 'Asia Pacific'],
   },
   {
     name: 'Microsoft Azure',
     description:
       'Offers virtual machines featuring AMD Instinct MI210-series GPUs for HPC and AI applications.',
     link: 'https://azure.microsoft.com/en-us/blog/new-azure-virtual-machines-for-hpc-and-ai-now-available/',
-          features: [
-        'MI210 Series VMs',
-        'Azure Integration',
-        'Enterprise Features',
-        'Global Network',
-        'DevOps Tools'
-      ],
-          pricing: {
-        mi250: '$2.10/hour',
-        mi210: '$1.60/hour'
-      },
+    features: [
+      'MI210 Series VMs',
+      'Azure Integration',
+      'Enterprise Features',
+      'Global Network',
+      'DevOps Tools',
+    ],
+    pricing: {
+      mi250: '$2.10/hour',
+      mi210: '$1.60/hour',
+    },
     availability: 'Medium',
-    regions: ['Global']
+    regions: ['Global'],
   },
 
   {
@@ -103,14 +97,14 @@ const publicClouds = [
       'On-demand Access',
       'Competitive Pricing',
       'Direct Support',
-      'Custom Configurations'
+      'Custom Configurations',
     ],
     pricing: {
       mi300x: '$2.90/hour',
-      mi250x: '$2.00/hour'
+      mi250x: '$2.00/hour',
     },
     availability: 'Medium',
-    regions: ['US East', 'US West']
+    regions: ['US East', 'US West'],
   },
   {
     name: 'TensorWave',
@@ -122,23 +116,18 @@ const publicClouds = [
       'Memory Optimized',
       'Scalable Infrastructure',
       'AI Focused',
-      'Performance Tuned'
+      'Performance Tuned',
     ],
     pricing: {
       mi300x: '$3.10/hour',
-      mi250x: '$2.30/hour'
+      mi250x: '$2.30/hour',
     },
     availability: 'Low',
-    regions: ['US East', 'US West']
+    regions: ['US East', 'US West'],
   },
 ];
 
-
-
-
-
 const GPUCloud: React.FC = () => {
-
   useEffect(() => {
     // Handle hash navigation immediately
     const hash = window.location.hash;
@@ -195,39 +184,50 @@ const GPUCloud: React.FC = () => {
               AMD Instinct™ GPU Cloud Access
             </h1>
             <p className='text-lg text-gray-300 mb-8'>
-              From experimentation to enterprise deployment, we support your entire GenAI journey.
+              From experimentation to enterprise deployment, we support your
+              entire GenAI journey.
             </p>
-            
+
             {/* Deploy Button */}
             <div className='mb-8'>
-                          <Link
-              to='/deploy'
-              className='inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-200 shadow-lg gap-2 hover:from-blue-700 hover:to-purple-700 hover:scale-105 relative'
-            >
-              <FaRocket className='mr-3 text-xl' />
-              <span>Deploy to Any Cloud Provider</span>
-              <span className='ml-3 px-2 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded shadow-sm'>Coming Soon</span>
-            </Link>
+              <Link
+                to='/deploy'
+                className='inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-200 shadow-lg gap-2 hover:from-blue-700 hover:to-purple-700 hover:scale-105 relative'
+              >
+                <FaRocket className='mr-3 text-xl' />
+                <span>Deploy to Any Cloud Provider</span>
+                <span className='ml-3 px-2 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded shadow-sm'>
+                  Coming Soon
+                </span>
+              </Link>
               <p className='text-sm text-gray-400 mt-3'>
-                Unified deployment interface for all AMD Instinct™ GPU cloud providers
+                Unified deployment interface for all AMD Instinct™ GPU cloud
+                providers
               </p>
             </div>
-            
+
             {/* Path to Production */}
             <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-8 mb-12 text-left'>
-              <h2 className='text-2xl font-bold text-white mb-6'>Path to Production</h2>
+              <h2 className='text-2xl font-bold text-white mb-6'>
+                Path to Production
+              </h2>
               <p className='text-gray-300 mb-8'>
-                Enables developers to learn and validate Instinct™ performance in the cloud, with a seamless path to production on-premises and in the public cloud.
+                Enables developers to learn and validate Instinct™ performance
+                in the cloud, with a seamless path to production on-premises and
+                in the public cloud.
               </p>
-              
+
               <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
                 <div className='bg-gray-800/50 rounded-lg p-6 flex flex-col h-full'>
                   <div className='flex items-center mb-4'>
                     <FaRocket className='text-purple-400 mr-3' />
-                    <h3 className='text-lg font-semibold text-white'>Developer Cloud</h3>
+                    <h3 className='text-lg font-semibold text-white'>
+                      Developer Cloud
+                    </h3>
                   </div>
                   <p className='text-gray-300 text-sm mb-4'>
-                    Get hands-on experience with ROCm software stack on AMD Developer Cloud.
+                    Get hands-on experience with ROCm software stack on AMD
+                    Developer Cloud.
                   </p>
                   <ul className='text-sm text-gray-400 space-y-1 mb-4'>
                     <li>• MI300X & MI250X Instances</li>
@@ -235,11 +235,16 @@ const GPUCloud: React.FC = () => {
                     <li>• Highly Competitive Pricing</li>
                   </ul>
                   <div className='mt-auto'>
-                    <button 
+                    <button
                       onClick={() => {
-                        const amdSection = document.querySelector('[data-amd-developer-cloud]') as HTMLElement;
+                        const amdSection = document.querySelector(
+                          '[data-amd-developer-cloud]'
+                        ) as HTMLElement;
                         if (amdSection) {
-                          amdSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          amdSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start',
+                          });
                           amdSection.focus();
                         }
                       }}
@@ -253,10 +258,13 @@ const GPUCloud: React.FC = () => {
                 <div className='bg-gray-800/50 rounded-lg p-6 flex flex-col h-full'>
                   <div className='flex items-center mb-4'>
                     <FaCloud className='text-blue-400 mr-3' />
-                    <h3 className='text-lg font-semibold text-white'>Public Cloud</h3>
+                    <h3 className='text-lg font-semibold text-white'>
+                      Public Cloud
+                    </h3>
                   </div>
                   <p className='text-gray-300 text-sm mb-4'>
-                    Deploy to major cloud providers with AMD Instinct GPU support.
+                    Deploy to major cloud providers with AMD Instinct GPU
+                    support.
                   </p>
                   <ul className='text-sm text-gray-400 space-y-1 mb-4'>
                     <li>• Vultr MI300X/MI325X</li>
@@ -264,11 +272,16 @@ const GPUCloud: React.FC = () => {
                     <li>• Azure MI210 Series</li>
                   </ul>
                   <div className='mt-auto'>
-                    <button 
+                    <button
                       onClick={() => {
-                        const publicCloudSection = document.querySelector('[data-public-cloud-providers]') as HTMLElement;
+                        const publicCloudSection = document.querySelector(
+                          '[data-public-cloud-providers]'
+                        ) as HTMLElement;
                         if (publicCloudSection) {
-                          publicCloudSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          publicCloudSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start',
+                          });
                           publicCloudSection.focus();
                         }
                       }}
@@ -282,10 +295,13 @@ const GPUCloud: React.FC = () => {
                 <div className='bg-gray-800/50 rounded-lg p-6 flex flex-col h-full'>
                   <div className='flex items-center mb-4'>
                     <FaServer className='text-green-400 mr-3' />
-                    <h3 className='text-lg font-semibold text-white'>On-Premises</h3>
+                    <h3 className='text-lg font-semibold text-white'>
+                      On-Premises
+                    </h3>
                   </div>
                   <p className='text-gray-300 text-sm mb-4'>
-                    Reference architecture for AMD Instinct GPU clusters with bare-metal and virtualization stacks.
+                    Reference architecture for AMD Instinct GPU clusters with
+                    bare-metal and virtualization stacks.
                   </p>
                   <ul className='text-sm text-gray-400 space-y-1 mb-4'>
                     <li>• Cluster Architecture Design</li>
@@ -294,11 +310,16 @@ const GPUCloud: React.FC = () => {
                     <li>• Performance Optimization</li>
                   </ul>
                   <div className='mt-auto'>
-                    <button 
+                    <button
                       onClick={() => {
-                        const onPremisesSection = document.querySelector('[data-on-premises-deployment]') as HTMLElement;
+                        const onPremisesSection = document.querySelector(
+                          '[data-on-premises-deployment]'
+                        ) as HTMLElement;
                         if (onPremisesSection) {
-                          onPremisesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          onPremisesSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start',
+                          });
                           onPremisesSection.focus();
                         }
                       }}
@@ -312,10 +333,13 @@ const GPUCloud: React.FC = () => {
                 <div className='bg-gray-800/50 rounded-lg p-6 flex flex-col h-full'>
                   <div className='flex items-center mb-4'>
                     <FaShieldAlt className='text-purple-400 mr-3' />
-                    <h3 className='text-lg font-semibold text-white'>Enterprise Production</h3>
+                    <h3 className='text-lg font-semibold text-white'>
+                      Enterprise Production
+                    </h3>
                   </div>
                   <p className='text-gray-300 text-sm mb-4'>
-                    Comprehensive guidance for production AI deployment and management.
+                    Comprehensive guidance for production AI deployment and
+                    management.
                   </p>
                   <ul className='text-sm text-gray-400 space-y-1 mb-4'>
                     <li>• Model Optimization & Performance</li>
@@ -324,11 +348,16 @@ const GPUCloud: React.FC = () => {
                     <li>• Lifecycle & Governance</li>
                   </ul>
                   <div className='mt-auto'>
-                    <button 
+                    <button
                       onClick={() => {
-                        const enterpriseSection = document.querySelector('[data-enterprise-production]') as HTMLElement;
+                        const enterpriseSection = document.querySelector(
+                          '[data-enterprise-production]'
+                        ) as HTMLElement;
                         if (enterpriseSection) {
-                          enterpriseSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          enterpriseSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start',
+                          });
                           enterpriseSection.focus();
                         }
                       }}
@@ -340,7 +369,7 @@ const GPUCloud: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Cloud Provider Overview */}
             <div className='space-y-12 mb-12'>
               {/* Availability Legend */}
@@ -363,9 +392,14 @@ const GPUCloud: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* AMD Developer Cloud Section */}
-              <div className='mb-16 text-left' id="amd-developer-cloud" data-amd-developer-cloud tabIndex={-1}>
+              <div
+                className='mb-16 text-left'
+                id='amd-developer-cloud'
+                data-amd-developer-cloud
+                tabIndex={-1}
+              >
                 <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-8'>
                   <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
                     <div className='flex flex-col'>
@@ -373,54 +407,74 @@ const GPUCloud: React.FC = () => {
                         <h3 className='text-2xl font-bold text-blue-400'>
                           {amdDeveloperCloud.name}
                         </h3>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          amdDeveloperCloud.availability === 'High' ? 'bg-green-600/20 text-green-400' :
-                          amdDeveloperCloud.availability === 'Medium' ? 'bg-yellow-600/20 text-yellow-400' :
-                          'bg-red-600/20 text-red-400'
-                        }`}>
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium ${
+                            amdDeveloperCloud.availability === 'High'
+                              ? 'bg-green-600/20 text-green-400'
+                              : amdDeveloperCloud.availability === 'Medium'
+                                ? 'bg-yellow-600/20 text-yellow-400'
+                                : 'bg-red-600/20 text-red-400'
+                          }`}
+                        >
                           {amdDeveloperCloud.availability}
                         </span>
                       </div>
                       <p className='text-gray-300 flex-grow mb-6'>
                         {amdDeveloperCloud.description}
                       </p>
-                      
+
                       <div className='mb-6'>
-                        <div className='text-sm text-gray-400 mb-1'>Starting Price</div>
-                        <div className='text-lg font-medium text-green-400'>{amdDeveloperCloud.pricing.mi100}</div>
+                        <div className='text-sm text-gray-400 mb-1'>
+                          Starting Price
+                        </div>
+                        <div className='text-lg font-medium text-green-400'>
+                          {amdDeveloperCloud.pricing.mi100}
+                        </div>
                       </div>
-                      
+
                       <Link
                         to='/gpu-cloud/amd-developer-cloud'
                         className='mt-auto text-sm font-semibold text-blue-400 hover:underline flex items-center'
                       >
-                        Start Learning <FaRocket className="ml-2" />
+                        Start Learning <FaRocket className='ml-2' />
                       </Link>
                     </div>
-                    
+
                     <div>
-                      <h4 className='text-lg font-semibold text-white mb-4'>Key Features</h4>
+                      <h4 className='text-lg font-semibold text-white mb-4'>
+                        Key Features
+                      </h4>
                       <ul className='space-y-2 mb-6'>
                         {amdDeveloperCloud.features.map((feature, index) => (
-                          <li key={index} className='flex items-center text-gray-300'>
+                          <li
+                            key={index}
+                            className='flex items-center text-gray-300'
+                          >
                             <div className='w-2 h-2 bg-blue-500 rounded-full mr-3'></div>
                             {feature}
                           </li>
                         ))}
                       </ul>
-                      
-                      <h4 className='text-lg font-semibold text-white mb-4'>Available Regions</h4>
+
+                      <h4 className='text-lg font-semibold text-white mb-4'>
+                        Available Regions
+                      </h4>
                       <div className='flex flex-wrap gap-2'>
                         {amdDeveloperCloud.regions.map((region, index) => (
-                          <span key={index} className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>
+                          <span
+                            key={index}
+                            className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'
+                          >
                             {region}
                           </span>
                         ))}
                       </div>
                     </div>
-                    
+
                     <div>
-                      <h4 className='text-lg font-semibold text-white mb-4'>Supported Workloads</h4>
+                      <h4 className='text-lg font-semibold text-white mb-4'>
+                        Supported Workloads
+                      </h4>
                       <ul className='space-y-2 mb-6'>
                         <li className='flex items-center text-gray-300'>
                           <div className='w-2 h-2 bg-purple-500 rounded-full mr-3'></div>
@@ -449,12 +503,18 @@ const GPUCloud: React.FC = () => {
               </div>
 
               {/* Public Cloud Providers Section */}
-              <div className='text-left' data-public-cloud-providers tabIndex={-1}>
+              <div
+                className='text-left'
+                data-public-cloud-providers
+                tabIndex={-1}
+              >
                 <h2 className='text-3xl font-bold text-white mb-6 border-b-2 border-blue-500 pb-2'>
                   Public Cloud Providers
                 </h2>
                 <p className='text-lg text-gray-300 mb-8'>
-                  Enterprise-grade production deployment across major public cloud providers with leadership performance, scalability, and reliability for your most demanding AI workloads.
+                  Enterprise-grade production deployment across major public
+                  cloud providers with leadership performance, scalability, and
+                  reliability for your most demanding AI workloads.
                 </p>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
                   {publicClouds.map((cloud, index) => (
@@ -466,43 +526,56 @@ const GPUCloud: React.FC = () => {
                         <h3 className='text-xl font-bold text-blue-400'>
                           {cloud.name}
                         </h3>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          cloud.availability === 'High' ? 'bg-green-600/20 text-green-400' :
-                          cloud.availability === 'Medium' ? 'bg-yellow-600/20 text-yellow-400' :
-                          'bg-red-600/20 text-red-400'
-                        }`}>
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium ${
+                            cloud.availability === 'High'
+                              ? 'bg-green-600/20 text-green-400'
+                              : cloud.availability === 'Medium'
+                                ? 'bg-yellow-600/20 text-yellow-400'
+                                : 'bg-red-600/20 text-red-400'
+                          }`}
+                        >
                           {cloud.availability}
                         </span>
                       </div>
-                      
-                      <p className='text-gray-300 flex-grow mb-4'>{cloud.description}</p>
-                      
+
+                      <p className='text-gray-300 flex-grow mb-4'>
+                        {cloud.description}
+                      </p>
+
                       <div className='space-y-3 mb-4'>
                         <div className='flex items-center justify-between'>
-                          <span className='text-sm text-gray-400'>Starting Price:</span>
+                          <span className='text-sm text-gray-400'>
+                            Starting Price:
+                          </span>
                           <span className='text-sm font-medium text-green-400'>
                             {Object.values(cloud.pricing)[0]}
                           </span>
                         </div>
                       </div>
-                      
+
                       <div className='space-y-2 mb-4'>
-                        <h4 className='text-sm font-semibold text-white'>Features:</h4>
+                        <h4 className='text-sm font-semibold text-white'>
+                          Features:
+                        </h4>
                         <ul className='space-y-1'>
                           {cloud.features.slice(0, 3).map((feature, idx) => (
-                            <li key={idx} className='text-xs text-gray-400 flex items-center'>
+                            <li
+                              key={idx}
+                              className='text-xs text-gray-400 flex items-center'
+                            >
                               <div className='w-1 h-1 bg-blue-500 rounded-full mr-2'></div>
                               {feature}
                             </li>
                           ))}
                         </ul>
                       </div>
-                      
+
                       <Link
                         to={`/gpu-cloud/${cloud.name.toLowerCase().replace(/\s+/g, '-')}`}
                         className='mt-auto text-sm font-semibold text-blue-400 group-hover:underline flex items-center'
                       >
-                        Deploy Now <FaRocket className="ml-2" />
+                        Deploy Now <FaRocket className='ml-2' />
                       </Link>
                     </div>
                   ))}
@@ -510,14 +583,21 @@ const GPUCloud: React.FC = () => {
               </div>
 
               {/* On-premises Deployment Section */}
-              <div className='text-left' data-on-premises-deployment tabIndex={-1}>
+              <div
+                className='text-left'
+                data-on-premises-deployment
+                tabIndex={-1}
+              >
                 <h2 className='text-3xl font-bold text-white mb-6 border-b-2 border-green-500 pb-2'>
                   On-premises Deployment
                 </h2>
                 <p className='text-lg text-gray-300 mb-8'>
-                  Comprehensive reference architecture for deploying and managing GenAI workloads on AMD Instinct™ GPU clusters. Covers both bare-metal and virtualization infrastructure with proven software stacks for enterprise data centers.
+                  Comprehensive reference architecture for deploying and
+                  managing GenAI workloads on AMD Instinct™ GPU clusters.
+                  Covers both bare-metal and virtualization infrastructure with
+                  proven software stacks for enterprise data centers.
                 </p>
-                
+
                 <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-8'>
                   <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
                     <div className='flex flex-col'>
@@ -527,22 +607,33 @@ const GPUCloud: React.FC = () => {
                         </h3>
                       </div>
                       <p className='text-gray-300 flex-grow mb-6'>
-                        Complete architectural guidance for building scalable AMD Instinct™ GPU clusters optimized for GenAI workloads. Includes bare-metal and virtualization deployment patterns with validated software stacks.
+                        Complete architectural guidance for building scalable
+                        AMD Instinct™ GPU clusters optimized for GenAI
+                        workloads. Includes bare-metal and virtualization
+                        deployment patterns with validated software stacks.
                       </p>
-                      
+
                       <div className='mb-6'>
-                        <div className='text-sm text-gray-400 mb-1'>Documentation</div>
-                        <div className='text-lg font-medium text-green-400'>AMD Instinct GPU Cluster Deployment Guide</div>
-                        <div className='text-xs text-gray-400 mt-1'>Comprehensive deployment guide</div>
+                        <div className='text-sm text-gray-400 mb-1'>
+                          Documentation
+                        </div>
+                        <div className='text-lg font-medium text-green-400'>
+                          AMD Instinct GPU Cluster Deployment Guide
+                        </div>
+                        <div className='text-xs text-gray-400 mt-1'>
+                          Comprehensive deployment guide
+                        </div>
                       </div>
-                      
+
                       <button className='mt-auto text-sm font-semibold text-green-400 hover:underline flex items-center'>
-                        Download Whitepaper <FaRocket className="ml-2" />
+                        Download Whitepaper <FaRocket className='ml-2' />
                       </button>
                     </div>
-                    
+
                     <div>
-                      <h4 className='text-lg font-semibold text-white mb-4'>Architecture Components</h4>
+                      <h4 className='text-lg font-semibold text-white mb-4'>
+                        Architecture Components
+                      </h4>
                       <ul className='space-y-2 mb-6'>
                         <li className='flex items-center text-gray-300'>
                           <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
@@ -569,18 +660,30 @@ const GPUCloud: React.FC = () => {
                           Storage & Data Management
                         </li>
                       </ul>
-                      
-                      <h4 className='text-lg font-semibold text-white mb-4'>Supported GPU Models</h4>
+
+                      <h4 className='text-lg font-semibold text-white mb-4'>
+                        Supported GPU Models
+                      </h4>
                       <div className='flex flex-wrap gap-2'>
-                        <span className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>MI300X</span>
-                        <span className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>MI250X</span>
-                        <span className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>MI210</span>
-                        <span className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>MI100</span>
+                        <span className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>
+                          MI300X
+                        </span>
+                        <span className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>
+                          MI250X
+                        </span>
+                        <span className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>
+                          MI210
+                        </span>
+                        <span className='px-3 py-1 bg-gray-700 rounded-full text-sm text-gray-300'>
+                          MI100
+                        </span>
                       </div>
                     </div>
-                    
+
                     <div>
-                      <h4 className='text-lg font-semibold text-white mb-4'>Whitepaper Contents</h4>
+                      <h4 className='text-lg font-semibold text-white mb-4'>
+                        Whitepaper Contents
+                      </h4>
                       <ul className='space-y-2 mb-6'>
                         <li className='flex items-center text-gray-300'>
                           <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
@@ -603,13 +706,23 @@ const GPUCloud: React.FC = () => {
                           Operational Best Practices
                         </li>
                       </ul>
-                      
-                      <h4 className='text-lg font-semibold text-white mb-4'>Implementation Timeline</h4>
+
+                      <h4 className='text-lg font-semibold text-white mb-4'>
+                        Implementation Timeline
+                      </h4>
                       <div className='text-gray-300 text-sm'>
-                        <div className='mb-2'>• Architecture Planning: 1-2 weeks</div>
-                        <div className='mb-2'>• Hardware Procurement: 4-8 weeks</div>
-                        <div className='mb-2'>• Cluster Deployment: 2-4 weeks</div>
-                        <div className='font-medium text-green-400'>Total: 7-14 weeks</div>
+                        <div className='mb-2'>
+                          • Architecture Planning: 1-2 weeks
+                        </div>
+                        <div className='mb-2'>
+                          • Hardware Procurement: 4-8 weeks
+                        </div>
+                        <div className='mb-2'>
+                          • Cluster Deployment: 2-4 weeks
+                        </div>
+                        <div className='font-medium text-green-400'>
+                          Total: 7-14 weeks
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -617,14 +730,22 @@ const GPUCloud: React.FC = () => {
               </div>
 
               {/* Enterprise Production Section */}
-              <div className='text-left' data-enterprise-production tabIndex={-1}>
+              <div
+                className='text-left'
+                data-enterprise-production
+                tabIndex={-1}
+              >
                 <h2 className='text-3xl font-bold text-white mb-6 border-b-2 border-purple-500 pb-2'>
                   Enterprise Production
                 </h2>
                 <p className='text-lg text-gray-300 mb-8'>
-                  Many large enterprises trust AMD Instinct™ clusters for their production workloads. We provide comprehensive support to help you do the same — with expert guidance on model optimization, deployment orchestration, security and compliance, lifecycle governance, and cost management.
+                  Many large enterprises trust AMD Instinct™ clusters for their
+                  production workloads. We provide comprehensive support to help
+                  you do the same — with expert guidance on model optimization,
+                  deployment orchestration, security and compliance, lifecycle
+                  governance, and cost management.
                 </p>
-                
+
                 <div className='bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6'>
                   <div className='grid grid-cols-1 lg:grid-cols-5 gap-4'>
                     <div className='flex flex-col'>
@@ -637,20 +758,26 @@ const GPUCloud: React.FC = () => {
                         </span>
                       </div>
                       <p className='text-gray-300 flex-grow mb-4 text-sm'>
-                        Expert guidance on deploying and managing production AI workloads with enterprise-grade optimization, security, compliance, and operational excellence.
+                        Expert guidance on deploying and managing production AI
+                        workloads with enterprise-grade optimization, security,
+                        compliance, and operational excellence.
                       </p>
-                      
+
                       <div className='mb-4'>
-                        <div className='text-xs text-gray-400'>Comprehensive enterprise coverage</div>
+                        <div className='text-xs text-gray-400'>
+                          Comprehensive enterprise coverage
+                        </div>
                       </div>
-                      
+
                       <button className='mt-auto text-sm font-semibold text-purple-400 hover:underline flex items-center'>
-                        Contact Enterprise Sales <FaRocket className="ml-2" />
+                        Contact Enterprise Sales <FaRocket className='ml-2' />
                       </button>
                     </div>
-                    
+
                     <div>
-                      <h4 className='text-base font-semibold text-white mb-3'>Model Optimization & Performance</h4>
+                      <h4 className='text-base font-semibold text-white mb-3'>
+                        Model Optimization & Performance
+                      </h4>
                       <ul className='space-y-1 mb-4'>
                         <li className='flex items-center text-gray-300 text-sm'>
                           <div className='w-1.5 h-1.5 bg-purple-500 rounded-full mr-2'></div>
@@ -678,53 +805,84 @@ const GPUCloud: React.FC = () => {
                         </li>
                       </ul>
                     </div>
-                    
+
                     <div>
-                      <h4 className='text-base font-semibold text-white mb-3'>Deployment & Orchestration</h4>
+                      <h4 className='text-base font-semibold text-white mb-3'>
+                        Deployment & Orchestration
+                      </h4>
                       <div className='flex flex-wrap gap-1.5'>
-                        <span className='px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300'>Kubernetes</span>
-                        <span className='px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300'>Docker</span>
-                        <span className='px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300'>CI/CD</span>
-                        <span className='px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300'>Auto-scaling</span>
+                        <span className='px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300'>
+                          Kubernetes
+                        </span>
+                        <span className='px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300'>
+                          Docker
+                        </span>
+                        <span className='px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300'>
+                          CI/CD
+                        </span>
+                        <span className='px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300'>
+                          Auto-scaling
+                        </span>
                       </div>
                     </div>
-                    
+
                     <div>
-                      <h4 className='text-base font-semibold text-white mb-3'>Security, Privacy & Compliance</h4>
+                      <h4 className='text-base font-semibold text-white mb-3'>
+                        Security, Privacy & Compliance
+                      </h4>
                       <div className='text-gray-300 text-sm'>
-                        Comprehensive security and compliance guidance for enterprise AI deployments.
+                        Comprehensive security and compliance guidance for
+                        enterprise AI deployments.
                       </div>
                     </div>
-                    
+
                     <div>
-                      <h4 className='text-base font-semibold text-white mb-3'>Lifecycle & Governance</h4>
+                      <h4 className='text-base font-semibold text-white mb-3'>
+                        Lifecycle & Governance
+                      </h4>
                       <div className='text-gray-300 text-sm'>
-                        <div className='mb-1'>• Model Versioning & Tracking</div>
+                        <div className='mb-1'>
+                          • Model Versioning & Tracking
+                        </div>
                         <div className='mb-1'>• A/B Testing & Monitoring</div>
                         <div className='mb-1'>• Cost Management</div>
-                        <div className='font-medium text-purple-400'>End-to-end governance</div>
+                        <div className='font-medium text-purple-400'>
+                          End-to-end governance
+                        </div>
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Enterprise Logos Section */}
                   <div className='mt-6 pt-6 border-t border-white/10'>
-                    <h4 className='text-base font-semibold text-white mb-3 text-center'>Enterprise Proven</h4>
+                    <h4 className='text-base font-semibold text-white mb-3 text-center'>
+                      Enterprise Proven
+                    </h4>
                     <div className='flex justify-center items-center space-x-6 opacity-70'>
                       <div className='w-24 h-14 bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg flex items-center justify-center shadow-lg'>
-                        <span className='text-sm text-white font-bold'>MICROSOFT</span>
+                        <span className='text-sm text-white font-bold'>
+                          MICROSOFT
+                        </span>
                       </div>
                       <div className='w-24 h-14 bg-gradient-to-r from-red-600 to-red-800 rounded-lg flex items-center justify-center shadow-lg'>
-                        <span className='text-sm text-white font-bold'>NETFLIX</span>
+                        <span className='text-sm text-white font-bold'>
+                          NETFLIX
+                        </span>
                       </div>
                       <div className='w-24 h-14 bg-gradient-to-r from-green-600 to-green-800 rounded-lg flex items-center justify-center shadow-lg'>
-                        <span className='text-sm text-white font-bold'>JPMORGAN</span>
+                        <span className='text-sm text-white font-bold'>
+                          JPMORGAN
+                        </span>
                       </div>
                       <div className='w-24 h-14 bg-gradient-to-r from-purple-600 to-purple-800 rounded-lg flex items-center justify-center shadow-lg'>
-                        <span className='text-sm text-white font-bold'>PFIZER</span>
+                        <span className='text-sm text-white font-bold'>
+                          PFIZER
+                        </span>
                       </div>
                       <div className='w-24 h-14 bg-gradient-to-r from-orange-600 to-orange-800 rounded-lg flex items-center justify-center shadow-lg'>
-                        <span className='text-sm text-white font-bold'>NASA</span>
+                        <span className='text-sm text-white font-bold'>
+                          NASA
+                        </span>
                       </div>
                     </div>
                   </div>

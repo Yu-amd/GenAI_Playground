@@ -1,5 +1,12 @@
-import type { CloudProviderAdapter, CloudProviderCapabilities } from '../types/cloudProvider';
-import type { DeploymentConfig, DeploymentResult, Instance } from './CentralDeploymentController';
+import type {
+  CloudProviderAdapter,
+  CloudProviderCapabilities,
+} from '../types/cloudProvider';
+import type {
+  DeploymentConfig,
+  DeploymentResult,
+  Instance,
+} from './CentralDeploymentController';
 import { centralDeploymentController } from './CentralDeploymentController';
 
 const VULTR_CAPABILITIES: CloudProviderCapabilities = {
@@ -8,7 +15,12 @@ const VULTR_CAPABILITIES: CloudProviderCapabilities = {
   supportsBlueprints: true,
   supportsCustomModels: true,
   maxInstances: 6,
-  features: ['Global Network', 'Container Deployment', 'API Integration', '99.99% Uptime SLA']
+  features: [
+    'Global Network',
+    'Container Deployment',
+    'API Integration',
+    '99.99% Uptime SLA',
+  ],
 };
 
 let mockInstances: Instance[] = [];
@@ -25,14 +37,14 @@ export const VultrCloudAdapter: CloudProviderAdapter = {
       region: config.region,
       endpoint: `https://vultr.example.com/instance/${id}`,
       createdAt: new Date(),
-      costPerHour: config.instanceType === 'mi325x' ? 3.20 : 2.80
+      costPerHour: config.instanceType === 'mi325x' ? 3.2 : 2.8,
     };
     mockInstances.push(instance);
     return {
       success: true,
       instanceId: id,
       endpoint: instance.endpoint,
-      logs: ['Vultr instance deployed successfully.']
+      logs: ['Vultr instance deployed successfully.'],
     };
   },
   async getInstances(): Promise<Instance[]> {
@@ -49,14 +61,17 @@ export const VultrCloudAdapter: CloudProviderAdapter = {
   getProviderInfo() {
     return {
       name: 'Vultr',
-      description: 'Global cloud platform with AMD Instinct GPU instances and competitive pricing.',
+      description:
+        'Global cloud platform with AMD Instinct GPU instances and competitive pricing.',
       logo: '/assets/vultr-logo.svg',
-      website: 'https://www.vultr.com/'
+      website: 'https://www.vultr.com/',
     };
   },
   validateConfig(config: DeploymentConfig) {
     const errors: string[] = [];
-    if (!VULTR_CAPABILITIES.supportedInstanceTypes.includes(config.instanceType)) {
+    if (
+      !VULTR_CAPABILITIES.supportedInstanceTypes.includes(config.instanceType)
+    ) {
       errors.push('Unsupported instance type');
     }
     if (!VULTR_CAPABILITIES.supportedRegions.includes(config.region)) {
@@ -67,10 +82,10 @@ export const VultrCloudAdapter: CloudProviderAdapter = {
   getDefaultConfig() {
     return {
       instanceType: VULTR_CAPABILITIES.supportedInstanceTypes[0],
-      region: VULTR_CAPABILITIES.supportedRegions[0]
+      region: VULTR_CAPABILITIES.supportedRegions[0],
     };
-  }
+  },
 };
 
 // Register with the central controller
-centralDeploymentController.registerProvider('vultr', VultrCloudAdapter); 
+centralDeploymentController.registerProvider('vultr', VultrCloudAdapter);

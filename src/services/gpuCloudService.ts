@@ -1,5 +1,3 @@
-
-
 // Types for GPU Cloud Management
 export interface GPUInstance {
   id: string;
@@ -27,7 +25,14 @@ export interface GPUInstance {
 export interface CloudProvider {
   id: string;
   name: string;
-  type: 'amd-developer' | 'vultr' | 'oracle' | 'azure' | 'ibm' | 'hot-aisle' | 'tensorwave';
+  type:
+    | 'amd-developer'
+    | 'vultr'
+    | 'oracle'
+    | 'azure'
+    | 'ibm'
+    | 'hot-aisle'
+    | 'tensorwave';
   apiEndpoint?: string;
   apiKey?: string;
   regions: string[];
@@ -74,7 +79,7 @@ export class GPUCloudService {
       autoStopIdleInstances: true,
       idleTimeoutMinutes: 30,
     };
-    
+
     this.initializeProviders();
     this.loadInstances();
   }
@@ -88,9 +93,9 @@ export class GPUCloudService {
         regions: ['us-east', 'us-west', 'europe', 'asia-pacific'],
         supportedGPUs: ['MI300X', 'MI250X', 'MI100'],
         pricing: {
-          'MI300X': 2.50,
-          'MI250X': 1.80,
-          'MI100': 0.95,
+          MI300X: 2.5,
+          MI250X: 1.8,
+          MI100: 0.95,
         },
         status: 'available',
       },
@@ -101,8 +106,8 @@ export class GPUCloudService {
         regions: ['us-east', 'us-west', 'europe', 'asia'],
         supportedGPUs: ['MI325X', 'MI300X'],
         pricing: {
-          'MI325X': 3.20,
-          'MI300X': 2.80,
+          MI325X: 3.2,
+          MI300X: 2.8,
         },
         status: 'available',
       },
@@ -113,8 +118,8 @@ export class GPUCloudService {
         regions: ['us-east', 'us-west', 'europe', 'asia-pacific'],
         supportedGPUs: ['MI300X', 'MI250X'],
         pricing: {
-          'MI300X': 3.50,
-          'MI250X': 2.20,
+          MI300X: 3.5,
+          MI250X: 2.2,
         },
         status: 'available',
       },
@@ -125,8 +130,8 @@ export class GPUCloudService {
         regions: ['global'],
         supportedGPUs: ['MI250', 'MI210'],
         pricing: {
-          'MI250': 2.10,
-          'MI210': 1.60,
+          MI250: 2.1,
+          MI210: 1.6,
         },
         status: 'available',
       },
@@ -137,8 +142,8 @@ export class GPUCloudService {
         regions: ['us-east', 'us-south', 'europe', 'asia-pacific'],
         supportedGPUs: ['EPYC_7763', 'EPYC_7543'],
         pricing: {
-          'EPYC_7763': 1.20,
-          'EPYC_7543': 0.95,
+          EPYC_7763: 1.2,
+          EPYC_7543: 0.95,
         },
         status: 'available',
       },
@@ -149,8 +154,8 @@ export class GPUCloudService {
         regions: ['us-east', 'us-west'],
         supportedGPUs: ['MI300X', 'MI250X'],
         pricing: {
-          'MI300X': 2.90,
-          'MI250X': 2.00,
+          MI300X: 2.9,
+          MI250X: 2.0,
         },
         status: 'available',
       },
@@ -161,8 +166,8 @@ export class GPUCloudService {
         regions: ['us-east', 'us-west'],
         supportedGPUs: ['MI300X', 'MI250X'],
         pricing: {
-          'MI300X': 3.10,
-          'MI250X': 2.30,
+          MI300X: 3.1,
+          MI250X: 2.3,
         },
         status: 'available',
       },
@@ -184,7 +189,9 @@ export class GPUCloudService {
           this.instances.set(inst.id, {
             ...inst,
             createdAt: new Date(inst.createdAt),
-            lastStarted: inst.lastStarted ? new Date(inst.lastStarted) : undefined,
+            lastStarted: inst.lastStarted
+              ? new Date(inst.lastStarted)
+              : undefined,
           });
         });
       } catch (error) {
@@ -210,7 +217,7 @@ export class GPUCloudService {
         createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
         lastStarted: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
         totalRuntime: 22.5,
-        costPerHour: 2.50,
+        costPerHour: 2.5,
         totalCost: 56.25,
         specs: {
           vram: '192GB',
@@ -232,7 +239,7 @@ export class GPUCloudService {
         createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
         lastStarted: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
         totalRuntime: 45.2,
-        costPerHour: 3.20,
+        costPerHour: 3.2,
         totalCost: 144.64,
         specs: {
           vram: '192GB',
@@ -254,8 +261,8 @@ export class GPUCloudService {
         createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 1 week ago
         lastStarted: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
         totalRuntime: 168.0,
-        costPerHour: 2.20,
-        totalCost: 369.60,
+        costPerHour: 2.2,
+        totalCost: 369.6,
         specs: {
           vram: '128GB',
           computeUnits: '1024',
@@ -269,7 +276,7 @@ export class GPUCloudService {
     sampleInstances.forEach(instance => {
       this.instances.set(instance.id, instance);
     });
-    
+
     // Save the sample instances
     this.saveInstances();
   }
@@ -321,7 +328,9 @@ export class GPUCloudService {
     }
 
     if (!provider.supportedGPUs.includes(config.gpuType)) {
-      throw new Error(`GPU type ${config.gpuType} not supported by ${provider.name}`);
+      throw new Error(
+        `GPU type ${config.gpuType} not supported by ${provider.name}`
+      );
     }
 
     const instance: GPUInstance = {
@@ -377,9 +386,10 @@ export class GPUCloudService {
 
     // Calculate runtime and cost
     if (instance.lastStarted) {
-      const runtime = (Date.now() - instance.lastStarted.getTime()) / (1000 * 60 * 60); // hours
+      const runtime =
+        (Date.now() - instance.lastStarted.getTime()) / (1000 * 60 * 60); // hours
       const cost = runtime * instance.costPerHour;
-      
+
       this.updateInstance(id, {
         totalRuntime: instance.totalRuntime + runtime,
         totalCost: instance.totalCost + cost,
@@ -406,7 +416,10 @@ export class GPUCloudService {
     this.saveInstances();
   }
 
-  private updateInstanceStatus(id: string, status: GPUInstance['status']): void {
+  private updateInstanceStatus(
+    id: string,
+    status: GPUInstance['status']
+  ): void {
     const instance = this.instances.get(id);
     if (instance) {
       instance.status = status;
@@ -423,7 +436,10 @@ export class GPUCloudService {
   }
 
   // Metrics and Monitoring
-  async getInstanceMetrics(id: string, timeRange: '1h' | '24h' | '7d' = '1h'): Promise<InstanceMetrics[]> {
+  async getInstanceMetrics(
+    id: string,
+    timeRange: '1h' | '24h' | '7d' = '1h'
+  ): Promise<InstanceMetrics[]> {
     const metrics = this.metrics.get(id) || [];
     const now = new Date();
     const timeRangeMs = {
@@ -432,10 +448,15 @@ export class GPUCloudService {
       '7d': 7 * 24 * 60 * 60 * 1000,
     }[timeRange];
 
-    return metrics.filter(m => now.getTime() - m.timestamp.getTime() <= timeRangeMs);
+    return metrics.filter(
+      m => now.getTime() - m.timestamp.getTime() <= timeRangeMs
+    );
   }
 
-  async addMetrics(id: string, metrics: Omit<InstanceMetrics, 'timestamp'>): Promise<void> {
+  async addMetrics(
+    id: string,
+    metrics: Omit<InstanceMetrics, 'timestamp'>
+  ): Promise<void> {
     const instanceMetrics = this.metrics.get(id) || [];
     instanceMetrics.push({
       ...metrics,
@@ -453,19 +474,24 @@ export class GPUCloudService {
   // Cost Analysis
   getCostAnalysis(): CostAnalysis {
     const instances = this.getInstances();
-    const totalCost = instances.reduce((sum, instance) => sum + instance.totalCost, 0);
-    
+    const totalCost = instances.reduce(
+      (sum, instance) => sum + instance.totalCost,
+      0
+    );
+
     const costByProvider: Record<string, number> = {};
     const costByGPU: Record<string, number> = {};
     const costByMonth: Record<string, number> = {};
 
     instances.forEach(instance => {
       // Cost by provider
-      costByProvider[instance.provider] = (costByProvider[instance.provider] || 0) + instance.totalCost;
-      
+      costByProvider[instance.provider] =
+        (costByProvider[instance.provider] || 0) + instance.totalCost;
+
       // Cost by GPU type
-      costByGPU[instance.gpuType] = (costByGPU[instance.gpuType] || 0) + instance.totalCost;
-      
+      costByGPU[instance.gpuType] =
+        (costByGPU[instance.gpuType] || 0) + instance.totalCost;
+
       // Cost by month
       const month = instance.createdAt.toISOString().substring(0, 7); // YYYY-MM
       costByMonth[month] = (costByMonth[month] || 0) + instance.totalCost;
@@ -474,14 +500,18 @@ export class GPUCloudService {
     // Calculate projected monthly cost
     const runningInstances = instances.filter(i => i.status === 'running');
     const projectedMonthlyCost = runningInstances.reduce((sum, instance) => {
-      return sum + (instance.costPerHour * 24 * 30); // 30 days
+      return sum + instance.costPerHour * 24 * 30; // 30 days
     }, 0);
 
     // Generate savings recommendations
     const savingsRecommendations: string[] = [];
-    const idleInstances = instances.filter(i => i.status === 'running' && i.totalRuntime > 24);
+    const idleInstances = instances.filter(
+      i => i.status === 'running' && i.totalRuntime > 24
+    );
     if (idleInstances.length > 0) {
-      savingsRecommendations.push(`Stop ${idleInstances.length} idle instances to save ~$${idleInstances.reduce((sum, i) => sum + i.costPerHour * 24, 0).toFixed(2)}/day`);
+      savingsRecommendations.push(
+        `Stop ${idleInstances.length} idle instances to save ~$${idleInstances.reduce((sum, i) => sum + i.costPerHour * 24, 0).toFixed(2)}/day`
+      );
     }
 
     return {
@@ -496,17 +526,64 @@ export class GPUCloudService {
 
   private getGPUSpecs(gpuType: string): GPUInstance['specs'] {
     const specs: Record<string, GPUInstance['specs']> = {
-      'MI300X': { vram: '192GB', computeUnits: '1536', systemMemory: '1TB', cpuCores: '128' },
-      'MI325X': { vram: '192GB', computeUnits: '1536', systemMemory: '1TB', cpuCores: '128' },
-      'MI250X': { vram: '128GB', computeUnits: '1024', systemMemory: '512GB', cpuCores: '64' },
-      'MI250': { vram: '128GB', computeUnits: '1024', systemMemory: '512GB', cpuCores: '64' },
-      'MI210': { vram: '96GB', computeUnits: '768', systemMemory: '256GB', cpuCores: '32' },
-      'MI100': { vram: '32GB', computeUnits: '256', systemMemory: '128GB', cpuCores: '16' },
-      'EPYC_7763': { vram: 'N/A', computeUnits: 'N/A', systemMemory: '1TB', cpuCores: '128' },
-      'EPYC_7543': { vram: 'N/A', computeUnits: 'N/A', systemMemory: '512GB', cpuCores: '64' },
+      MI300X: {
+        vram: '192GB',
+        computeUnits: '1536',
+        systemMemory: '1TB',
+        cpuCores: '128',
+      },
+      MI325X: {
+        vram: '192GB',
+        computeUnits: '1536',
+        systemMemory: '1TB',
+        cpuCores: '128',
+      },
+      MI250X: {
+        vram: '128GB',
+        computeUnits: '1024',
+        systemMemory: '512GB',
+        cpuCores: '64',
+      },
+      MI250: {
+        vram: '128GB',
+        computeUnits: '1024',
+        systemMemory: '512GB',
+        cpuCores: '64',
+      },
+      MI210: {
+        vram: '96GB',
+        computeUnits: '768',
+        systemMemory: '256GB',
+        cpuCores: '32',
+      },
+      MI100: {
+        vram: '32GB',
+        computeUnits: '256',
+        systemMemory: '128GB',
+        cpuCores: '16',
+      },
+      EPYC_7763: {
+        vram: 'N/A',
+        computeUnits: 'N/A',
+        systemMemory: '1TB',
+        cpuCores: '128',
+      },
+      EPYC_7543: {
+        vram: 'N/A',
+        computeUnits: 'N/A',
+        systemMemory: '512GB',
+        cpuCores: '64',
+      },
     };
 
-    return specs[gpuType] || { vram: 'Unknown', computeUnits: 'Unknown', systemMemory: 'Unknown', cpuCores: 'Unknown' };
+    return (
+      specs[gpuType] || {
+        vram: 'Unknown',
+        computeUnits: 'Unknown',
+        systemMemory: 'Unknown',
+        cpuCores: 'Unknown',
+      }
+    );
   }
 
   // Configuration
@@ -538,10 +615,13 @@ export class GPUCloudService {
   startAutoCleanup(): void {
     setInterval(() => {
       if (this.config.autoStopIdleInstances) {
-        const runningInstances = this.getInstances().filter(i => i.status === 'running');
+        const runningInstances = this.getInstances().filter(
+          i => i.status === 'running'
+        );
         runningInstances.forEach(instance => {
           if (instance.lastStarted) {
-            const idleTime = (Date.now() - instance.lastStarted.getTime()) / (1000 * 60); // minutes
+            const idleTime =
+              (Date.now() - instance.lastStarted.getTime()) / (1000 * 60); // minutes
             if (idleTime > this.config.idleTimeoutMinutes) {
               this.stopInstance(instance.id);
             }
@@ -553,4 +633,4 @@ export class GPUCloudService {
 }
 
 // Export singleton instance
-export const gpuCloudService = new GPUCloudService(); 
+export const gpuCloudService = new GPUCloudService();
