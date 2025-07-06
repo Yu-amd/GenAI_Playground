@@ -9,8 +9,8 @@ interface DeployTabProps {
   customFooter?: React.ReactNode;
 }
 
-function isCloudProviderCapabilities(obj: any): obj is CloudProviderCapabilities {
-  return obj && typeof obj === 'object' && Object.keys(obj).length > 0;
+function isCloudProviderCapabilities(obj: unknown): obj is CloudProviderCapabilities {
+  return Boolean(obj && typeof obj === 'object' && obj !== null && Object.keys(obj).length > 0);
 }
 
 export const DeployTab: React.FC<DeployTabProps> = ({ providerId, customHeader, customFooter }) => {
@@ -63,8 +63,9 @@ export const DeployTab: React.FC<DeployTabProps> = ({ providerId, customHeader, 
       } else {
         setError(result.error || 'Deployment failed');
       }
-    } catch (err: any) {
-      setError(err.message || 'Deployment error');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Deployment error';
+      setError(errorMessage);
     } finally {
       setDeploying(false);
     }

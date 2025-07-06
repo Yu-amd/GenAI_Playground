@@ -97,20 +97,26 @@ export const ModelDeploymentManager: React.FC<ModelDeploymentManagerProps> = ({
       const savedBlueprintDeployments = localStorage.getItem('blueprint-deployments');
       
       if (savedModelDeployments) {
-        const deployments = JSON.parse(savedModelDeployments).map((d: any) => ({
-          ...d,
-          createdAt: new Date(d.createdAt),
-          lastHealthCheck: d.lastHealthCheck ? new Date(d.lastHealthCheck) : undefined,
-        }));
+        const deployments = JSON.parse(savedModelDeployments).map((d: unknown) => {
+          const deployment = d as ModelDeployment;
+          return {
+            ...deployment,
+            createdAt: new Date(deployment.createdAt),
+            lastHealthCheck: deployment.lastHealthCheck ? new Date(deployment.lastHealthCheck) : undefined,
+          };
+        });
         setModelDeployments(deployments);
       }
       
       if (savedBlueprintDeployments) {
-        const deployments = JSON.parse(savedBlueprintDeployments).map((d: any) => ({
-          ...d,
-          createdAt: new Date(d.createdAt),
-          lastHealthCheck: d.lastHealthCheck ? new Date(d.lastHealthCheck) : undefined,
-        }));
+        const deployments = JSON.parse(savedBlueprintDeployments).map((d: unknown) => {
+          const deployment = d as BlueprintDeployment;
+          return {
+            ...deployment,
+            createdAt: new Date(deployment.createdAt),
+            lastHealthCheck: deployment.lastHealthCheck ? new Date(deployment.lastHealthCheck) : undefined,
+          };
+        });
         setBlueprintDeployments(deployments);
       }
       
@@ -365,14 +371,14 @@ export const ModelDeploymentManager: React.FC<ModelDeploymentManagerProps> = ({
         <h2 className="text-xl font-semibold text-white">Model & Blueprint Deployments</h2>
         <div className="flex space-x-2">
           <button
-            onClick={() => setSelectedDeployment({ type: 'model' } as any)}
+            onClick={() => setSelectedDeployment({ type: 'model' as const })}
             className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
           >
             <FaRocket className="w-4 h-4" />
             <span>deploy model</span>
           </button>
           <button
-            onClick={() => setSelectedDeployment({ type: 'blueprint' } as any)}
+            onClick={() => setSelectedDeployment({ type: 'blueprint' as const })}
             className="flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all"
           >
             <FaServer className="w-4 h-4" />
@@ -593,13 +599,13 @@ export const ModelDeploymentManager: React.FC<ModelDeploymentManagerProps> = ({
           <p className="text-gray-400 mb-4">No deployments found</p>
           <div className="flex justify-center space-x-4">
             <button
-              onClick={() => setSelectedDeployment({ type: 'model' } as any)}
+              onClick={() => setSelectedDeployment({ type: 'model' as const })}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
             >
               Deploy Your First Model
             </button>
             <button
-              onClick={() => setSelectedDeployment({ type: 'blueprint' } as any)}
+              onClick={() => setSelectedDeployment({ type: 'blueprint' as const })}
               className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all"
             >
               Deploy Your First Blueprint
@@ -627,8 +633,27 @@ export const ModelDeploymentManager: React.FC<ModelDeploymentManagerProps> = ({
 interface DeploymentModalProps {
   type: 'model' | 'blueprint';
   instances: GPUInstance[];
-  onDeployModel: (config: any) => void;
-  onDeployBlueprint: (config: any) => void;
+  onDeployModel: (config: {
+    name: string;
+    modelId: string;
+    instanceId: string;
+    modelType: ModelDeployment['config']['modelType'];
+    framework: ModelDeployment['config']['framework'];
+    quantization: ModelDeployment['config']['quantization'];
+    maxConcurrentRequests: number;
+    autoScaling: boolean;
+    minReplicas: number;
+    maxReplicas: number;
+  }) => void;
+  onDeployBlueprint: (config: {
+    name: string;
+    blueprintId: string;
+    instanceId: string;
+    blueprintType: BlueprintDeployment['config']['blueprintType'];
+    components: string[];
+    dependencies: string[];
+    environment: Record<string, string>;
+  }) => void;
   onCancel: () => void;
   isDeploying: boolean;
 }
@@ -646,14 +671,14 @@ const DeploymentModal: React.FC<DeploymentModalProps> = ({
     modelId: '',
     blueprintId: '',
     instanceId: '',
-    modelType: 'llm' as const,
-    framework: 'transformers' as const,
-    quantization: 'none' as const,
+    modelType: 'llm' as ModelDeployment['config']['modelType'],
+    framework: 'transformers' as ModelDeployment['config']['framework'],
+    quantization: 'none' as ModelDeployment['config']['quantization'],
     maxConcurrentRequests: 10,
     autoScaling: true,
     minReplicas: 1,
     maxReplicas: 3,
-    blueprintType: 'chatqna' as const,
+    blueprintType: 'chatqna' as BlueprintDeployment['config']['blueprintType'],
     components: [] as string[],
     dependencies: [] as string[],
     environment: {} as Record<string, string>,
@@ -770,7 +795,7 @@ const DeploymentModal: React.FC<DeploymentModalProps> = ({
                   </label>
                   <select
                     value={formData.modelType}
-                    onChange={(e) => setFormData({ ...formData, modelType: e.target.value as any })}
+                    onChange={(e) => setFormData({ ...formData, modelType: e.target.value as ModelDeployment['config']['modelType'] })}
                     className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
                   >
                     <option value="llm">LLM</option>
@@ -785,7 +810,7 @@ const DeploymentModal: React.FC<DeploymentModalProps> = ({
                   </label>
                   <select
                     value={formData.framework}
-                    onChange={(e) => setFormData({ ...formData, framework: e.target.value as any })}
+                    onChange={(e) => setFormData({ ...formData, framework: e.target.value as ModelDeployment['config']['framework'] })}
                     className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
                   >
                     <option value="transformers">Transformers</option>
@@ -803,7 +828,7 @@ const DeploymentModal: React.FC<DeploymentModalProps> = ({
                   </label>
                   <select
                     value={formData.quantization}
-                    onChange={(e) => setFormData({ ...formData, quantization: e.target.value as any })}
+                    onChange={(e) => setFormData({ ...formData, quantization: e.target.value as ModelDeployment['config']['quantization'] })}
                     className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
                   >
                     <option value="none">None</option>
@@ -879,7 +904,7 @@ const DeploymentModal: React.FC<DeploymentModalProps> = ({
               </label>
               <select
                 value={formData.blueprintType}
-                onChange={(e) => setFormData({ ...formData, blueprintType: e.target.value as any })}
+                onChange={(e) => setFormData({ ...formData, blueprintType: e.target.value as BlueprintDeployment['config']['blueprintType'] })}
                 className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
               >
                 <option value="chatqna">ChatQnA</option>

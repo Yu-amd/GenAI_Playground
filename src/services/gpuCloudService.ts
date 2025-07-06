@@ -179,11 +179,12 @@ export class GPUCloudService {
     if (savedInstances) {
       try {
         const instances = JSON.parse(savedInstances);
-        instances.forEach((instance: any) => {
-          this.instances.set(instance.id, {
-            ...instance,
-            createdAt: new Date(instance.createdAt),
-            lastStarted: instance.lastStarted ? new Date(instance.lastStarted) : undefined,
+        instances.forEach((instance: unknown) => {
+          const inst = instance as GPUInstance;
+          this.instances.set(inst.id, {
+            ...inst,
+            createdAt: new Date(inst.createdAt),
+            lastStarted: inst.lastStarted ? new Date(inst.lastStarted) : undefined,
           });
         });
       } catch (error) {
@@ -528,7 +529,7 @@ export class GPUCloudService {
       // Simulate health check
       await new Promise(resolve => setTimeout(resolve, 1000));
       return Math.random() > 0.1; // 90% success rate
-    } catch (error) {
+    } catch {
       return false;
     }
   }

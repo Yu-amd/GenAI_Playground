@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">41.3% </span>
+                <span class="strong">41.48% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>829/2007</span>
+                <span class='fraction'>835/2013</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">41.3% </span>
+                <span class="strong">41.48% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>829/2007</span>
+                <span class='fraction'>835/2013</span>
             </div>
         
             
@@ -2668,7 +2668,12 @@
 <a name='L2603'></a><a href='#L2603'>2603</a>
 <a name='L2604'></a><a href='#L2604'>2604</a>
 <a name='L2605'></a><a href='#L2605'>2605</a>
-<a name='L2606'></a><a href='#L2606'>2606</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L2606'></a><a href='#L2606'>2606</a>
+<a name='L2607'></a><a href='#L2607'>2607</a>
+<a name='L2608'></a><a href='#L2608'>2608</a>
+<a name='L2609'></a><a href='#L2609'>2609</a>
+<a name='L2610'></a><a href='#L2610'>2610</a>
+<a name='L2611'></a><a href='#L2611'>2611</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -2712,7 +2717,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -3312,6 +3317,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-yes">41x</span>
@@ -5317,7 +5327,7 @@ import avatarchatbotArchitecture from '../assets/architecture/avatarchatbot-arch
 // Model images
 import llamaImg from '../assets/models/model_llama3_1.png';
 import deepseekImg from '../assets/models/model_DeepSeek_MoE_18B.png';
-&nbsp;
+import qwen3Img from '../assets/models/model_qwen3_32b.png';
 import llama4MaverickImg from '../assets/models/model_llama4_maverick.png';
 import { generatedBlueprintData } from '../utils/generatedBlueprintData';
 import PlaygroundLogo from '../components/PlaygroundLogo';
@@ -5497,7 +5507,7 @@ Emergency hotline: +1-555-OPEA-911
     metadata: {
       author: 'OPEA Engineering Team',
       version: '2.1',
-      lastUpdated: '2024-01-15',
+      lastUpdated: '2025-06-30',
       classification: 'Public',
       size: '15.2 KB',
     },
@@ -5905,7 +5915,7 @@ Emergency hotline: +1-555-OPEA-911
 <span class="cstat-no" title="statement not covered" >      return {</span>
 <span class="cstat-no" title="statement not covered" >        models: chatqnaData.microservices.models.map(model =&gt; ({</span>
 <span class="cstat-no" title="statement not covered" >          name: model.name,</span>
-<span class="cstat-no" title="statement not covered" >          logo: model.logo,</span>
+<span class="cstat-no" title="statement not covered" >          logo: model.name === 'Qwen3 32B' ? qwen3Img : model.logo,</span>
 <span class="cstat-no" title="statement not covered" >          tags: [...model.tags],</span>
 <span class="cstat-no" title="statement not covered" >        })),</span>
 <span class="cstat-no" title="statement not covered" >        functional: chatqnaData.microservices.functional.map(service =&gt; ({</span>
@@ -5937,6 +5947,11 @@ Emergency hotline: +1-555-OPEA-911
         name: 'Llama 3.1 405B Instruct FP8 KV',
         logo: llamaImg,
         tags: ['FP8', 'Large Scale', 'AMD', 'Featured'],
+      },
+      {
+        name: 'Qwen3 32B',
+        logo: qwen3Img,
+        tags: ['Multilingual', 'Chat', 'Reasoning'],
       },
     ];
 &nbsp;
@@ -7147,7 +7162,7 @@ for (let i = 0; i &lt; 10; i++) {
 <span class="cstat-no" title="statement not covered" >                              ))</span>
                             : [
                                 `# API Reference\n\n## POST /v1/users\nCreate a new user in the system.\n\n**Request Body:**\n- name: string\n- email: string\n\n**Response:**\n- 201 Created: User object\n- 400 Bad Request: Validation error`,
-                                `# Changelog\n\n## [1.2.0] - 2024-06-01\n### Added\n- Support for multi-factor authentication.\n- New API endpoint for password reset.\n\n### Fixed\n- Minor bug fixes in user profile module.`,
+                                `# Changelog\n\n## [1.2.0] - 2025-06-01\n### Added\n- Support for multi-factor authentication.\n- New API endpoint for password reset.\n\n### Fixed\n- Minor bug fixes in user profile module.`,
                                 `# README\n\nThis project provides a RESTful API for managing tasks.\n\n## Features\n- Create, update, delete tasks\n- Assign tasks to users\n- Track task status and deadlines`,
                                 `# Technical Specification\n\nThe system uses a microservices architecture with the following components:\n- Auth Service\n- User Service\n- Task Service\n\nAll services communicate via gRPC.`,
                                 `# Integration Guide\n\nTo integrate with the payment gateway:\n1. Obtain your API key from the dashboard.\n2. Use the /v1/payments endpoint for transactions.\n3. Handle webhook events for payment status updates.`,
@@ -7885,7 +7900,7 @@ export default BlueprintDetail;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-01T04:45:22.644Z
+                at 2025-07-06T04:44:43.317Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

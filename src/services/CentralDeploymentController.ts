@@ -5,8 +5,8 @@ export interface DeploymentConfig {
   instanceType: string;
   region: string;
   blueprint?: string;
-  modelConfig?: any;
-  userConfig?: any;
+  modelConfig?: Record<string, unknown>;
+  userConfig?: Record<string, unknown>;
 }
 
 export interface DeploymentResult {

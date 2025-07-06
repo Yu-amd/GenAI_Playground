@@ -13,6 +13,7 @@ import { gpuCloudService, type GPUInstance, type CostAnalysis } from '../service
 
 interface GPUCloudManagerProps {
   // Props can be added here if needed in the future
+  [key: string]: unknown;
 }
 
 export const GPUCloudManager: React.FC<GPUCloudManagerProps> = () => {

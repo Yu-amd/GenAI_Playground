@@ -1216,7 +1216,7 @@ export class ToolService {
 <span class="cstat-no" title="statement not covered" >        return this.getMockWeather(location, unit);</span>
 <span class="cstat-no" title="statement not covered" >      }</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      const data = await response.json();</span>
+<span class="cstat-no" title="statement not covered" >      const data = await response.json() as any;</span>
 <span class="cstat-no" title="statement not covered" >      const temp = data.main.temp;</span>
 <span class="cstat-no" title="statement not covered" >      const description = data.weather[0].description;</span>
 <span class="cstat-no" title="statement not covered" >      const humidity = data.main.humidity;</span>
@@ -1251,7 +1251,7 @@ export class ToolService {
 <span class="cstat-no" title="statement not covered" >        return this.getMockSearchResults(query, num_results);</span>
 <span class="cstat-no" title="statement not covered" >      }</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      const data = await response.json();</span>
+<span class="cstat-no" title="statement not covered" >      const data = await response.json() as any;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      if (data.Abstract) {</span>
 <span class="cstat-no" title="statement not covered" >        return `Search results for "${query}":\n\n${data.Abstract}\n\nSource: ${data.AbstractURL || 'DuckDuckGo'}`;</span>
@@ -1324,7 +1324,7 @@ export class ToolService {
 <span class="cstat-no" title="statement not covered" >        return this.getMockTranslation(text, target_language, source_language);</span>
 <span class="cstat-no" title="statement not covered" >      }</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      const data = await response.json();</span>
+<span class="cstat-no" title="statement not covered" >      const data = await response.json() as any;</span>
 <span class="cstat-no" title="statement not covered" >      const detectedLanguage =</span>
 <span class="cstat-no" title="statement not covered" >        data.detected?.language || source_language || 'auto';</span>
 &nbsp;
@@ -1389,7 +1389,7 @@ export class ToolService {
 <span class="cstat-no" title="statement not covered" >        return this.getMockStockPrice(symbol, include_currency);</span>
 <span class="cstat-no" title="statement not covered" >      }</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      const data = await response.json();</span>
+<span class="cstat-no" title="statement not covered" >      const data = await response.json() as any;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      if (data['Global Quote']) {</span>
 <span class="cstat-no" title="statement not covered" >        const quote = data['Global Quote'];</span>
@@ -1435,7 +1435,7 @@ export class ToolService {
 <span class="cstat-no" title="statement not covered" >      }</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      if (!targetDate) {</span>
-<span class="cstat-no" title="statement not covered" >        return `Please specify a date for historical stock data. Example: "AMD stock price on June 20, 2024"`;</span>
+<span class="cstat-no" title="statement not covered" >        return `Please specify a date for historical stock data. Example: "AMD stock price on June 20, 2025"`;</span>
 <span class="cstat-no" title="statement not covered" >      }</span>
 &nbsp;
       // Convert date to YYYY-MM-DD format for Alpha Vantage
@@ -1470,7 +1470,7 @@ export class ToolService {
 &nbsp;
 <span class="cstat-no" title="statement not covered" >          formattedDate = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;</span>
 <span class="cstat-no" title="statement not covered" >        } else {</span>
-<span class="cstat-no" title="statement not covered" >          return `Unable to parse date: ${targetDate}. Please use format like "June 20, 2024" or "2024-06-20"`;</span>
+<span class="cstat-no" title="statement not covered" >          return `Unable to parse date: ${targetDate}. Please use format like "June 20, 2025" or "2025-06-20"`;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >      }</span>
 &nbsp;
@@ -1490,18 +1490,18 @@ export class ToolService {
 <span class="cstat-no" title="statement not covered" >        return `Error fetching historical data for ${symbol.toUpperCase()}. Please check the symbol and try again.`;</span>
 <span class="cstat-no" title="statement not covered" >      }</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      const data = await response.json();</span>
+<span class="cstat-no" title="statement not covered" >      const data = await response.json() as any;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      if (</span>
 <span class="cstat-no" title="statement not covered" >        data['Time Series (Daily)'] &amp;&amp;</span>
 <span class="cstat-no" title="statement not covered" >        data['Time Series (Daily)'][formattedDate]</span>
 <span class="cstat-no" title="statement not covered" >      ) {</span>
 <span class="cstat-no" title="statement not covered" >        const dailyData = data['Time Series (Daily)'][formattedDate];</span>
-<span class="cstat-no" title="statement not covered" >        const open = parseFloat(dailyData['1. open']);</span>
-<span class="cstat-no" title="statement not covered" >        const high = parseFloat(dailyData['2. high']);</span>
-<span class="cstat-no" title="statement not covered" >        const low = parseFloat(dailyData['3. low']);</span>
-<span class="cstat-no" title="statement not covered" >        const close = parseFloat(dailyData['4. close']);</span>
-<span class="cstat-no" title="statement not covered" >        const volume = parseInt(dailyData['5. volume']);</span>
+<span class="cstat-no" title="statement not covered" >        const open = dailyData['1. open'];</span>
+<span class="cstat-no" title="statement not covered" >        const high = dailyData['2. high'];</span>
+<span class="cstat-no" title="statement not covered" >        const low = dailyData['3. low'];</span>
+<span class="cstat-no" title="statement not covered" >        const close = dailyData['4. close'];</span>
+<span class="cstat-no" title="statement not covered" >        const volume = dailyData['5. volume'];</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        const dateObj = new Date(formattedDate);</span>
 <span class="cstat-no" title="statement not covered" >        const formattedDisplayDate = dateObj.toLocaleDateString('en-US', {</span>
@@ -1511,11 +1511,11 @@ export class ToolService {
 <span class="cstat-no" title="statement not covered" >          day: 'numeric',</span>
 <span class="cstat-no" title="statement not covered" >        });</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        let resultText = `Historical Stock Price for ${symbol.toUpperCase()}:\n• Date: ${formattedDisplayDate}\n• Close Price: $${close.toFixed(2)} USD`;</span>
-<span class="cstat-no" title="statement not covered" >        resultText += `\n• Open: $${open.toFixed(2)}`;</span>
-<span class="cstat-no" title="statement not covered" >        resultText += `\n• High: $${high.toFixed(2)}`;</span>
-<span class="cstat-no" title="statement not covered" >        resultText += `\n• Low: $${low.toFixed(2)}`;</span>
-<span class="cstat-no" title="statement not covered" >        resultText += `\n• Volume: ${volume.toLocaleString()}`;</span>
+<span class="cstat-no" title="statement not covered" >        let resultText = `Historical Stock Price for ${symbol.toUpperCase()}:\n• Date: ${formattedDisplayDate}\n• Close Price: $${close} USD`;</span>
+<span class="cstat-no" title="statement not covered" >        resultText += `\n• Open: $${open}`;</span>
+<span class="cstat-no" title="statement not covered" >        resultText += `\n• High: $${high}`;</span>
+<span class="cstat-no" title="statement not covered" >        resultText += `\n• Low: $${low}`;</span>
+<span class="cstat-no" title="statement not covered" >        resultText += `\n• Volume: ${volume}`;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return resultText;</span>
 <span class="cstat-no" title="statement not covered" >      } else {</span>
@@ -1537,11 +1537,11 @@ export class ToolService {
 <span class="cstat-no" title="statement not covered" >          }</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >          const dailyData = data['Time Series (Daily)'][closestDate];</span>
-<span class="cstat-no" title="statement not covered" >          const close = parseFloat(dailyData['4. close']);</span>
-<span class="cstat-no" title="statement not covered" >          const open = parseFloat(dailyData['1. open']);</span>
-<span class="cstat-no" title="statement not covered" >          const high = parseFloat(dailyData['2. high']);</span>
-<span class="cstat-no" title="statement not covered" >          const low = parseFloat(dailyData['3. low']);</span>
-<span class="cstat-no" title="statement not covered" >          const volume = parseInt(dailyData['5. volume']);</span>
+<span class="cstat-no" title="statement not covered" >          const close = dailyData['4. close'];</span>
+<span class="cstat-no" title="statement not covered" >          const open = dailyData['1. open'];</span>
+<span class="cstat-no" title="statement not covered" >          const high = dailyData['2. high'];</span>
+<span class="cstat-no" title="statement not covered" >          const low = dailyData['3. low'];</span>
+<span class="cstat-no" title="statement not covered" >          const volume = dailyData['5. volume'];</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >          const dateObj = new Date(closestDate);</span>
 <span class="cstat-no" title="statement not covered" >          const formattedDisplayDate = dateObj.toLocaleDateString('en-US', {</span>
@@ -1551,11 +1551,11 @@ export class ToolService {
 <span class="cstat-no" title="statement not covered" >            day: 'numeric',</span>
 <span class="cstat-no" title="statement not covered" >          });</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >          let resultText = `Historical Stock Price for ${symbol.toUpperCase()}:\n• Date: ${formattedDisplayDate} (closest available to ${targetDate})\n• Close Price: $${close.toFixed(2)} USD`;</span>
-<span class="cstat-no" title="statement not covered" >          resultText += `\n• Open: $${open.toFixed(2)}`;</span>
-<span class="cstat-no" title="statement not covered" >          resultText += `\n• High: $${high.toFixed(2)}`;</span>
-<span class="cstat-no" title="statement not covered" >          resultText += `\n• Low: $${low.toFixed(2)}`;</span>
-<span class="cstat-no" title="statement not covered" >          resultText += `\n• Volume: ${volume.toLocaleString()}`;</span>
+<span class="cstat-no" title="statement not covered" >          let resultText = `Historical Stock Price for ${symbol.toUpperCase()}:\n• Date: ${formattedDisplayDate} (closest available to ${targetDate})\n• Close Price: $${close} USD`;</span>
+<span class="cstat-no" title="statement not covered" >          resultText += `\n• Open: $${open}`;</span>
+<span class="cstat-no" title="statement not covered" >          resultText += `\n• High: $${high}`;</span>
+<span class="cstat-no" title="statement not covered" >          resultText += `\n• Low: $${low}`;</span>
+<span class="cstat-no" title="statement not covered" >          resultText += `\n• Volume: ${volume}`;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >          return resultText;</span>
 <span class="cstat-no" title="statement not covered" >        } else {</span>
@@ -1663,7 +1663,7 @@ export const toolService = ToolService.getInstance();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-01T04:45:22.644Z
+                at 2025-07-06T04:44:43.317Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
