@@ -164,6 +164,15 @@ The application will be available at `http://localhost:5173`
 npm run dev -- --port 3000
 ```
 
+For external access, the server port 5173 might be blocked depending on your network setting. To unblock it:
+
+Allow port 5173 temporarily (Recommended for development)
+```bash
+sudo ufw allow 5173/tcp
+# allow port 5173 permanently
+sudo ufw reload
+```
+
 ### WSL2 Installation (Windows)
 
 If you're running Windows with WSL2, follow these specific instructions:
